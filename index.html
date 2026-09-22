@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Juan Antonio & Anahí — 23 de enero, 2027</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,400&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* paleta de la boda */
+    --crema:#F8F4EE;        /* fondo */
+    --blush:#F1E0D6;        /* tarjetas / acentos suaves */
+    --arena:#D8C4AE;        /* líneas divisorias cálidas */
+    --terracota:#C1815B;    /* color principal / botones / acentos */
+    --gris-calido:#B4A99B;  /* texto secundario */
+    --texto:#3B2A22;        /* texto principal, café oscuro */
+
+    /* alias para mantener el resto del CSS sin tocar */
+    --verde-oscuro:var(--crema);
+    --marfil:var(--texto);
+    --marfil-suave:var(--gris-calido);
+    --dorado:var(--terracota);
+    --rosa-polvo:var(--blush);
+    --linea:rgba(59,42,34,0.15);
+    --max-w:720px;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+
+  html{scroll-behavior:smooth;}
+
+  body{
+    background:var(--verde-oscuro);
+    color:var(--marfil);
+    font-family:'Work Sans', sans-serif;
+    font-weight:300;
+    line-height:1.6;
+  }
+
+  h1,h2,.serif{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    letter-spacing:0.01em;
+  }
+
+  a{color:inherit;}
+
+  .wrap{
+    max-width:var(--max-w);
+    margin:0 auto;
+    padding:0 28px;
+  }
+
+  section{
+    padding:96px 0;
+    border-bottom:1px solid var(--linea);
+  }
+  section:last-of-type{border-bottom:none;}
+
+  /* -------- aviso de vista previa -------- */
+  .preview-banner{
+    background:var(--marfil-suave);
+    color:var(--verde-oscuro);
+    text-align:center;
+    font-size:0.85rem;
+    padding:10px 16px;
+    letter-spacing:0.02em;
+  }
+
+  /* -------- hero -------- */
+  .hero{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:64px 28px;
+    border-bottom:1px solid var(--linea);
+  }
+
+  .hero .nos-casamos{
+    font-size:0.95rem;
+    letter-spacing:0.04em;
+    color:var(--dorado);
+    margin-bottom:28px;
+  }
+
+  .hero h1{
+    font-size:clamp(2.6rem, 7vw, 4.4rem);
+    line-height:1.08;
+    max-width:11ch;
+  }
+
+  .hero .amp{
+    display:block;
+    font-style:italic;
+    font-weight:300;
+    font-size:0.5em;
+    color:var(--dorado);
+    margin:6px 0;
+  }
+
+  .hero .fecha{
+    margin-top:36px;
+    font-size:1.1rem;
+    color:var(--marfil-suave);
+  }
+
+  .hero .lugar{
+    margin-top:6px;
+    font-size:1rem;
+    color:var(--marfil-suave);
+    opacity:0.8;
+  }
+
+  /* -------- encabezados de sección -------- */
+  h2{
+    font-size:clamp(1.8rem, 4vw, 2.4rem);
+    margin-bottom:32px;
+  }
+
+  /* -------- mensaje -------- */
+  .mensaje p{
+    font-size:1.15rem;
+    max-width:56ch;
+  }
+
+  /* -------- itinerario -------- */
+  .itinerario-item{
+    display:flex;
+    gap:24px;
+    padding:20px 0;
+    border-top:1px solid var(--arena);
+  }
+  .itinerario-item:last-child{border-bottom:1px solid var(--arena);}
+
+  .itinerario-item .hora{
+    font-family:'Fraunces', serif;
+    color:var(--dorado);
+    min-width:88px;
+    font-size:1.05rem;
+  }
+
+  .itinerario-item .detalle strong{
+    display:block;
+    font-weight:500;
+    margin-bottom:2px;
+  }
+
+  .itinerario-item .detalle span{
+    opacity:0.75;
+    font-size:0.95rem;
+  }
+
+  /* -------- ubicación -------- */
+  .ubicacion .nombre-lugar{
+    font-size:1.3rem;
+    margin-bottom:8px;
+  }
+
+  .btn{
+    display:inline-block;
+    margin-top:24px;
+    padding:14px 32px;
+    border:1px solid var(--dorado);
+    color:var(--marfil);
+    text-decoration:none;
+    font-size:0.95rem;
+    letter-spacing:0.02em;
+    transition:background 0.25s ease, color 0.25s ease;
+  }
+  .btn:hover{
+    background:var(--dorado);
+    color:var(--verde-oscuro);
+  }
+
+  /* -------- galería -------- */
+  .galeria{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:12px;
+  }
+  .foto-placeholder{
+    aspect-ratio:3/4;
+    background:var(--blush);
+    border:1px dashed var(--arena);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:0.8rem;
+    text-align:center;
+    color:var(--texto);
+    opacity:0.55;
+    padding:12px;
+  }
+
+  /* -------- regalos -------- */
+  .regalos .tarjeta{
+    background:var(--blush);
+    border:1px solid var(--arena);
+    padding:28px;
+    margin-bottom:16px;
+  }
+  .regalos .tarjeta h3{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    font-size:1.15rem;
+    margin-bottom:10px;
+  }
+  .regalos .dato{
+    font-size:0.95rem;
+    opacity:0.85;
+    margin:2px 0;
+  }
+
+  /* -------- rsvp -------- */
+  .rsvp-placeholder{
+    border:1px dashed var(--arena);
+    padding:32px;
+    font-size:0.95rem;
+    opacity:0.75;
+  }
+
+  /* -------- footer -------- */
+  footer{
+    text-align:center;
+    padding:48px 0;
+    font-size:0.85rem;
+    opacity:0.6;
+  }
+
+  @media (max-width:560px){
+    .galeria{grid-template-columns:repeat(2, 1fr);}
+    section{padding:72px 0;}
+  }
+</style>
+</head>
+<body>
+
+<div class="preview-banner">
+  Vista previa — esta invitación sigue en construcción, el contenido aún puede cambiar.
+</div>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <p class="nos-casamos">Nos casamos</p>
+  <h1>
+    Juan Antonio
+    <span class="amp">&amp;</span>
+    Anahí
+  </h1>
+  <p class="fecha">23 de enero de 2027</p>
+  <p class="lugar">Jardín Quinta Santa Fe</p>
+</header>
+
+<!-- ============ MENSAJE ============ -->
+<!-- EDITA: aquí va el mensaje personal para los invitados -->
+<section class="mensaje">
+  <div class="wrap">
+    <h2 class="serif">Con mucha alegría</h2>
+    <p>
+      Con la bendición de Dios y nuestras familias, queremos invitarte a celebrar
+      con nosotros el día en que unimos nuestras vidas para siempre.
+      <!-- Reemplaza este párrafo con su mensaje real -->
+    </p>
+  </div>
+</section>
+
+<!-- ============ ITINERARIO ============ -->
+<!-- EDITA: horarios reales de ceremonia, recepción, etc. -->
+<section class="itinerario" id="itinerario">
+  <div class="wrap">
+    <h2 class="serif">Itinerario</h2>
+
+    <div class="itinerario-item">
+      <div class="hora">Por definir</div>
+      <div class="detalle">
+        <strong>Ceremonia</strong>
+        <span>Detalles próximamente</span>
+      </div>
+    </div>
+
+    <div class="itinerario-item">
+      <div class="hora">Por definir</div>
+      <div class="detalle">
+        <strong>Recepción</strong>
+        <span>Detalles próximamente</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ UBICACIÓN ============ -->
+<section class="ubicacion" id="ubicacion">
+  <div class="wrap">
+    <h2 class="serif">Ubicación</h2>
+    <p class="nombre-lugar">Jardín Quinta Santa Fe</p>
+    <p>Te esperamos para celebrar juntos este día tan especial.</p>
+    <a class="btn" href="https://maps.app.goo.gl/hDU6dDWUqxerV5o89" target="_blank" rel="noopener">
+      Cómo llegar
+    </a>
+  </div>
+</section>
+
+<!-- ============ FOTOS ============ -->
+<!-- EDITA: reemplaza cada .foto-placeholder con <img src="fotos/nombre.jpg" alt="..."> -->
+<section class="fotos" id="fotos">
+  <div class="wrap">
+    <h2 class="serif">Nosotros</h2>
+    <div class="galeria">
+      <div class="foto-placeholder">Foto 1</div>
+      <div class="foto-placeholder">Foto 2</div>
+      <div class="foto-placeholder">Foto 3</div>
+      <div class="foto-placeholder">Foto 4</div>
+      <div class="foto-placeholder">Foto 5</div>
+      <div class="foto-placeholder">Foto 6</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MESA DE REGALOS / DONATIVOS ============ -->
+<!-- EDITA: link real de mesa de regalos y datos bancarios -->
+<section class="regalos" id="regalos">
+  <div class="wrap">
+    <h2 class="serif">Mesa de regalos</h2>
+
+    <div class="tarjeta">
+      <h3>Mesa de regalos en línea</h3>
+      <p>Tu presencia es nuestro mejor regalo, pero si deseas obsequiarnos algo:</p>
+      <a class="btn" href="#" target="_blank" rel="noopener">Ver mesa de regalos</a>
+    </div>
+
+    <div class="tarjeta">
+      <h3>Si prefieres hacer un donativo</h3>
+      <p class="dato">Banco: por definir</p>
+      <p class="dato">Titular: por definir</p>
+      <p class="dato">Cuenta / CLABE: por definir</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RSVP ============ -->
+<!-- Aquí se conectará el formulario (Google Form embebido o backend propio) -->
+<section class="rsvp" id="rsvp">
+  <div class="wrap">
+    <h2 class="serif">Confirma tu asistencia</h2>
+    <p>Te pedimos confirmar antes del [fecha límite].</p>
+    <div class="rsvp-placeholder">
+      Aquí va el formulario de confirmación (asistencia, número de acompañantes,
+      alergias/restricciones alimenticias y mensaje opcional para los novios).
+    </div>
+  </div>
+</section>
+
+<footer>
+  Juan Antonio &amp; Anahí · 23.01.2027
+</footer>
+
+</body>
+</html>
