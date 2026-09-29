@@ -11,7 +11,7 @@ const admin = require("firebase-admin");
 const RUTA_CSV = "./invitados.csv";
 const RUTA_LLAVE = "./service-account-key.json";
 // Cambia esto por tu link real de GitHub Pages (el mismo que ya le mandaste a tu novia)
-const BASE_URL = "https://juansantana-1993.github.io/boda-invitacion/";
+const BASE_URL = "https://tuusuario.github.io/boda-invitacion/index.html";
 // ---------------------------------
 
 if (!fs.existsSync(RUTA_LLAVE)) {

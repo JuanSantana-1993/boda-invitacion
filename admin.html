@@ -414,7 +414,7 @@
   // sin tener que escribir tu URL a mano en ningún lado.
   function copiarLink(btn) {
     const id = btn.dataset.id;
-    const link = `${location.origin}${location.pathname.replace("admin.html", "rsvp.html")}?fam=${encodeURIComponent(id)}`;
+    const link = `${location.origin}${location.pathname.replace("admin.html", "index.html")}?fam=${encodeURIComponent(id)}`;
     navigator.clipboard.writeText(link).then(() => {
       const textoOriginal = btn.textContent;
       btn.textContent = "¡Copiado!";
@@ -551,7 +551,7 @@
         lista_espera: enEspera,
       });
 
-      const link = `${location.origin}${location.pathname.replace("admin.html", "rsvp.html")}?fam=${encodeURIComponent(idTentativo)}`;
+      const link = `${location.origin}${location.pathname.replace("admin.html", "index.html")}?fam=${encodeURIComponent(idTentativo)}`;
       nuevos.push({ contacto_nombre: nombre, personas_esperadas: esperados, link });
     }
 
