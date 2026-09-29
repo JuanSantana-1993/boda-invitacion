@@ -198,6 +198,7 @@
     text-decoration:underline;
     font-family:inherit;
   }
+  .eliminar-btn{color:var(--rojo-cancelado);}
 
   #vacio{
     text-align:center;
@@ -293,7 +294,7 @@
     getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut
   } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
   import {
-    getFirestore, collection, onSnapshot, doc, updateDoc, setDoc
+    getFirestore, collection, onSnapshot, doc, updateDoc, setDoc, deleteDoc
   } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
   import { firebaseConfig } from "./firebase-config.js";
 
@@ -393,12 +394,13 @@
           <button class="editar-btn" data-id="${f.id}">Editar</button>
           <button class="editar-btn copiar-btn" data-id="${f.id}">Copiar link</button>
           ${f.lista_espera ? `<button class="editar-btn mover-btn" data-id="${f.id}">Mover a lista principal</button>` : ""}
+          <button class="editar-btn eliminar-btn" data-id="${f.id}">Eliminar</button>
         </td>
       `;
       tbody.appendChild(tr);
     });
 
-    document.querySelectorAll(".editar-btn:not(.mover-btn):not(.copiar-btn)").forEach(btn => {
+    document.querySelectorAll(".editar-btn:not(.mover-btn):not(.copiar-btn):not(.eliminar-btn)").forEach(btn => {
       btn.addEventListener("click", () => editarFamilia(btn.dataset.id));
     });
     document.querySelectorAll(".mover-btn").forEach(btn => {
@@ -407,6 +409,17 @@
     document.querySelectorAll(".copiar-btn").forEach(btn => {
       btn.addEventListener("click", () => copiarLink(btn));
     });
+    document.querySelectorAll(".eliminar-btn").forEach(btn => {
+      btn.addEventListener("click", () => eliminarFamilia(btn.dataset.id));
+    });
+  }
+
+  async function eliminarFamilia(id) {
+    const familia = familias.find(f => f.id === id);
+    if (!familia) return;
+    const ok = confirm(`¿Eliminar por completo a ${familia.contacto_nombre || id}? Esto borra su lugar de la lista y no se puede deshacer.`);
+    if (!ok) return;
+    await deleteDoc(doc(db, "familias", id));
   }
 
   // El link se arma solo, a partir de dónde vive este mismo admin.html —
