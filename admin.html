@@ -205,6 +205,66 @@
     padding:60px 20px;
     color:var(--gris-calido);
   }
+
+  /* -------- modal de edición -------- */
+  .modal-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(59,42,34,0.45);
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    z-index:100;
+  }
+  .modal-overlay.activo{display:flex;}
+  .modal-box{
+    background:#fff;
+    max-width:440px;
+    width:100%;
+    max-height:90vh;
+    overflow-y:auto;
+    padding:32px;
+  }
+  .modal-box h3{font-size:1.2rem; margin-bottom:20px;}
+  .modal-box .campo{margin-bottom:16px; text-align:left;}
+  .modal-box label{
+    display:block;
+    font-size:0.8rem;
+    color:var(--gris-calido);
+    margin-bottom:5px;
+  }
+  .modal-box input[type="text"],
+  .modal-box input[type="number"],
+  .modal-box select,
+  .modal-box textarea{
+    width:100%;
+    padding:9px 11px;
+    border:1px solid var(--arena);
+    background:var(--crema);
+    font-family:inherit;
+    font-size:0.9rem;
+  }
+  .modal-box textarea{min-height:60px; resize:vertical;}
+  .modal-box .campo-checkbox{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .modal-box .campo-checkbox input{width:auto;}
+  .modal-box .campo-checkbox label{margin:0;}
+  .modal-botones{
+    display:flex;
+    gap:10px;
+    margin-top:24px;
+  }
+  .modal-botones .btn{flex:1; width:auto; margin-top:0; text-align:center;}
+  .btn-cancelar{
+    background:none;
+    border:1px solid var(--arena);
+    color:var(--texto);
+  }
+  .btn-cancelar:hover{background:var(--crema);}
 </style>
 </head>
 <body>
@@ -285,6 +345,57 @@
 
     <p id="vacio" style="display:none;">No hay invitados cargados todavía.</p>
 
+  </div>
+</div>
+
+<!-- ============ MODAL DE EDICIÓN ============ -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box">
+    <h3 class="serif">Editar familia</h3>
+
+    <div class="campo">
+      <label for="edit-nombre">Nombre del contacto</label>
+      <input type="text" id="edit-nombre">
+    </div>
+
+    <div class="campo">
+      <label for="edit-telefono">Teléfono</label>
+      <input type="text" id="edit-telefono" placeholder="Ej. 2221234567">
+    </div>
+
+    <div class="campo">
+      <label for="edit-esperados">Lugares totales asignados</label>
+      <input type="number" id="edit-esperados" min="1">
+    </div>
+
+    <div class="campo">
+      <label for="edit-estado">Estado</label>
+      <select id="edit-estado">
+        <option value="pendiente">Pendiente</option>
+        <option value="confirmado">Confirmado</option>
+        <option value="cancelado">Cancelado</option>
+      </select>
+    </div>
+
+    <div class="campo">
+      <label for="edit-confirmados">Personas confirmadas</label>
+      <input type="number" id="edit-confirmados" min="0">
+    </div>
+
+    <div class="campo">
+      <label for="edit-alergias">Alergias / notas</label>
+      <textarea id="edit-alergias"></textarea>
+    </div>
+
+    <div class="campo campo-checkbox">
+      <input type="checkbox" id="edit-espera">
+      <label for="edit-espera">Está en lista de espera</label>
+    </div>
+
+    <div class="modal-botones">
+      <button class="btn btn-cancelar" id="modal-cancelar">Cancelar</button>
+      <button class="btn btn-principal" id="modal-guardar" style="background:var(--terracota); color:#fff; border:none;">Guardar cambios</button>
+    </div>
   </div>
 </div>
 
@@ -401,7 +512,7 @@
     });
 
     document.querySelectorAll(".editar-btn:not(.mover-btn):not(.copiar-btn):not(.eliminar-btn)").forEach(btn => {
-      btn.addEventListener("click", () => editarFamilia(btn.dataset.id));
+      btn.addEventListener("click", () => abrirModalEditar(btn.dataset.id));
     });
     document.querySelectorAll(".mover-btn").forEach(btn => {
       btn.addEventListener("click", () => moverALisitaPrincipal(btn.dataset.id));
@@ -443,33 +554,56 @@
     await updateDoc(doc(db, "familias", id), { lista_espera: false });
   }
 
-  // Edición manual rápida — útil cuando alguien confirma por WhatsApp
-  // en vez de por el formulario de la invitación.
-  async function editarFamilia(id) {
-    const familia = familias.find(f => f.id === id);
-    if (!familia) return;
+  let idEnEdicion = null;
 
-    const nuevoEstado = prompt(
-      `Estado para ${familia.contacto_nombre || id} (escribe: confirmado / cancelado / pendiente)`,
-      familia.estado || "pendiente"
-    );
-    if (!["confirmado", "cancelado", "pendiente"].includes(nuevoEstado)) return;
+  function abrirModalEditar(id) {
+    const f = familias.find(x => x.id === id);
+    if (!f) return;
+    idEnEdicion = id;
 
-    let confirmados = familia.personas_confirmadas ?? familia.personas_esperadas;
-    if (nuevoEstado === "confirmado") {
-      const respuesta = prompt(
-        `¿Cuántas personas de esta familia confirmaron? (máx ${familia.personas_esperadas})`,
-        confirmados
-      );
-      if (respuesta === null) return;
-      confirmados = Math.min(parseInt(respuesta) || 0, familia.personas_esperadas);
-    }
+    document.getElementById("edit-nombre").value = f.contacto_nombre || "";
+    document.getElementById("edit-telefono").value = f.contacto_telefono || "";
+    document.getElementById("edit-esperados").value = f.personas_esperadas ?? 1;
+    document.getElementById("edit-estado").value = f.estado || "pendiente";
+    document.getElementById("edit-confirmados").value = f.personas_confirmadas ?? 0;
+    document.getElementById("edit-alergias").value = f.alergias || "";
+    document.getElementById("edit-espera").checked = !!f.lista_espera;
 
-    await updateDoc(doc(db, "familias", id), {
-      estado: nuevoEstado,
-      personas_confirmadas: confirmados
-    });
+    document.getElementById("modal-overlay").classList.add("activo");
   }
+
+  function cerrarModal() {
+    document.getElementById("modal-overlay").classList.remove("activo");
+    idEnEdicion = null;
+  }
+
+  document.getElementById("modal-cancelar").addEventListener("click", cerrarModal);
+  document.getElementById("modal-overlay").addEventListener("click", (e) => {
+    if (e.target.id === "modal-overlay") cerrarModal();
+  });
+
+  document.getElementById("modal-guardar").addEventListener("click", async () => {
+    if (!idEnEdicion) return;
+
+    const nombre = document.getElementById("edit-nombre").value.trim();
+    if (!nombre) { alert("El nombre del contacto no puede quedar vacío."); return; }
+
+    const esperados = Math.max(parseInt(document.getElementById("edit-esperados").value) || 1, 1);
+    let confirmados = Math.max(parseInt(document.getElementById("edit-confirmados").value) || 0, 0);
+    if (confirmados > esperados) confirmados = esperados;
+
+    await updateDoc(doc(db, "familias", idEnEdicion), {
+      contacto_nombre: nombre,
+      contacto_telefono: document.getElementById("edit-telefono").value.trim(),
+      personas_esperadas: esperados,
+      estado: document.getElementById("edit-estado").value,
+      personas_confirmadas: confirmados,
+      alergias: document.getElementById("edit-alergias").value.trim(),
+      lista_espera: document.getElementById("edit-espera").checked,
+    });
+
+    cerrarModal();
+  });
 
   // ---------- filtros y búsqueda ----------
   document.querySelectorAll(".filtro-btn").forEach(btn => {
