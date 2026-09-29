@@ -103,14 +103,48 @@
     margin:6px 0;
   }
 
-  .hero .fecha{
-    margin-top:36px;
-    font-size:1.1rem;
+  .hero .fecha-destacada{
+    margin-top:40px;
+    display:flex;
+    align-items:center;
+    gap:20px;
+  }
+
+  .hero .fecha-destacada .linea-lateral{
+    width:40px;
+    height:1px;
+    background:var(--arena);
+  }
+
+  .hero .fecha-destacada .bloque-fecha{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+
+  .hero .fecha-destacada .dia-semana{
+    font-size:0.85rem;
+    letter-spacing:0.06em;
     color:var(--marfil-suave);
+    margin-bottom:2px;
+  }
+
+  .hero .fecha-destacada .dia-numero{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:3.4rem;
+    line-height:1;
+    color:var(--dorado);
+  }
+
+  .hero .fecha-destacada .mes-anio{
+    font-size:0.95rem;
+    letter-spacing:0.03em;
+    margin-top:4px;
   }
 
   .hero .lugar{
-    margin-top:6px;
+    margin-top:28px;
     font-size:1rem;
     color:var(--marfil-suave);
     opacity:0.8;
@@ -128,31 +162,32 @@
     max-width:56ch;
   }
 
-  /* -------- itinerario -------- */
-  .itinerario-item{
+  /* -------- nuestra historia -------- */
+  .historia-item{
     display:flex;
     gap:24px;
     padding:20px 0;
     border-top:1px solid var(--arena);
   }
-  .itinerario-item:last-child{border-bottom:1px solid var(--arena);}
+  .historia-item:last-child{border-bottom:1px solid var(--arena);}
 
-  .itinerario-item .hora{
+  .historia-item .numero{
     font-family:'Fraunces', serif;
     color:var(--dorado);
-    min-width:88px;
+    min-width:44px;
     font-size:1.05rem;
   }
 
-  .itinerario-item .detalle strong{
+  .historia-item .detalle strong{
     display:block;
     font-weight:500;
-    margin-bottom:2px;
+    margin-bottom:4px;
+    font-size:1.1rem;
   }
 
-  .itinerario-item .detalle span{
-    opacity:0.75;
-    font-size:0.95rem;
+  .historia-item .detalle p{
+    opacity:0.8;
+    font-size:0.98rem;
   }
 
   /* -------- ubicación -------- */
@@ -166,15 +201,28 @@
     margin-top:24px;
     padding:14px 32px;
     border:1px solid var(--dorado);
+    background:none;
     color:var(--marfil);
     text-decoration:none;
+    font-family:inherit;
     font-size:0.95rem;
     letter-spacing:0.02em;
+    cursor:pointer;
     transition:background 0.25s ease, color 0.25s ease;
   }
   .btn:hover{
     background:var(--dorado);
     color:var(--verde-oscuro);
+  }
+  .btn-texto{
+    background:none;
+    border:none;
+    color:var(--marfil-suave);
+    text-decoration:underline;
+    font-size:0.85rem;
+    cursor:pointer;
+    font-family:inherit;
+    margin-top:4px;
   }
 
   /* -------- galería -------- */
@@ -217,11 +265,20 @@
   }
 
   /* -------- rsvp -------- */
-  .rsvp-placeholder{
-    border:1px dashed var(--arena);
-    padding:32px;
-    font-size:0.95rem;
-    opacity:0.75;
+  .rsvp-botones{
+    display:flex;
+    gap:14px;
+    justify-content:center;
+    flex-wrap:wrap;
+  }
+  .rsvp-botones .btn{margin-top:0; width:auto;}
+  .btn-relleno{
+    background:var(--dorado);
+    color:var(--verde-oscuro);
+  }
+  .btn-relleno:hover{
+    background:transparent;
+    color:var(--marfil);
   }
 
   /* -------- footer -------- */
@@ -252,8 +309,15 @@
     <span class="amp">&amp;</span>
     Anahí
   </h1>
-  <p class="fecha">23 de enero de 2027</p>
-  <p class="lugar">Jardín Quinta Santa Fe</p>
+  <div class="fecha-destacada">
+    <span class="linea-lateral"></span>
+    <div class="bloque-fecha">
+      <span class="dia-semana">Sábado</span>
+      <span class="dia-numero">23</span>
+      <span class="mes-anio">Enero · 2027</span>
+    </div>
+    <span class="linea-lateral"></span>
+  </div>
 </header>
 
 <!-- ============ MENSAJE ============ -->
@@ -269,25 +333,33 @@
   </div>
 </section>
 
-<!-- ============ ITINERARIO ============ -->
-<!-- EDITA: horarios reales de ceremonia, recepción, etc. -->
-<section class="itinerario" id="itinerario">
+<!-- ============ NUESTRA HISTORIA ============ -->
+<!-- EDITA: reemplaza cada bloque con su historia real (cómo se conocieron, el noviazgo, la propuesta, etc.) -->
+<section class="historia" id="historia">
   <div class="wrap">
-    <h2 class="serif">Itinerario</h2>
+    <h2 class="serif">Nuestra historia</h2>
 
-    <div class="itinerario-item">
-      <div class="hora">Por definir</div>
+    <div class="historia-item">
+      <div class="numero">01</div>
       <div class="detalle">
-        <strong>Ceremonia</strong>
-        <span>Detalles próximamente</span>
+        <strong>Cómo nos conocimos</strong>
+        <p>Aquí va el relato de cómo se conocieron — el lugar, el momento, cómo fue.</p>
       </div>
     </div>
 
-    <div class="itinerario-item">
-      <div class="hora">Por definir</div>
+    <div class="historia-item">
+      <div class="numero">02</div>
       <div class="detalle">
-        <strong>Recepción</strong>
-        <span>Detalles próximamente</span>
+        <strong>El camino juntos</strong>
+        <p>Aquí va lo que han vivido desde entonces — momentos, viajes, lo que los une.</p>
+      </div>
+    </div>
+
+    <div class="historia-item">
+      <div class="numero">03</div>
+      <div class="detalle">
+        <strong>La propuesta</strong>
+        <p>Aquí va cómo fue el momento en que decidieron dar el siguiente paso.</p>
       </div>
     </div>
   </div>
@@ -297,7 +369,7 @@
 <section class="ubicacion" id="ubicacion">
   <div class="wrap">
     <h2 class="serif">Ubicación</h2>
-    <p class="nombre-lugar">Jardín Quinta Santa Fe</p>
+    <p class="nombre-lugar">Jardín Quinta Santa Fe, Atlixco, Puebla</p>
     <p>Te esperamos para celebrar juntos este día tan especial.</p>
     <a class="btn" href="https://maps.app.goo.gl/hDU6dDWUqxerV5o89" target="_blank" rel="noopener">
       Cómo llegar
@@ -343,17 +415,85 @@
 </section>
 
 <!-- ============ RSVP ============ -->
-<!-- Aquí se conectará el formulario (Google Form embebido o backend propio) -->
 <section class="rsvp" id="rsvp">
   <div class="wrap">
     <h2 class="serif">Confirma tu asistencia</h2>
-    <p>Te pedimos confirmar antes del [fecha límite].</p>
-    <div class="rsvp-placeholder">
-      Aquí va el formulario de confirmación (asistencia, número de acompañantes,
-      alergias/restricciones alimenticias y mensaje opcional para los novios).
+    <p style="margin-bottom:28px;">Te pedimos confirmar antes del [fecha límite].</p>
+    <div id="rsvp-contenido">
+      <p style="opacity:0.7;">Cargando…</p>
     </div>
   </div>
 </section>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+  import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+  import { firebaseConfig } from "./firebase-config.js";
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  const contenedor = document.getElementById("rsvp-contenido");
+  const params = new URLSearchParams(window.location.search);
+  const famId = params.get("fam");
+  let familia = null;
+
+  async function iniciarRSVP() {
+    if (!famId) {
+      contenedor.innerHTML = `<p style="opacity:0.75;">Este es el link general de la invitación. Usa el link personalizado que te enviamos por WhatsApp para poder confirmar.</p>`;
+      return;
+    }
+    try {
+      const snap = await getDoc(doc(db, "familias", famId));
+      if (!snap.exists()) {
+        contenedor.innerHTML = `<p style="opacity:0.75;">No encontramos tu invitación. Si crees que es un error, contáctanos directamente.</p>`;
+        return;
+      }
+      familia = { id: snap.id, ...snap.data() };
+      renderBotones();
+    } catch (err) {
+      contenedor.innerHTML = `<p style="opacity:0.75;">Ocurrió un problema cargando tu invitación, intenta de nuevo en un momento.</p>`;
+    }
+  }
+
+  function renderBotones() {
+    const yaRespondio = familia.estado === "confirmado" || familia.estado === "cancelado";
+    contenedor.innerHTML = `
+      ${yaRespondio ? `<p style="margin-bottom:18px; opacity:0.75;">Ya nos habías avisado: <strong>${familia.estado === "confirmado" ? "asistirán" : "no podrán asistir"}</strong>. Puedes cambiar tu respuesta si hace falta.</p>` : ""}
+      <div class="rsvp-botones">
+        <button class="btn btn-relleno" id="btn-rsvp-si">Sí, ahí estaremos</button>
+        <button class="btn" id="btn-rsvp-no">No podremos acompañarlos</button>
+      </div>
+    `;
+    document.getElementById("btn-rsvp-si").addEventListener("click", () => responder("confirmado"));
+    document.getElementById("btn-rsvp-no").addEventListener("click", () => responder("cancelado"));
+  }
+
+  async function responder(estado) {
+    const personas_confirmadas = estado === "confirmado" ? familia.personas_esperadas : 0;
+    contenedor.innerHTML = `<p style="opacity:0.7;">Guardando tu respuesta…</p>`;
+    try {
+      await updateDoc(doc(db, "familias", famId), { estado, personas_confirmadas });
+      familia = { ...familia, estado, personas_confirmadas };
+      mostrarGracias(estado);
+    } catch (err) {
+      contenedor.innerHTML = `<p style="opacity:0.75;">No pudimos guardar tu respuesta, intenta de nuevo en un momento.</p>`;
+    }
+  }
+
+  function mostrarGracias(estado) {
+    const titulo = estado === "confirmado" ? "¡Los esperamos! 🎉" : "Gracias por avisarnos 💌";
+    const texto = estado === "confirmado" ? "Guardamos tu confirmación." : "Lamentamos que no puedan acompañarnos, ¡los queremos igual!";
+    contenedor.innerHTML = `
+      <p class="serif" style="font-size:1.2rem; margin-bottom:6px;">${titulo}</p>
+      <p style="opacity:0.75; margin-bottom:14px;">${texto}</p>
+      <button class="btn-texto" id="btn-cambiar">¿Necesitas cambiar tu respuesta?</button>
+    `;
+    document.getElementById("btn-cambiar").addEventListener("click", renderBotones);
+  }
+
+  iniciarRSVP();
+</script>
 
 <footer>
   Juan Antonio &amp; Anahí · 23.01.2027

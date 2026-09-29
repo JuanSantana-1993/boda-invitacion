@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panel de invitados — Juan Antonio & Anahí</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --crema:#F8F4EE;
+    --blush:#F1E0D6;
+    --arena:#D8C4AE;
+    --terracota:#C1815B;
+    --gris-calido:#B4A99B;
+    --texto:#3B2A22;
+    --verde-confirmado:#5C7A5A;
+    --rojo-cancelado:#B15D4A;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--crema);
+    color:var(--texto);
+    font-family:'Work Sans', sans-serif;
+    min-height:100vh;
+  }
+  h1,h2,.serif{font-family:'Fraunces', serif; font-weight:600;}
+
+  /* -------- login -------- */
+  #login-screen{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+  }
+  #login-box{
+    background:#fff;
+    border:1px solid var(--arena);
+    padding:40px 32px;
+    max-width:360px;
+    width:100%;
+    text-align:center;
+  }
+  #login-box h1{font-size:1.4rem; margin-bottom:24px;}
+  #login-box input{
+    width:100%;
+    padding:12px 14px;
+    margin-bottom:12px;
+    border:1px solid var(--arena);
+    background:var(--crema);
+    font-family:inherit;
+    font-size:0.95rem;
+  }
+  #login-box button, .btn{
+    width:100%;
+    padding:12px 14px;
+    border:none;
+    background:var(--terracota);
+    color:#fff;
+    font-family:inherit;
+    font-size:0.95rem;
+    cursor:pointer;
+    letter-spacing:0.02em;
+  }
+  #login-box button:hover, .btn:hover{opacity:0.9;}
+  #login-error{color:var(--rojo-cancelado); font-size:0.85rem; margin-top:10px; min-height:1.2em;}
+
+  /* -------- panel -------- */
+  #panel{display:none;}
+  header.panel-header{
+    background:#fff;
+    border-bottom:1px solid var(--arena);
+    padding:18px 28px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  header.panel-header h1{font-size:1.2rem;}
+  #logout-btn{
+    background:none;
+    border:1px solid var(--arena);
+    color:var(--texto);
+    padding:8px 16px;
+    font-family:inherit;
+    cursor:pointer;
+    font-size:0.85rem;
+  }
+
+  .wrap{max-width:1000px; margin:0 auto; padding:28px;}
+
+  /* -------- importar -------- */
+  .importar-box{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin-bottom:24px;
+    flex-wrap:wrap;
+  }
+  .importar-box .btn{width:auto; display:inline-block; cursor:pointer; padding:10px 20px;}
+  #csv-input{display:none;}
+  #importar-status{font-size:0.85rem; color:var(--gris-calido);}
+
+  /* -------- resumen -------- */
+  .resumen{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(130px, 1fr));
+    gap:14px;
+    margin-bottom:28px;
+  }
+  .tarjeta-resumen{
+    background:#fff;
+    border:1px solid var(--arena);
+    padding:18px;
+    text-align:center;
+  }
+  .tarjeta-resumen .numero{
+    font-family:'Fraunces', serif;
+    font-size:2rem;
+    font-weight:600;
+  }
+  .tarjeta-resumen .etiqueta{
+    font-size:0.8rem;
+    color:var(--gris-calido);
+    margin-top:4px;
+  }
+
+  /* -------- filtros -------- */
+  .filtros{
+    display:flex;
+    gap:8px;
+    margin-bottom:16px;
+    flex-wrap:wrap;
+  }
+  .filtro-btn{
+    padding:8px 16px;
+    border:1px solid var(--arena);
+    background:#fff;
+    color:var(--texto);
+    font-family:inherit;
+    font-size:0.85rem;
+    cursor:pointer;
+  }
+  .filtro-btn.activo{
+    background:var(--terracota);
+    color:#fff;
+    border-color:var(--terracota);
+  }
+
+  input#buscador{
+    width:100%;
+    padding:10px 14px;
+    margin-bottom:20px;
+    border:1px solid var(--arena);
+    background:#fff;
+    font-family:inherit;
+    font-size:0.9rem;
+  }
+
+  /* -------- tabla -------- */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    background:#fff;
+    font-size:0.9rem;
+  }
+  th, td{
+    text-align:left;
+    padding:12px 14px;
+    border-bottom:1px solid var(--arena);
+  }
+  th{
+    background:var(--blush);
+    font-weight:500;
+    font-size:0.78rem;
+    letter-spacing:0.02em;
+    color:var(--texto);
+  }
+  tr:hover{background:var(--crema);}
+
+  .estado-pill{
+    display:inline-block;
+    padding:3px 10px;
+    border-radius:20px;
+    font-size:0.75rem;
+  }
+  .estado-confirmado{background:rgba(92,122,90,0.15); color:var(--verde-confirmado);}
+  .estado-cancelado{background:rgba(177,93,74,0.15); color:var(--rojo-cancelado);}
+  .estado-pendiente{background:rgba(180,169,155,0.2); color:var(--gris-calido);}
+
+  .editar-btn{
+    background:none;
+    border:none;
+    color:var(--terracota);
+    cursor:pointer;
+    font-size:0.8rem;
+    text-decoration:underline;
+    font-family:inherit;
+  }
+
+  #vacio{
+    text-align:center;
+    padding:60px 20px;
+    color:var(--gris-calido);
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN ============ -->
+<div id="login-screen">
+  <div id="login-box">
+    <h1 class="serif">Panel de invitados</h1>
+    <input type="email" id="login-email" placeholder="Correo">
+    <input type="password" id="login-pass" placeholder="Contraseña">
+    <button id="login-btn">Entrar</button>
+    <p id="login-error"></p>
+  </div>
+</div>
+
+<!-- ============ PANEL ============ -->
+<div id="panel">
+  <header class="panel-header">
+    <h1 class="serif">Control de invitados — Juan Antonio &amp; Anahí</h1>
+    <button id="logout-btn">Cerrar sesión</button>
+  </header>
+
+  <div class="wrap">
+
+    <div class="importar-box">
+      <label class="btn" id="importar-label" for="csv-input">Importar CSV</label>
+      <input type="file" id="csv-input" accept=".csv">
+      <span id="importar-status"></span>
+    </div>
+    <div id="resultados-importacion"></div>
+
+    <div class="resumen">
+      <div class="tarjeta-resumen">
+        <div class="numero" id="num-esperados">0</div>
+        <div class="etiqueta">Personas esperadas</div>
+      </div>
+      <div class="tarjeta-resumen">
+        <div class="numero" id="num-confirmados">0</div>
+        <div class="etiqueta">Confirmados</div>
+      </div>
+      <div class="tarjeta-resumen">
+        <div class="numero" id="num-cancelados">0</div>
+        <div class="etiqueta">Cancelados</div>
+      </div>
+      <div class="tarjeta-resumen">
+        <div class="numero" id="num-pendientes">0</div>
+        <div class="etiqueta">Familias por responder</div>
+      </div>
+      <div class="tarjeta-resumen">
+        <div class="numero" id="num-espera">0</div>
+        <div class="etiqueta">En lista de espera</div>
+      </div>
+    </div>
+
+    <input type="text" id="buscador" placeholder="Buscar familia o contacto...">
+
+    <div class="filtros">
+      <button class="filtro-btn activo" data-filtro="todos">Todos</button>
+      <button class="filtro-btn" data-filtro="confirmado">Confirmados</button>
+      <button class="filtro-btn" data-filtro="cancelado">Cancelados</button>
+      <button class="filtro-btn" data-filtro="pendiente">Pendientes</button>
+      <button class="filtro-btn" data-filtro="espera">Lista de espera</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Familia / Contacto</th>
+          <th>Esperados</th>
+          <th>Confirmados</th>
+          <th>Estado</th>
+          <th>Alergias / notas</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="tabla-body"></tbody>
+    </table>
+
+    <p id="vacio" style="display:none;">No hay invitados cargados todavía.</p>
+
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+  import {
+    getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut
+  } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+  import {
+    getFirestore, collection, onSnapshot, doc, updateDoc, setDoc
+  } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+  import { firebaseConfig } from "./firebase-config.js";
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  const loginScreen = document.getElementById("login-screen");
+  const panel = document.getElementById("panel");
+  const loginError = document.getElementById("login-error");
+
+  // ---------- login / logout ----------
+  document.getElementById("login-btn").addEventListener("click", () => {
+    const email = document.getElementById("login-email").value.trim();
+    const pass = document.getElementById("login-pass").value;
+    loginError.textContent = "";
+    signInWithEmailAndPassword(auth, email, pass)
+      .catch(() => { loginError.textContent = "Correo o contraseña incorrectos."; });
+  });
+
+  document.getElementById("logout-btn").addEventListener("click", () => signOut(auth));
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      loginScreen.style.display = "none";
+      panel.style.display = "block";
+      escucharFamilias();
+    } else {
+      loginScreen.style.display = "flex";
+      panel.style.display = "none";
+    }
+  });
+
+  // ---------- datos en tiempo real ----------
+  let familias = [];
+  let filtroActivo = "todos";
+  let yaEscuchando = false;
+
+  function escucharFamilias() {
+    if (yaEscuchando) return;
+    yaEscuchando = true;
+    onSnapshot(collection(db, "familias"), (snapshot) => {
+      familias = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderTodo();
+    });
+  }
+
+  function renderTodo() {
+    // resumen — la lista de espera no cuenta como invitados confirmados todavía
+    const activos = familias.filter(f => !f.lista_espera);
+    const esperados = activos.reduce((s, f) => s + (f.personas_esperadas || 0), 0);
+    const confirmados = activos.reduce((s, f) => s + (f.estado === "confirmado" ? (f.personas_confirmadas ?? f.personas_esperadas) : 0), 0);
+    const cancelados = activos.filter(f => f.estado === "cancelado").length;
+    const pendientes = activos.filter(f => !f.estado || f.estado === "pendiente").length;
+
+    document.getElementById("num-esperados").textContent = esperados;
+    document.getElementById("num-confirmados").textContent = confirmados;
+    document.getElementById("num-cancelados").textContent = cancelados;
+    document.getElementById("num-pendientes").textContent = pendientes;
+    document.getElementById("num-espera").textContent = familias.filter(f => f.lista_espera).length;
+
+    renderTabla();
+  }
+
+  function renderTabla() {
+    const texto = document.getElementById("buscador").value.toLowerCase();
+    const tbody = document.getElementById("tabla-body");
+    const vacio = document.getElementById("vacio");
+
+    let lista = familias.filter(f => {
+      const estado = f.estado || "pendiente";
+      const enEspera = !!f.lista_espera;
+      let pasaFiltro;
+      if (filtroActivo === "espera") {
+        pasaFiltro = enEspera;
+      } else {
+        // los filtros normales nunca mezclan a la lista de espera
+        pasaFiltro = !enEspera && (filtroActivo === "todos" || estado === filtroActivo);
+      }
+      const pasaBusqueda = (f.contacto_nombre || f.id).toLowerCase().includes(texto);
+      return pasaFiltro && pasaBusqueda;
+    });
+
+    tbody.innerHTML = "";
+    vacio.style.display = lista.length ? "none" : "block";
+
+    lista.forEach(f => {
+      const estado = f.estado || "pendiente";
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${f.contacto_nombre || f.id}</td>
+        <td>${f.personas_esperadas ?? "-"}</td>
+        <td>${f.estado === "confirmado" ? (f.personas_confirmadas ?? f.personas_esperadas) : "-"}</td>
+        <td><span class="estado-pill estado-${estado}">${estado}</span></td>
+        <td>${f.alergias || "-"}</td>
+        <td>
+          <button class="editar-btn" data-id="${f.id}">Editar</button>
+          <button class="editar-btn copiar-btn" data-id="${f.id}">Copiar link</button>
+          ${f.lista_espera ? `<button class="editar-btn mover-btn" data-id="${f.id}">Mover a lista principal</button>` : ""}
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    document.querySelectorAll(".editar-btn:not(.mover-btn):not(.copiar-btn)").forEach(btn => {
+      btn.addEventListener("click", () => editarFamilia(btn.dataset.id));
+    });
+    document.querySelectorAll(".mover-btn").forEach(btn => {
+      btn.addEventListener("click", () => moverALisitaPrincipal(btn.dataset.id));
+    });
+    document.querySelectorAll(".copiar-btn").forEach(btn => {
+      btn.addEventListener("click", () => copiarLink(btn));
+    });
+  }
+
+  // El link se arma solo, a partir de dónde vive este mismo admin.html —
+  // así funciona igual en Live Server (localhost) que en GitHub Pages,
+  // sin tener que escribir tu URL a mano en ningún lado.
+  function copiarLink(btn) {
+    const id = btn.dataset.id;
+    const link = `${location.origin}${location.pathname.replace("admin.html", "rsvp.html")}?fam=${encodeURIComponent(id)}`;
+    navigator.clipboard.writeText(link).then(() => {
+      const textoOriginal = btn.textContent;
+      btn.textContent = "¡Copiado!";
+      setTimeout(() => { btn.textContent = textoOriginal; }, 1500);
+    });
+  }
+
+  async function moverALisitaPrincipal(id) {
+    const familia = familias.find(f => f.id === id);
+    if (!familia) return;
+    const ok = confirm(`¿Mover a ${familia.contacto_nombre || id} de la lista de espera a la lista principal? Se le podrá mandar su link para confirmar.`);
+    if (!ok) return;
+    await updateDoc(doc(db, "familias", id), { lista_espera: false });
+  }
+
+  // Edición manual rápida — útil cuando alguien confirma por WhatsApp
+  // en vez de por el formulario de la invitación.
+  async function editarFamilia(id) {
+    const familia = familias.find(f => f.id === id);
+    if (!familia) return;
+
+    const nuevoEstado = prompt(
+      `Estado para ${familia.contacto_nombre || id} (escribe: confirmado / cancelado / pendiente)`,
+      familia.estado || "pendiente"
+    );
+    if (!["confirmado", "cancelado", "pendiente"].includes(nuevoEstado)) return;
+
+    let confirmados = familia.personas_confirmadas ?? familia.personas_esperadas;
+    if (nuevoEstado === "confirmado") {
+      const respuesta = prompt(
+        `¿Cuántas personas de esta familia confirmaron? (máx ${familia.personas_esperadas})`,
+        confirmados
+      );
+      if (respuesta === null) return;
+      confirmados = Math.min(parseInt(respuesta) || 0, familia.personas_esperadas);
+    }
+
+    await updateDoc(doc(db, "familias", id), {
+      estado: nuevoEstado,
+      personas_confirmadas: confirmados
+    });
+  }
+
+  // ---------- filtros y búsqueda ----------
+  document.querySelectorAll(".filtro-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".filtro-btn").forEach(b => b.classList.remove("activo"));
+      btn.classList.add("activo");
+      filtroActivo = btn.dataset.filtro;
+      renderTabla();
+    });
+  });
+
+  document.getElementById("buscador").addEventListener("input", renderTabla);
+
+  // ---------- importar CSV desde el navegador ----------
+
+  // Misma lógica que importar.js: mismo nombre → mismo id, sin acentos ni espacios.
+  function slugify(nombre, idsUsados) {
+    let base = nombre
+      .toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
+    let id = base;
+    let contador = 2;
+    while (idsUsados.has(id)) {
+      id = `${base}-${contador}`;
+      contador++;
+    }
+    idsUsados.add(id);
+    return id;
+  }
+
+  // Parser sencillo de CSV (soporta comas dentro de campos con comillas,
+  // y detecta automáticamente si el separador es , o ; — Excel en
+  // español a veces exporta con ; porque usa la coma para decimales)
+  function parseCSV(texto) {
+    const lineas = texto.trim().split(/\r?\n/);
+    const primeraLinea = lineas[0];
+    const separador = (primeraLinea.split(";").length > primeraLinea.split(",").length) ? ";" : ",";
+    const regexCampo = separador === ";" ? /(".*?"|[^;]+)(?=;|$)/g : /(".*?"|[^,]+)(?=,|$)/g;
+
+    const encabezados = primeraLinea.split(separador).map(h => h.trim());
+    return lineas.slice(1).filter(l => l.trim() !== "").map(linea => {
+      const valores = linea.match(regexCampo) || [];
+      const fila = {};
+      encabezados.forEach((h, i) => {
+        fila[h] = (valores[i] || "").replace(/^"|"$/g, "").trim();
+      });
+      return fila;
+    });
+  }
+
+  document.getElementById("csv-input").addEventListener("change", async (e) => {
+    const archivo = e.target.files[0];
+    if (!archivo) return;
+    const status = document.getElementById("importar-status");
+    status.textContent = "Importando...";
+
+    const texto = await archivo.text();
+    const filas = parseCSV(texto);
+
+    // ids que ya existen en el sistema, para no duplicar a nadie
+    const idsExistentes = new Set(familias.map(f => f.id));
+    let omitidos = 0, invalidos = 0;
+    const nuevos = [];
+
+    for (const fila of filas) {
+      const nombre = (fila.contacto_nombre || "").trim();
+      const esperados = parseInt(fila.personas_esperadas, 10);
+      if (!nombre || isNaN(esperados) || esperados < 1) { invalidos++; continue; }
+
+      const idTentativo = nombre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+
+      if (idsExistentes.has(idTentativo)) {
+        omitidos++;
+        continue;
+      }
+
+      const enEspera = ["si", "sí", "true", "1"].includes((fila.lista_espera || "").toLowerCase());
+
+      idsExistentes.add(idTentativo);
+      await setDoc(doc(db, "familias", idTentativo), {
+        contacto_nombre: nombre,
+        contacto_telefono: (fila.contacto_telefono || "").trim(),
+        personas_esperadas: esperados,
+        personas_confirmadas: 0,
+        estado: "pendiente",
+        nombres: [],
+        alergias: "",
+        mensaje: "",
+        lista_espera: enEspera,
+      });
+
+      const link = `${location.origin}${location.pathname.replace("admin.html", "rsvp.html")}?fam=${encodeURIComponent(idTentativo)}`;
+      nuevos.push({ contacto_nombre: nombre, personas_esperadas: esperados, link });
+    }
+
+    status.textContent = `Listo: ${nuevos.length} nuevos, ${omitidos} ya existían (omitidos)${invalidos ? `, ${invalidos} filas inválidas` : ""}.`;
+    e.target.value = "";
+    mostrarResultadosImportacion(nuevos);
+  });
+
+  function mostrarResultadosImportacion(nuevos) {
+    const contenedor = document.getElementById("resultados-importacion");
+    if (nuevos.length === 0) { contenedor.innerHTML = ""; return; }
+
+    const filasHtml = nuevos.map(r => `
+      <tr>
+        <td>${r.contacto_nombre}</td>
+        <td>${r.personas_esperadas}</td>
+        <td><button class="editar-btn copiar-resultado" data-link="${r.link}">Copiar link</button></td>
+      </tr>
+    `).join("");
+
+    contenedor.innerHTML = `
+      <p style="margin:20px 0 10px; font-size:0.9rem;">Links generados para las familias nuevas:</p>
+      <table style="margin-bottom:20px;">
+        <thead><tr><th>Familia</th><th>Lugares</th><th></th></tr></thead>
+        <tbody>${filasHtml}</tbody>
+      </table>
+      <button class="editar-btn" id="descargar-links-btn">Descargar CSV con todos los links</button>
+    `;
+
+    contenedor.querySelectorAll(".copiar-resultado").forEach(btn => {
+      btn.addEventListener("click", () => {
+        navigator.clipboard.writeText(btn.dataset.link).then(() => {
+          const original = btn.textContent;
+          btn.textContent = "¡Copiado!";
+          setTimeout(() => { btn.textContent = original; }, 1500);
+        });
+      });
+    });
+
+    document.getElementById("descargar-links-btn").addEventListener("click", () => {
+      const encabezado = "contacto_nombre,personas_esperadas,link\n";
+      const cuerpo = nuevos.map(r => `"${r.contacto_nombre}",${r.personas_esperadas},${r.link}`).join("\n");
+      const blob = new Blob([encabezado + cuerpo], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "links-generados.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+  }
+</script>
+
+</body>
+</html>
