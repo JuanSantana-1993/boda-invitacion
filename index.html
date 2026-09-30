@@ -6,7 +6,7 @@
 <title>Juan Antonio & Anahí — 23 de enero, 2027</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,400&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,400&family=Parisienne&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
     /* paleta de la boda */
@@ -248,6 +248,52 @@
     opacity:0.8;
   }
 
+  /* -------- versículo -------- */
+  .versiculo{
+    max-width:34ch;
+    margin:32px 0 8px;
+  }
+  .texto-manuscrito{
+    font-family:'Parisienne', cursive;
+    font-size:1.7rem;
+    line-height:1.35;
+    color:var(--dorado);
+  }
+  .cita-biblica{
+    display:block;
+    margin-top:10px;
+    font-size:0.78rem;
+    letter-spacing:0.04em;
+    color:var(--marfil-suave);
+    opacity:0.75;
+  }
+
+  /* -------- conteo regresivo -------- */
+  .conteo{
+    display:flex;
+    gap:22px;
+    margin:8px 0 4px;
+  }
+  .conteo-item{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    min-width:54px;
+  }
+  .conteo-num{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:2.1rem;
+    color:var(--dorado);
+    line-height:1;
+  }
+  .conteo-label{
+    font-size:0.68rem;
+    letter-spacing:0.06em;
+    color:var(--marfil-suave);
+    margin-top:6px;
+  }
+
   /* -------- encabezados de sección -------- */
   h2{
     font-size:clamp(1.8rem, 4vw, 2.4rem);
@@ -370,6 +416,15 @@
     flex-wrap:wrap;
   }
   .rsvp-botones .btn{margin-top:0; width:auto;}
+  .aviso-cambios{
+    margin-top:20px;
+    font-size:0.82rem;
+    color:var(--marfil-suave);
+    opacity:0.8;
+    max-width:42ch;
+    margin-left:auto;
+    margin-right:auto;
+  }
   .btn-relleno{
     background:var(--dorado);
     color:var(--verde-oscuro);
@@ -421,6 +476,19 @@
     <span class="amp">&amp;</span>
     Anahí
   </h1>
+
+  <div class="versiculo">
+    <p class="texto-manuscrito">"Después de esto vi una enorme multitud de todo pueblo y toda nación, tribu y lengua, que era tan numerosa que nadie podía contarla. Estaban de pie delante del trono y delante del Cordero. Vestían túnicas blancas y tenían en sus manos ramas de palmeras, y gritaban con gran estruendo: ¡La salvación viene de nuestro Dios que está sentado en el trono y del Cordero!"</p>
+    <span class="cita-biblica">Apocalipsis 7:9-10, NTV</span>
+  </div>
+
+  <div class="conteo" id="conteo">
+    <div class="conteo-item"><span class="conteo-num" id="cnt-dias">00</span><span class="conteo-label">Días</span></div>
+    <div class="conteo-item"><span class="conteo-num" id="cnt-horas">00</span><span class="conteo-label">Horas</span></div>
+    <div class="conteo-item"><span class="conteo-num" id="cnt-min">00</span><span class="conteo-label">Min</span></div>
+    <div class="conteo-item"><span class="conteo-num" id="cnt-seg">00</span><span class="conteo-label">Seg</span></div>
+  </div>
+
   <div class="fecha-destacada">
     <span class="linea-lateral"></span>
     <div class="bloque-fecha">
@@ -430,6 +498,7 @@
     </div>
     <span class="linea-lateral"></span>
   </div>
+  <p class="lugar">Jardín Quinta Santa Fe, Atlixco, Puebla</p>
 </header>
 
 <!-- ============ MENSAJE ============ -->
@@ -576,6 +645,10 @@
         <button class="btn btn-relleno" id="btn-rsvp-si">Sí, ahí estaremos</button>
         <button class="btn" id="btn-rsvp-no">No podremos acompañarlos</button>
       </div>
+      <p class="aviso-cambios">
+        Si su respuesta llegara a cambiar (por ejemplo, si invitamos a 3 personas pero solo asistirán 2),
+        por favor avísennos directamente: Juan Antonio 222 000 0000 · Anahí 222 000 0000
+      </p>
     `;
     document.getElementById("btn-rsvp-si").addEventListener("click", () => responder("confirmado"));
     document.getElementById("btn-rsvp-no").addEventListener("click", () => responder("cancelado"));
@@ -658,6 +731,32 @@
       inicioY = null;
       abrirIntro(); // también sirve un simple toque/clic, por si no arrastran
     });
+  })();
+</script>
+
+<script>
+  // Conteo regresivo — la fecha es fija (23 de enero, 2027), la hora
+  // de las 12pm es tentativa, pero sirve de referencia para el conteo.
+  (function () {
+    const objetivo = new Date(2027, 0, 23, 12, 0, 0).getTime();
+
+    function actualizarConteo() {
+      const ahora = Date.now();
+      let diff = Math.max(objetivo - ahora, 0);
+
+      const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const horas = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const min = Math.floor((diff / (1000 * 60)) % 60);
+      const seg = Math.floor((diff / 1000) % 60);
+
+      document.getElementById("cnt-dias").textContent = String(dias).padStart(2, "0");
+      document.getElementById("cnt-horas").textContent = String(horas).padStart(2, "0");
+      document.getElementById("cnt-min").textContent = String(min).padStart(2, "0");
+      document.getElementById("cnt-seg").textContent = String(seg).padStart(2, "0");
+    }
+
+    actualizarConteo();
+    setInterval(actualizarConteo, 1000);
   })();
 </script>
 
