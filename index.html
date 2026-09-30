@@ -59,7 +59,7 @@
     transform-origin:center;
   }
   #avion-wrap.entrando{
-    animation:entrada-vuelo 1.5s ease-out forwards;
+    animation:entrada-vuelo 2.4s ease-in-out forwards;
   }
   #avion-wrap.flotando{
     animation:planear 2.8s ease-in-out infinite;
@@ -70,8 +70,11 @@
   #avion-svg{width:100%; height:100%;}
 
   @keyframes entrada-vuelo{
-    0%{ transform:translate(-130vw, 30vh) rotate(-30deg) scale(0.6); opacity:0; }
-    55%{ opacity:1; }
+    0%{ transform:translate(-140vw, -6vh) rotate(-18deg) scale(0.6); opacity:0; }
+    10%{ opacity:1; }
+    22%{ transform:translate(-30vw, -24vh) rotate(-6deg) scale(0.8); opacity:1; }
+    46%{ transform:translate(125vw, 10vh) rotate(20deg) scale(0.85); opacity:1; }
+    70%{ transform:translate(38vw, -16vh) rotate(-10deg) scale(0.95); opacity:1; }
     100%{ transform:translate(0,0) rotate(-4deg) scale(1); opacity:1; }
   }
 
