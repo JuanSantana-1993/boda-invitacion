@@ -199,6 +199,24 @@
     font-size:0.5em;
     color:var(--dorado);
     margin:6px 0;
+    opacity:0;
+    transition:opacity 0.7s ease;
+    transition-delay:0.3s;
+  }
+
+  .hero .nombre-izq, .hero .nombre-der{
+    display:block;
+    opacity:0;
+    transition:transform 0.9s cubic-bezier(.2,.7,.3,1), opacity 0.9s ease;
+  }
+  .hero .nombre-izq{ transform:translateX(-70px); transition-delay:0.05s; }
+  .hero .nombre-der{ transform:translateX(70px); transition-delay:0.15s; }
+
+  .hero.revelado .amp{ opacity:1; }
+  .hero.revelado .nombre-izq,
+  .hero.revelado .nombre-der{
+    opacity:1;
+    transform:translateX(0);
   }
 
   .hero .fecha-destacada{
@@ -206,6 +224,14 @@
     display:flex;
     align-items:center;
     gap:20px;
+    opacity:0;
+    transform:translateY(18px);
+    transition:transform 0.8s ease, opacity 0.8s ease;
+    transition-delay:0.75s;
+  }
+  .hero.revelado .fecha-destacada{
+    opacity:1;
+    transform:translateY(0);
   }
 
   .hero .fecha-destacada .linea-lateral{
@@ -245,6 +271,11 @@
     margin-top:28px;
     font-size:1rem;
     color:var(--marfil-suave);
+    opacity:0;
+    transition:opacity 0.8s ease;
+    transition-delay:0.95s;
+  }
+  .hero.revelado .lugar{
     opacity:0.8;
   }
 
@@ -252,6 +283,15 @@
   .versiculo{
     max-width:38ch;
     margin:32px 0 8px;
+    opacity:0;
+    transform:scale(0.4);
+    transform-origin:center;
+    transition:transform 1s cubic-bezier(.2,.7,.3,1), opacity 1s ease;
+    transition-delay:0.4s;
+  }
+  .hero.revelado .versiculo{
+    opacity:1;
+    transform:scale(1);
   }
   .texto-manuscrito{
     font-family:'Sacramento', cursive;
@@ -273,6 +313,14 @@
     display:flex;
     gap:clamp(18px, 3vw, 36px);
     margin:8px 0 4px;
+    opacity:0;
+    transform:translateY(14px);
+    transition:transform 0.8s ease, opacity 0.8s ease;
+    transition-delay:0.6s;
+  }
+  .hero.revelado .conteo{
+    opacity:1;
+    transform:translateY(0);
   }
   .conteo-item{
     display:flex;
@@ -473,9 +521,9 @@
 <header class="hero">
   <p class="nos-casamos">Nos casamos</p>
   <h1>
-    Juan Antonio
+    <span class="nombre-izq">Juan Antonio</span>
     <span class="amp">&amp;</span>
-    Anahí
+    <span class="nombre-der">Anahí</span>
   </h1>
 
   <div class="versiculo">
@@ -499,6 +547,7 @@
     </div>
     <span class="linea-lateral"></span>
   </div>
+  <p class="lugar">Jardín Quinta Santa Fe, Atlixco, Puebla</p>
 </header>
 
 <!-- ============ MENSAJE ============ -->
@@ -717,7 +766,10 @@
 
       // el overlay se desvanece a la mitad del desdoblado, para que se
       // sienta como que el papel se convierte en la página de abajo
-      setTimeout(() => overlay.classList.add("oculto"), 500);
+      setTimeout(() => {
+        overlay.classList.add("oculto");
+        document.querySelector(".hero").classList.add("revelado");
+      }, 500);
       document.body.classList.remove("bloqueado");
       setTimeout(() => { overlay.style.display = "none"; }, 1150);
     }
