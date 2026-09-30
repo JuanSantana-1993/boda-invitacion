@@ -96,14 +96,17 @@ async function importar() {
       creado_en: admin.firestore.FieldValue.serverTimestamp(),
     });
 
-    const link = `${BASE_URL}?fam=${id}`;
-    resultados.push({ contacto_nombre: nombre, personas_esperadas: esperados, link });
-    console.log(`✅ ${nombre} (${esperados} personas) → ${link}`);
+    const link = enEspera ? null : `${BASE_URL}?fam=${id}`;
+    resultados.push({ contacto_nombre: nombre, personas_esperadas: esperados, link, lista_espera: enEspera });
+    console.log(enEspera
+      ? `⏳ ${nombre} (${esperados} personas) → en lista de espera, sin link todavía`
+      : `✅ ${nombre} (${esperados} personas) → ${link}`);
   }
 
   // Guarda también un CSV con los links, listo para copiar/pegar a WhatsApp
   const encabezado = "contacto_nombre,personas_esperadas,link\n";
   const filasCsv = resultados
+    .filter(r => !r.lista_espera)
     .map(r => `"${r.contacto_nombre}",${r.personas_esperadas},${r.link}`)
     .join("\n");
   fs.writeFileSync("links-generados.csv", encabezado + filasCsv);

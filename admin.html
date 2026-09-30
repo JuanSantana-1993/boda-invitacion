@@ -503,7 +503,7 @@
         <td>${f.alergias || "-"}</td>
         <td>
           <button class="editar-btn" data-id="${f.id}">Editar</button>
-          <button class="editar-btn copiar-btn" data-id="${f.id}">Copiar link</button>
+          ${!f.lista_espera ? `<button class="editar-btn copiar-btn" data-id="${f.id}">Copiar link</button>` : ""}
           ${f.lista_espera ? `<button class="editar-btn mover-btn" data-id="${f.id}">Mover a lista principal</button>` : ""}
           <button class="editar-btn eliminar-btn" data-id="${f.id}">Eliminar</button>
         </td>
@@ -698,8 +698,13 @@
         lista_espera: enEspera,
       });
 
-      const link = `${location.origin}${location.pathname.replace("admin.html", "index.html")}?fam=${encodeURIComponent(idTentativo)}`;
-      nuevos.push({ contacto_nombre: nombre, personas_esperadas: esperados, link });
+      // Solo generamos link para quien SÍ está invitado desde ya.
+      // A los de lista de espera no se les da link hasta que se les mueva
+      // a la lista principal (ahí ya les aparece el botón "Copiar link").
+      if (!enEspera) {
+        const link = `${location.origin}${location.pathname.replace("admin.html", "index.html")}?fam=${encodeURIComponent(idTentativo)}`;
+        nuevos.push({ contacto_nombre: nombre, personas_esperadas: esperados, link });
+      }
     }
 
     status.textContent = `Listo: ${nuevos.length} nuevos, ${omitidos} ya existían (omitidos)${invalidos ? `, ${invalidos} filas inválidas` : ""}.`;
@@ -711,32 +716,13 @@
     const contenedor = document.getElementById("resultados-importacion");
     if (nuevos.length === 0) { contenedor.innerHTML = ""; return; }
 
-    const filasHtml = nuevos.map(r => `
-      <tr>
-        <td>${r.contacto_nombre}</td>
-        <td>${r.personas_esperadas}</td>
-        <td><button class="editar-btn copiar-resultado" data-link="${r.link}">Copiar link</button></td>
-      </tr>
-    `).join("");
-
+    // La tabla de abajo ya se llena sola en tiempo real con las familias
+    // nuevas (incluyendo las de lista de espera, sin link todavía).
+    // Aquí solo dejamos un acceso rápido para descargar de un jalón los
+    // links de las que sí quedaron invitadas desde ya.
     contenedor.innerHTML = `
-      <p style="margin:20px 0 10px; font-size:0.9rem;">Links generados para las familias nuevas:</p>
-      <table style="margin-bottom:20px;">
-        <thead><tr><th>Familia</th><th>Lugares</th><th></th></tr></thead>
-        <tbody>${filasHtml}</tbody>
-      </table>
-      <button class="editar-btn" id="descargar-links-btn">Descargar CSV con todos los links</button>
+      <button class="editar-btn" id="descargar-links-btn">Descargar CSV con los links nuevos (${nuevos.length})</button>
     `;
-
-    contenedor.querySelectorAll(".copiar-resultado").forEach(btn => {
-      btn.addEventListener("click", () => {
-        navigator.clipboard.writeText(btn.dataset.link).then(() => {
-          const original = btn.textContent;
-          btn.textContent = "¡Copiado!";
-          setTimeout(() => { btn.textContent = original; }, 1500);
-        });
-      });
-    });
 
     document.getElementById("descargar-links-btn").addEventListener("click", () => {
       const encabezado = "contacto_nombre,personas_esperadas,link\n";
