@@ -6,7 +6,7 @@
 <title>Juan Antonio & Anahí — 23 de enero, 2027</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,400&family=Parisienne&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,400&family=Sacramento&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
     /* paleta de la boda */
@@ -250,28 +250,28 @@
 
   /* -------- versículo -------- */
   .versiculo{
-    max-width:34ch;
+    max-width:38ch;
     margin:32px 0 8px;
   }
   .texto-manuscrito{
-    font-family:'Parisienne', cursive;
-    font-size:1.7rem;
-    line-height:1.35;
+    font-family:'Sacramento', cursive;
+    font-size:clamp(1.5rem, 3.4vw, 1.9rem);
+    line-height:1.4;
     color:var(--dorado);
   }
   .cita-biblica{
     display:block;
-    margin-top:10px;
-    font-size:0.78rem;
+    margin-top:12px;
+    font-size:0.92rem;
     letter-spacing:0.04em;
-    color:var(--marfil-suave);
-    opacity:0.75;
+    color:var(--texto);
+    opacity:0.6;
   }
 
   /* -------- conteo regresivo -------- */
   .conteo{
     display:flex;
-    gap:22px;
+    gap:clamp(18px, 3vw, 36px);
     margin:8px 0 4px;
   }
   .conteo-item{
@@ -283,14 +283,15 @@
   .conteo-num{
     font-family:'Fraunces', serif;
     font-weight:600;
-    font-size:2.1rem;
+    font-size:clamp(2.1rem, 5vw, 3.2rem);
     color:var(--dorado);
     line-height:1;
   }
   .conteo-label{
-    font-size:0.68rem;
+    font-size:clamp(0.72rem, 1.3vw, 0.85rem);
     letter-spacing:0.06em;
-    color:var(--marfil-suave);
+    color:var(--texto);
+    opacity:0.6;
     margin-top:6px;
   }
 
