@@ -179,6 +179,8 @@
   }
   tr:hover{background:var(--crema);}
 
+  table.vista-espera .col-condicional{display:none;}
+
   .estado-pill{
     display:inline-block;
     padding:3px 10px;
@@ -334,9 +336,9 @@
         <tr>
           <th>Familia / Contacto</th>
           <th>Esperados</th>
-          <th>Confirmados</th>
-          <th>Estado</th>
-          <th>Alergias / notas</th>
+          <th class="col-condicional">Confirmados</th>
+          <th class="col-condicional">Estado</th>
+          <th class="col-condicional">Alergias / notas</th>
           <th></th>
         </tr>
       </thead>
@@ -492,15 +494,17 @@
     tbody.innerHTML = "";
     vacio.style.display = lista.length ? "none" : "block";
 
+    document.querySelector("table").classList.toggle("vista-espera", filtroActivo === "espera");
+
     lista.forEach(f => {
       const estado = f.estado || "pendiente";
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td>${f.contacto_nombre || f.id}</td>
         <td>${f.personas_esperadas ?? "-"}</td>
-        <td>${f.estado === "confirmado" ? (f.personas_confirmadas ?? f.personas_esperadas) : "-"}</td>
-        <td><span class="estado-pill estado-${estado}">${estado}</span></td>
-        <td>${f.alergias || "-"}</td>
+        <td class="col-condicional">${f.estado === "confirmado" ? (f.personas_confirmadas ?? f.personas_esperadas) : "-"}</td>
+        <td class="col-condicional"><span class="estado-pill estado-${estado}">${estado}</span></td>
+        <td class="col-condicional">${f.alergias || "-"}</td>
         <td>
           <button class="editar-btn" data-id="${f.id}">Editar</button>
           ${!f.lista_espera ? `<button class="editar-btn copiar-btn" data-id="${f.id}">Copiar link</button>` : ""}
