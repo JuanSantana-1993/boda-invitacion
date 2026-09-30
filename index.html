@@ -31,6 +31,70 @@
 
   html{scroll-behavior:smooth;}
 
+  body.bloqueado{overflow:hidden; height:100vh;}
+
+  /* -------- intro: avión de papel -------- */
+  #intro-overlay{
+    position:fixed;
+    inset:0;
+    z-index:200;
+    background:var(--verde-oscuro);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:28px;
+    cursor:grab;
+    touch-action:none;
+    transition:opacity 0.6s ease;
+  }
+  #intro-overlay.oculto{
+    opacity:0;
+    pointer-events:none;
+  }
+
+  #avion-wrap{
+    width:110px;
+    height:110px;
+    transition:transform 0.9s cubic-bezier(.3,.6,.4,1), opacity 0.9s ease;
+  }
+  #avion-wrap.volando{
+    transform:translate(60vw, -70vh) rotate(35deg) scale(0.7);
+    opacity:0;
+  }
+  #avion-svg{width:100%; height:100%;}
+
+  .intro-texto{
+    font-family:'Fraunces', serif;
+    font-size:1.05rem;
+    letter-spacing:0.03em;
+    color:var(--marfil-suave);
+    transition:opacity 0.4s ease;
+  }
+
+  .intro-flecha{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:-4px;
+    transition:opacity 0.4s ease;
+    font-size:1.4rem;
+    color:var(--dorado);
+    line-height:0.7;
+  }
+  .intro-flecha span{
+    animation:subir 1.6s infinite;
+  }
+  .intro-flecha span::before{content:"⌃";}
+  .intro-flecha span:nth-child(2){animation-delay:0.15s;}
+  .intro-flecha span:nth-child(3){animation-delay:0.3s;}
+
+  @keyframes subir{
+    0%{opacity:0.15; transform:translateY(6px);}
+    40%{opacity:0.9; transform:translateY(0);}
+    100%{opacity:0.15; transform:translateY(-6px);}
+  }
+
   body{
     background:var(--verde-oscuro);
     color:var(--marfil);
@@ -295,7 +359,21 @@
   }
 </style>
 </head>
-<body>
+<body class="bloqueado">
+
+<!-- ============ INTRO: AVIÓN DE PAPEL ============ -->
+<div id="intro-overlay">
+  <div id="avion-wrap">
+    <svg id="avion-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <path d="M6 52 L94 8 L62 92 L50 62 L6 52Z" fill="none" stroke="var(--dorado)" stroke-width="2.2" stroke-linejoin="round"/>
+      <path d="M50 62 L94 8 L38 46 L50 62Z" fill="var(--dorado)" opacity="0.9"/>
+    </svg>
+  </div>
+  <p class="intro-texto">Desliza para abrir</p>
+  <div class="intro-flecha">
+    <span></span><span></span><span></span>
+  </div>
+</div>
 
 <div class="preview-banner">
   Vista previa — esta invitación sigue en construcción, el contenido aún puede cambiar.
@@ -318,6 +396,7 @@
     </div>
     <span class="linea-lateral"></span>
   </div>
+  <p class="lugar">Jardín Quinta Santa Fe, Atlixco, Puebla</p>
 </header>
 
 <!-- ============ MENSAJE ============ -->
@@ -498,6 +577,34 @@
 <footer>
   Juan Antonio &amp; Anahí · 23.01.2027
 </footer>
+
+<script>
+  (function () {
+    const overlay = document.getElementById("intro-overlay");
+    const avion = document.getElementById("avion-wrap");
+    let inicioY = null;
+    let abierto = false;
+
+    function abrirIntro() {
+      if (abierto) return;
+      abierto = true;
+      avion.classList.add("volando");
+      overlay.classList.add("oculto");
+      document.body.classList.remove("bloqueado");
+      setTimeout(() => { overlay.style.display = "none"; }, 700);
+    }
+
+    overlay.addEventListener("pointerdown", (e) => { inicioY = e.clientY; });
+    overlay.addEventListener("pointermove", (e) => {
+      if (inicioY === null) return;
+      if (inicioY - e.clientY > 45) abrirIntro(); // deslizó hacia arriba lo suficiente
+    });
+    overlay.addEventListener("pointerup", () => {
+      inicioY = null;
+      abrirIntro(); // también sirve un simple toque/clic, por si no arrastran
+    });
+  })();
+</script>
 
 </body>
 </html>
