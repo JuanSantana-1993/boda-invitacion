@@ -90,6 +90,39 @@
 
   .wrap{max-width:1000px; margin:0 auto; padding:28px;}
 
+  /* -------- conteo regresivo -------- */
+  .conteo-panel{
+    background:#fff;
+    border:1px solid var(--arena);
+    padding:20px;
+    margin-bottom:24px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:clamp(20px, 4vw, 40px);
+    flex-wrap:wrap;
+  }
+  .conteo-panel .conteo-item{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    min-width:54px;
+  }
+  .conteo-panel .conteo-num{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:clamp(1.7rem, 3.5vw, 2.3rem);
+    color:var(--terracota);
+    line-height:1;
+  }
+  .conteo-panel .conteo-label{
+    font-size:0.72rem;
+    letter-spacing:0.05em;
+    color:var(--texto);
+    opacity:0.55;
+    margin-top:6px;
+  }
+
   /* -------- pestañas -------- */
   .tabs-panel{
     display:flex;
@@ -366,6 +399,13 @@
 
   <div class="wrap">
 
+    <div class="conteo-panel" id="conteo-panel">
+      <div class="conteo-item"><span class="conteo-num" id="panel-cnt-dias">00</span><span class="conteo-label">Días</span></div>
+      <div class="conteo-item"><span class="conteo-num" id="panel-cnt-horas">00</span><span class="conteo-label">Horas</span></div>
+      <div class="conteo-item"><span class="conteo-num" id="panel-cnt-min">00</span><span class="conteo-label">Min</span></div>
+      <div class="conteo-item"><span class="conteo-num" id="panel-cnt-seg">00</span><span class="conteo-label">Seg</span></div>
+    </div>
+
     <div class="tabs-panel">
       <button class="tab-btn activo" data-tab="invitados">Invitados</button>
       <button class="tab-btn" data-tab="planeacion">Planeación de la boda</button>
@@ -526,6 +566,20 @@
   const loginScreen = document.getElementById("login-screen");
   const panel = document.getElementById("panel");
   const loginError = document.getElementById("login-error");
+
+  // ---------- conteo regresivo ----------
+  (function () {
+    const objetivo = new Date(2027, 0, 23, 12, 0, 0).getTime();
+    function actualizarConteoPanel() {
+      const diff = Math.max(objetivo - Date.now(), 0);
+      document.getElementById("panel-cnt-dias").textContent = String(Math.floor(diff / 86400000)).padStart(2, "0");
+      document.getElementById("panel-cnt-horas").textContent = String(Math.floor(diff / 3600000) % 24).padStart(2, "0");
+      document.getElementById("panel-cnt-min").textContent = String(Math.floor(diff / 60000) % 60).padStart(2, "0");
+      document.getElementById("panel-cnt-seg").textContent = String(Math.floor(diff / 1000) % 60).padStart(2, "0");
+    }
+    actualizarConteoPanel();
+    setInterval(actualizarConteoPanel, 1000);
+  })();
 
   // ---------- login / logout ----------
   document.getElementById("login-btn").addEventListener("click", () => {
