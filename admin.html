@@ -90,6 +90,30 @@
 
   .wrap{max-width:1000px; margin:0 auto; padding:28px;}
 
+  /* -------- pestañas -------- */
+  .tabs-panel{
+    display:flex;
+    gap:8px;
+    margin-bottom:24px;
+    border-bottom:1px solid var(--arena);
+  }
+  .tab-btn{
+    padding:12px 18px;
+    border:none;
+    background:none;
+    color:var(--gris-calido);
+    font-family:inherit;
+    font-size:0.92rem;
+    cursor:pointer;
+    border-bottom:2px solid transparent;
+    margin-bottom:-1px;
+  }
+  .tab-btn.activo{
+    color:var(--terracota);
+    border-bottom-color:var(--terracota);
+    font-weight:600;
+  }
+
   /* -------- importar -------- */
   .importar-box{
     display:flex;
@@ -101,6 +125,57 @@
   .importar-box .btn{width:auto; display:inline-block; cursor:pointer; padding:10px 20px;}
   #csv-input{display:none;}
   #importar-status{font-size:0.85rem; color:var(--gris-calido);}
+
+  /* -------- planeación / checklist -------- */
+  .planeacion-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:32px;
+  }
+  @media (max-width:640px){
+    .planeacion-grid{grid-template-columns:1fr;}
+  }
+  .planeacion-col h3{font-size:1.1rem; margin-bottom:14px;}
+  .agregar-item{
+    display:flex;
+    gap:8px;
+    margin-bottom:16px;
+  }
+  .agregar-item input{
+    flex:1;
+    padding:10px 12px;
+    border:1px solid var(--arena);
+    background:#fff;
+    font-family:inherit;
+    font-size:0.9rem;
+  }
+  .lista-checklist{list-style:none;}
+  .lista-checklist li{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px 0;
+    border-bottom:1px solid var(--arena);
+  }
+  .lista-checklist li input[type="checkbox"]{width:auto; flex-shrink:0;}
+  .lista-checklist li span.nombre-item{
+    flex:1;
+    font-size:0.92rem;
+  }
+  .lista-checklist li.hecho span.nombre-item{
+    text-decoration:line-through;
+    opacity:0.5;
+  }
+  .lista-checklist li button{
+    background:none;
+    border:none;
+    color:var(--rojo-cancelado);
+    cursor:pointer;
+    font-size:0.78rem;
+    text-decoration:underline;
+    font-family:inherit;
+  }
+  .lista-vacia{color:var(--gris-calido); font-size:0.88rem; padding:12px 0;}
 
   /* -------- resumen -------- */
   .resumen{
@@ -291,61 +366,94 @@
 
   <div class="wrap">
 
-    <div class="importar-box">
-      <label class="btn" id="importar-label" for="csv-input">Importar CSV</label>
-      <input type="file" id="csv-input" accept=".csv">
-      <span id="importar-status"></span>
-    </div>
-    <div id="resultados-importacion"></div>
-
-    <div class="resumen">
-      <div class="tarjeta-resumen">
-        <div class="numero" id="num-esperados">0</div>
-        <div class="etiqueta">Personas esperadas</div>
-      </div>
-      <div class="tarjeta-resumen">
-        <div class="numero" id="num-confirmados">0</div>
-        <div class="etiqueta">Confirmados</div>
-      </div>
-      <div class="tarjeta-resumen">
-        <div class="numero" id="num-cancelados">0</div>
-        <div class="etiqueta">Cancelados</div>
-      </div>
-      <div class="tarjeta-resumen">
-        <div class="numero" id="num-pendientes">0</div>
-        <div class="etiqueta">Familias por responder</div>
-      </div>
-      <div class="tarjeta-resumen">
-        <div class="numero" id="num-espera">0</div>
-        <div class="etiqueta">En lista de espera</div>
-      </div>
+    <div class="tabs-panel">
+      <button class="tab-btn activo" data-tab="invitados">Invitados</button>
+      <button class="tab-btn" data-tab="planeacion">Planeación de la boda</button>
     </div>
 
-    <input type="text" id="buscador" placeholder="Buscar familia o contacto...">
+    <!-- ============ TAB: INVITADOS ============ -->
+    <div id="tab-invitados">
 
-    <div class="filtros">
-      <button class="filtro-btn activo" data-filtro="todos">Todos</button>
-      <button class="filtro-btn" data-filtro="confirmado">Confirmados</button>
-      <button class="filtro-btn" data-filtro="cancelado">Cancelados</button>
-      <button class="filtro-btn" data-filtro="pendiente">Pendientes</button>
-      <button class="filtro-btn" data-filtro="espera">Lista de espera</button>
+      <div class="importar-box">
+        <label class="btn" id="importar-label" for="csv-input">Importar CSV</label>
+        <input type="file" id="csv-input" accept=".csv">
+        <button class="btn" id="agregar-manual-btn" style="width:auto;">Agregar invitado</button>
+        <button class="btn" id="descargar-pendientes-btn" style="width:auto; background:none; border:1px solid var(--arena); color:var(--texto);">Descargar lista de invitados y links</button>
+        <span id="importar-status"></span>
+      </div>
+      <div id="resultados-importacion"></div>
+
+      <div class="resumen">
+        <div class="tarjeta-resumen">
+          <div class="numero" id="num-esperados">0</div>
+          <div class="etiqueta">Personas esperadas</div>
+        </div>
+        <div class="tarjeta-resumen">
+          <div class="numero" id="num-confirmados">0</div>
+          <div class="etiqueta">Confirmados</div>
+        </div>
+        <div class="tarjeta-resumen">
+          <div class="numero" id="num-cancelados">0</div>
+          <div class="etiqueta">Cancelados</div>
+        </div>
+        <div class="tarjeta-resumen">
+          <div class="numero" id="num-pendientes">0</div>
+          <div class="etiqueta">Familias por responder</div>
+        </div>
+        <div class="tarjeta-resumen">
+          <div class="numero" id="num-espera">0</div>
+          <div class="etiqueta">En lista de espera</div>
+        </div>
+      </div>
+
+      <input type="text" id="buscador" placeholder="Buscar familia o contacto...">
+
+      <div class="filtros">
+        <button class="filtro-btn activo" data-filtro="todos">Todos</button>
+        <button class="filtro-btn" data-filtro="confirmado">Confirmados</button>
+        <button class="filtro-btn" data-filtro="cancelado">Cancelados</button>
+        <button class="filtro-btn" data-filtro="pendiente">Pendientes</button>
+        <button class="filtro-btn" data-filtro="espera">Lista de espera</button>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Familia / Contacto</th>
+            <th>Esperados</th>
+            <th class="col-condicional">Confirmados</th>
+            <th class="col-condicional">Estado</th>
+            <th class="col-condicional">Alergias / notas</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="tabla-body"></tbody>
+      </table>
+
+      <p id="vacio" style="display:none;">No hay invitados cargados todavía.</p>
     </div>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Familia / Contacto</th>
-          <th>Esperados</th>
-          <th class="col-condicional">Confirmados</th>
-          <th class="col-condicional">Estado</th>
-          <th class="col-condicional">Alergias / notas</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody id="tabla-body"></tbody>
-    </table>
-
-    <p id="vacio" style="display:none;">No hay invitados cargados todavía.</p>
+    <!-- ============ TAB: PLANEACIÓN ============ -->
+    <div id="tab-planeacion" style="display:none;">
+      <div class="planeacion-grid">
+        <div class="planeacion-col">
+          <h3 class="serif">Lo que ya tenemos</h3>
+          <div class="agregar-item">
+            <input type="text" id="nuevo-tenemos" placeholder="Ej. Salón reservado">
+            <button class="btn" id="btn-agregar-tenemos" style="width:auto;">Agregar</button>
+          </div>
+          <ul class="lista-checklist" id="lista-tenemos"></ul>
+        </div>
+        <div class="planeacion-col">
+          <h3 class="serif">Lo que queremos conseguir</h3>
+          <div class="agregar-item">
+            <input type="text" id="nuevo-queremos" placeholder="Ej. Cotizar banda en vivo">
+            <button class="btn" id="btn-agregar-queremos" style="width:auto;">Agregar</button>
+          </div>
+          <ul class="lista-checklist" id="lista-queremos"></ul>
+        </div>
+      </div>
+    </div>
 
   </div>
 </div>
@@ -353,7 +461,7 @@
 <!-- ============ MODAL DE EDICIÓN ============ -->
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal-box">
-    <h3 class="serif">Editar familia</h3>
+    <h3 class="serif" id="modal-titulo">Editar familia</h3>
 
     <div class="campo">
       <label for="edit-nombre">Nombre del contacto</label>
@@ -370,7 +478,7 @@
       <input type="number" id="edit-esperados" min="1">
     </div>
 
-    <div class="campo">
+    <div class="campo" id="campo-estado">
       <label for="edit-estado">Estado</label>
       <select id="edit-estado">
         <option value="pendiente">Pendiente</option>
@@ -379,19 +487,19 @@
       </select>
     </div>
 
-    <div class="campo">
+    <div class="campo" id="campo-confirmados">
       <label for="edit-confirmados">Personas confirmadas</label>
       <input type="number" id="edit-confirmados" min="0">
     </div>
 
-    <div class="campo">
+    <div class="campo" id="campo-alergias">
       <label for="edit-alergias">Alergias / notas</label>
       <textarea id="edit-alergias"></textarea>
     </div>
 
     <div class="campo campo-checkbox">
       <input type="checkbox" id="edit-espera">
-      <label for="edit-espera">Está en lista de espera</label>
+      <label for="edit-espera">Va a la lista de espera (en vez de la lista principal)</label>
     </div>
 
     <div class="modal-botones">
@@ -407,7 +515,7 @@
     getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut
   } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
   import {
-    getFirestore, collection, onSnapshot, doc, updateDoc, setDoc, deleteDoc
+    getFirestore, collection, onSnapshot, doc, updateDoc, setDoc, deleteDoc, addDoc
   } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
   import { firebaseConfig } from "./firebase-config.js";
 
@@ -435,10 +543,22 @@
       loginScreen.style.display = "none";
       panel.style.display = "block";
       escucharFamilias();
+      escucharPlaneacion();
     } else {
       loginScreen.style.display = "flex";
       panel.style.display = "none";
     }
+  });
+
+  // ---------- pestañas ----------
+  document.querySelectorAll(".tab-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("activo"));
+      btn.classList.add("activo");
+      const esInvitados = btn.dataset.tab === "invitados";
+      document.getElementById("tab-invitados").style.display = esInvitados ? "block" : "none";
+      document.getElementById("tab-planeacion").style.display = esInvitados ? "none" : "block";
+    });
   });
 
   // ---------- datos en tiempo real ----------
@@ -506,10 +626,12 @@
         <td class="col-condicional"><span class="estado-pill estado-${estado}">${estado}</span></td>
         <td class="col-condicional">${f.alergias || "-"}</td>
         <td>
-          <button class="editar-btn" data-id="${f.id}">Editar</button>
-          ${!f.lista_espera ? `<button class="editar-btn copiar-btn" data-id="${f.id}">Copiar link</button>` : ""}
-          ${f.lista_espera ? `<button class="editar-btn mover-btn" data-id="${f.id}">Mover a lista principal</button>` : ""}
-          <button class="editar-btn eliminar-btn" data-id="${f.id}">Eliminar</button>
+          ${estado === "cancelado" ? `<span style="color:var(--gris-calido); font-size:0.8rem;">— sin acciones —</span>` : `
+            <button class="editar-btn" data-id="${f.id}">Editar</button>
+            ${!f.lista_espera ? `<button class="editar-btn copiar-btn" data-id="${f.id}">Copiar link</button>` : ""}
+            ${f.lista_espera ? `<button class="editar-btn mover-btn" data-id="${f.id}">Mover a lista principal</button>` : ""}
+            <button class="editar-btn eliminar-btn" data-id="${f.id}">Eliminar</button>
+          `}
         </td>
       `;
       tbody.appendChild(tr);
@@ -559,11 +681,19 @@
   }
 
   let idEnEdicion = null;
+  let modoNuevo = false;
 
   function abrirModalEditar(id) {
     const f = familias.find(x => x.id === id);
     if (!f) return;
     idEnEdicion = id;
+    modoNuevo = false;
+
+    document.getElementById("modal-titulo").textContent = "Editar familia";
+    document.getElementById("modal-guardar").textContent = "Guardar cambios";
+    document.getElementById("campo-estado").style.display = "block";
+    document.getElementById("campo-confirmados").style.display = "block";
+    document.getElementById("campo-alergias").style.display = "block";
 
     document.getElementById("edit-nombre").value = f.contacto_nombre || "";
     document.getElementById("edit-telefono").value = f.contacto_telefono || "";
@@ -576,9 +706,34 @@
     document.getElementById("modal-overlay").classList.add("activo");
   }
 
+  function abrirModalNuevo() {
+    idEnEdicion = null;
+    modoNuevo = true;
+
+    document.getElementById("modal-titulo").textContent = "Agregar invitado nuevo";
+    document.getElementById("modal-guardar").textContent = "Agregar invitado";
+    // estado/confirmados/alergias no aplican para alguien que aún no ha respondido
+    document.getElementById("campo-estado").style.display = "none";
+    document.getElementById("campo-confirmados").style.display = "none";
+    document.getElementById("campo-alergias").style.display = "none";
+
+    document.getElementById("edit-nombre").value = "";
+    document.getElementById("edit-telefono").value = "";
+    document.getElementById("edit-esperados").value = 1;
+    document.getElementById("edit-estado").value = "pendiente";
+    document.getElementById("edit-confirmados").value = 0;
+    document.getElementById("edit-alergias").value = "";
+    document.getElementById("edit-espera").checked = false;
+
+    document.getElementById("modal-overlay").classList.add("activo");
+  }
+
+  document.getElementById("agregar-manual-btn").addEventListener("click", abrirModalNuevo);
+
   function cerrarModal() {
     document.getElementById("modal-overlay").classList.remove("activo");
     idEnEdicion = null;
+    modoNuevo = false;
   }
 
   document.getElementById("modal-cancelar").addEventListener("click", cerrarModal);
@@ -587,27 +742,106 @@
   });
 
   document.getElementById("modal-guardar").addEventListener("click", async () => {
-    if (!idEnEdicion) return;
-
     const nombre = document.getElementById("edit-nombre").value.trim();
     if (!nombre) { alert("El nombre del contacto no puede quedar vacío."); return; }
 
     const esperados = Math.max(parseInt(document.getElementById("edit-esperados").value) || 1, 1);
-    let confirmados = Math.max(parseInt(document.getElementById("edit-confirmados").value) || 0, 0);
-    if (confirmados > esperados) confirmados = esperados;
 
-    await updateDoc(doc(db, "familias", idEnEdicion), {
-      contacto_nombre: nombre,
-      contacto_telefono: document.getElementById("edit-telefono").value.trim(),
-      personas_esperadas: esperados,
-      estado: document.getElementById("edit-estado").value,
-      personas_confirmadas: confirmados,
-      alergias: document.getElementById("edit-alergias").value.trim(),
-      lista_espera: document.getElementById("edit-espera").checked,
-    });
+    if (modoNuevo) {
+      // Alta manual: mismo generador de id que el CSV, para que no se
+      // dupliquen entre sí si algún día coinciden en nombre.
+      const idsExistentes = new Set(familias.map(f => f.id));
+      const idNuevo = slugify(nombre, idsExistentes);
+
+      await setDoc(doc(db, "familias", idNuevo), {
+        contacto_nombre: nombre,
+        contacto_telefono: document.getElementById("edit-telefono").value.trim(),
+        personas_esperadas: esperados,
+        personas_confirmadas: 0,
+        estado: "pendiente",
+        nombres: [],
+        alergias: "",
+        mensaje: "",
+        lista_espera: document.getElementById("edit-espera").checked,
+      });
+    } else {
+      if (!idEnEdicion) return;
+      let confirmados = Math.max(parseInt(document.getElementById("edit-confirmados").value) || 0, 0);
+      if (confirmados > esperados) confirmados = esperados;
+
+      await updateDoc(doc(db, "familias", idEnEdicion), {
+        contacto_nombre: nombre,
+        contacto_telefono: document.getElementById("edit-telefono").value.trim(),
+        personas_esperadas: esperados,
+        estado: document.getElementById("edit-estado").value,
+        personas_confirmadas: confirmados,
+        alergias: document.getElementById("edit-alergias").value.trim(),
+        lista_espera: document.getElementById("edit-espera").checked,
+      });
+    }
 
     cerrarModal();
   });
+
+  // ---------- planeación de la boda (checklist) ----------
+  let itemsPlaneacion = [];
+  let yaEscuchandoPlaneacion = false;
+
+  function escucharPlaneacion() {
+    if (yaEscuchandoPlaneacion) return;
+    yaEscuchandoPlaneacion = true;
+    onSnapshot(collection(db, "planeacion"), (snapshot) => {
+      itemsPlaneacion = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderPlaneacion();
+    });
+  }
+
+  function renderPlaneacion() {
+    renderListaPlaneacion("tenemos", "lista-tenemos");
+    renderListaPlaneacion("queremos", "lista-queremos");
+  }
+
+  function renderListaPlaneacion(tipo, idLista) {
+    const ul = document.getElementById(idLista);
+    const items = itemsPlaneacion.filter(i => i.tipo === tipo);
+
+    if (items.length === 0) {
+      ul.innerHTML = `<li class="lista-vacia">Nada agregado todavía.</li>`;
+      return;
+    }
+
+    ul.innerHTML = items.map(i => `
+      <li class="${i.hecho ? "hecho" : ""}">
+        <input type="checkbox" data-id="${i.id}" ${i.hecho ? "checked" : ""}>
+        <span class="nombre-item">${i.nombre}</span>
+        <button data-id="${i.id}">Eliminar</button>
+      </li>
+    `).join("");
+
+    ul.querySelectorAll("input[type=checkbox]").forEach(chk => {
+      chk.addEventListener("change", () => {
+        updateDoc(doc(db, "planeacion", chk.dataset.id), { hecho: chk.checked });
+      });
+    });
+    ul.querySelectorAll("button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        deleteDoc(doc(db, "planeacion", btn.dataset.id));
+      });
+    });
+  }
+
+  async function agregarItemPlaneacion(tipo, inputId) {
+    const input = document.getElementById(inputId);
+    const nombre = input.value.trim();
+    if (!nombre) return;
+    await addDoc(collection(db, "planeacion"), { tipo, nombre, hecho: false });
+    input.value = "";
+  }
+
+  document.getElementById("btn-agregar-tenemos").addEventListener("click", () => agregarItemPlaneacion("tenemos", "nuevo-tenemos"));
+  document.getElementById("btn-agregar-queremos").addEventListener("click", () => agregarItemPlaneacion("queremos", "nuevo-queremos"));
+  document.getElementById("nuevo-tenemos").addEventListener("keydown", (e) => { if (e.key === "Enter") agregarItemPlaneacion("tenemos", "nuevo-tenemos"); });
+  document.getElementById("nuevo-queremos").addEventListener("keydown", (e) => { if (e.key === "Enter") agregarItemPlaneacion("queremos", "nuevo-queremos"); });
 
   // ---------- filtros y búsqueda ----------
   document.querySelectorAll(".filtro-btn").forEach(btn => {
@@ -714,6 +948,34 @@
     status.textContent = `Listo: ${nuevos.length} nuevos, ${omitidos} ya existían (omitidos)${invalidos ? `, ${invalidos} filas inválidas` : ""}.`;
     e.target.value = "";
     mostrarResultadosImportacion(nuevos);
+  });
+
+  // Botón siempre disponible (no solo justo después de importar): toma
+  // a todos los que siguen pendientes de responder y aún no se les ha
+  // mandado — por eso excluye lista de espera, confirmados y cancelados.
+  document.getElementById("descargar-pendientes-btn").addEventListener("click", () => {
+    const pendientes = familias.filter(f => (!f.estado || f.estado === "pendiente") && !f.lista_espera);
+
+    if (pendientes.length === 0) {
+      alert("No hay invitados pendientes para descargar en este momento.");
+      return;
+    }
+
+    const conLinks = pendientes.map(f => ({
+      contacto_nombre: f.contacto_nombre || f.id,
+      personas_esperadas: f.personas_esperadas ?? "",
+      link: `${location.origin}${location.pathname.replace("admin.html", "index.html")}?fam=${encodeURIComponent(f.id)}`
+    }));
+
+    const encabezado = "contacto_nombre,personas_esperadas,link\n";
+    const cuerpo = conLinks.map(r => `"${r.contacto_nombre}",${r.personas_esperadas},${r.link}`).join("\n");
+    const blob = new Blob([encabezado + cuerpo], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "invitados-pendientes-links.csv";
+    a.click();
+    URL.revokeObjectURL(url);
   });
 
   function mostrarResultadosImportacion(nuevos) {
