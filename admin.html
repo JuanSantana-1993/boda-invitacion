@@ -680,7 +680,9 @@
         <td class="col-condicional"><span class="estado-pill estado-${estado}">${estado}</span></td>
         <td class="col-condicional">${f.alergias || "-"}</td>
         <td>
-          ${estado === "cancelado" ? `<span style="color:var(--gris-calido); font-size:0.8rem;">— sin acciones —</span>` : `
+          ${estado === "cancelado" ? `
+            <button class="editar-btn" data-id="${f.id}">Editar</button>
+          ` : `
             <button class="editar-btn" data-id="${f.id}">Editar</button>
             ${!f.lista_espera ? `<button class="editar-btn copiar-btn" data-id="${f.id}">Copiar link</button>` : ""}
             ${f.lista_espera ? `<button class="editar-btn mover-btn" data-id="${f.id}">Mover a lista principal</button>` : ""}
