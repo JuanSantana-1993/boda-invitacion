@@ -242,10 +242,10 @@
   .hero .nombre-izq, .hero .nombre-der{
     display:block;
     opacity:0;
-    transition:transform 0.9s cubic-bezier(.2,.7,.3,1), opacity 0.9s ease;
+    transition:transform 1.3s cubic-bezier(.2,.7,.3,1), opacity 1.3s ease;
   }
   .hero .nombre-izq{ transform:translateX(-70px); transition-delay:0.05s; }
-  .hero .nombre-der{ transform:translateX(70px); transition-delay:0.15s; }
+  .hero .nombre-der{ transform:translateX(70px); transition-delay:0.2s; }
 
   .hero.revelado .amp{ opacity:1; }
   .hero.revelado .nombre-izq,
@@ -261,8 +261,8 @@
     gap:20px;
     opacity:0;
     transform:translateY(18px);
-    transition:transform 0.8s ease, opacity 0.8s ease;
-    transition-delay:0.75s;
+    transition:transform 1.1s ease, opacity 1.1s ease;
+    transition-delay:0.9s;
   }
   .hero.revelado .fecha-destacada{
     opacity:1;
@@ -321,8 +321,8 @@
     opacity:0;
     transform:scale(0.4);
     transform-origin:center;
-    transition:transform 1s cubic-bezier(.2,.7,.3,1), opacity 1s ease;
-    transition-delay:0.4s;
+    transition:transform 1.4s cubic-bezier(.2,.7,.3,1), opacity 1.4s ease;
+    transition-delay:0.45s;
   }
   .hero.revelado .versiculo{
     opacity:1;
@@ -350,8 +350,8 @@
     margin:8px 0 4px;
     opacity:0;
     transform:translateY(14px);
-    transition:transform 0.8s ease, opacity 0.8s ease;
-    transition-delay:0.6s;
+    transition:transform 1.1s ease, opacity 1.1s ease;
+    transition-delay:0.75s;
   }
   .hero.revelado .conteo{
     opacity:1;
@@ -503,8 +503,8 @@
   .aviso-cambios{
     margin-top:20px;
     font-size:0.82rem;
-    color:var(--marfil-suave);
-    opacity:0.8;
+    color:var(--texto);
+    opacity:0.65;
     max-width:42ch;
     margin-left:auto;
     margin-right:auto;
@@ -545,7 +545,7 @@
   .reveal-derecha,
   .reveal-izquierda{
     opacity:0;
-    transition:transform 0.9s cubic-bezier(.2,.7,.3,1), opacity 0.9s ease;
+    transition:transform 1.3s cubic-bezier(.2,.7,.3,1), opacity 1.3s ease;
   }
   .reveal-derecha{transform:translateX(70px);}
   .reveal-izquierda{transform:translateX(-70px);}
@@ -581,7 +581,7 @@
     <div class="texto-en-foto">
       <p class="nos-casamos">Nos casamos</p>
       <h1>
-        <span class="nombre-izq">Juan</span>
+        <span class="nombre-izq">Juan Antonio</span>
         <span class="amp">&amp;</span>
         <span class="nombre-der">Anahí</span>
       </h1>
@@ -754,10 +754,7 @@
         <button class="btn btn-relleno" id="btn-rsvp-si">Sí, ahí estaremos</button>
         <button class="btn" id="btn-rsvp-no">No podremos acompañarlos</button>
       </div>
-      <p class="aviso-cambios">
-        Si su respuesta llegara a cambiar (por ejemplo, si invitamos a 3 personas pero solo asistirán 2),
-        por favor avísennos directamente: Juan Antonio 222 000 0000 · Anahí 222 000 0000
-      </p>
+      <p class="aviso-cambios">Ante cualquier duda, comunícate directamente con nosotros.</p>
     `;
     document.getElementById("btn-rsvp-si").addEventListener("click", () => responder("confirmado"));
     document.getElementById("btn-rsvp-no").addEventListener("click", () => responder("cancelado"));
@@ -776,8 +773,8 @@
   }
 
   function mostrarGracias(estado) {
-    const titulo = estado === "confirmado" ? "¡Los esperamos! 🎉" : "Gracias por avisarnos 💌";
-    const texto = estado === "confirmado" ? "Guardamos tu confirmación." : "Lamentamos que no puedan acompañarnos, ¡los queremos igual!";
+    const titulo = estado === "confirmado" ? "Nos alegra mucho que estés presente" : "Gracias por tu respuesta";
+    const texto = estado === "confirmado" ? "Guardamos tu confirmación." : "Lamentamos que no puedan acompañarnos.";
     contenedor.innerHTML = `
       <p class="serif" style="font-size:1.2rem; margin-bottom:6px;">${titulo}</p>
       <p style="opacity:0.75; margin-bottom:14px;">${texto}</p>

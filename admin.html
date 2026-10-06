@@ -463,7 +463,6 @@
             <th>Esperados</th>
             <th class="col-condicional">Confirmados</th>
             <th class="col-condicional">Estado</th>
-            <th class="col-condicional">Alergias / notas</th>
             <th></th>
           </tr>
         </thead>
@@ -532,12 +531,7 @@
       <input type="number" id="edit-confirmados" min="0">
     </div>
 
-    <div class="campo" id="campo-alergias">
-      <label for="edit-alergias">Alergias / notas</label>
-      <textarea id="edit-alergias"></textarea>
-    </div>
-
-    <div class="campo campo-checkbox">
+    <div class="campo campo-checkbox" id="campo-espera">
       <input type="checkbox" id="edit-espera">
       <label for="edit-espera">Va a la lista de espera (en vez de la lista principal)</label>
     </div>
@@ -678,7 +672,6 @@
         <td>${f.personas_esperadas ?? "-"}</td>
         <td class="col-condicional">${f.estado === "confirmado" ? (f.personas_confirmadas ?? f.personas_esperadas) : "-"}</td>
         <td class="col-condicional"><span class="estado-pill estado-${estado}">${estado}</span></td>
-        <td class="col-condicional">${f.alergias || "-"}</td>
         <td>
           ${estado === "cancelado" ? `
             <button class="editar-btn" data-id="${f.id}">Editar</button>
@@ -749,14 +742,13 @@
     document.getElementById("modal-guardar").textContent = "Guardar cambios";
     document.getElementById("campo-estado").style.display = "block";
     document.getElementById("campo-confirmados").style.display = "block";
-    document.getElementById("campo-alergias").style.display = "block";
+    document.getElementById("campo-espera").style.display = "none";
 
     document.getElementById("edit-nombre").value = f.contacto_nombre || "";
     document.getElementById("edit-telefono").value = f.contacto_telefono || "";
     document.getElementById("edit-esperados").value = f.personas_esperadas ?? 1;
     document.getElementById("edit-estado").value = f.estado || "pendiente";
     document.getElementById("edit-confirmados").value = f.personas_confirmadas ?? 0;
-    document.getElementById("edit-alergias").value = f.alergias || "";
     document.getElementById("edit-espera").checked = !!f.lista_espera;
 
     document.getElementById("modal-overlay").classList.add("activo");
@@ -768,17 +760,17 @@
 
     document.getElementById("modal-titulo").textContent = "Agregar invitado nuevo";
     document.getElementById("modal-guardar").textContent = "Agregar invitado";
-    // estado/confirmados/alergias no aplican para alguien que aún no ha respondido
+    // estado/confirmados no aplican para alguien que aún no ha respondido,
+    // pero sí hay que elegir si va a la lista principal o a la de espera
     document.getElementById("campo-estado").style.display = "none";
     document.getElementById("campo-confirmados").style.display = "none";
-    document.getElementById("campo-alergias").style.display = "none";
+    document.getElementById("campo-espera").style.display = "flex";
 
     document.getElementById("edit-nombre").value = "";
     document.getElementById("edit-telefono").value = "";
     document.getElementById("edit-esperados").value = 1;
     document.getElementById("edit-estado").value = "pendiente";
     document.getElementById("edit-confirmados").value = 0;
-    document.getElementById("edit-alergias").value = "";
     document.getElementById("edit-espera").checked = false;
 
     document.getElementById("modal-overlay").classList.add("activo");
@@ -831,8 +823,6 @@
         personas_esperadas: esperados,
         estado: document.getElementById("edit-estado").value,
         personas_confirmadas: confirmados,
-        alergias: document.getElementById("edit-alergias").value.trim(),
-        lista_espera: document.getElementById("edit-espera").checked,
       });
     }
 
