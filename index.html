@@ -85,8 +85,6 @@
     75%{ transform:translate(-8px, -10px) rotate(3deg); }
   }
 
-  /* el avión se "desdobla" (aletea) y luego se expande, como si su
-     papel se convirtiera en la página de la invitación */
   @keyframes desplegar{
     0%{ transform:scale(1) rotate(-4deg); opacity:1; }
     14%{ transform:scale(1.2, 0.82) rotate(-2deg); opacity:1; }
@@ -156,16 +154,6 @@
     border-bottom:1px solid var(--linea);
   }
   section:last-of-type{border-bottom:none;}
-
-  /* -------- aviso de vista previa -------- */
-  .preview-banner{
-    background:var(--marfil-suave);
-    color:var(--verde-oscuro);
-    text-align:center;
-    font-size:0.85rem;
-    padding:10px 16px;
-    letter-spacing:0.02em;
-  }
 
   /* -------- hero -------- */
   .hero{
@@ -302,18 +290,6 @@
     margin-top:4px;
   }
 
-  .hero .lugar{
-    margin-top:28px;
-    font-size:1rem;
-    color:var(--marfil-suave);
-    opacity:0;
-    transition:opacity 0.8s ease;
-    transition-delay:0.95s;
-  }
-  .hero.revelado .lugar{
-    opacity:0.8;
-  }
-
   /* -------- versículo -------- */
   .versiculo{
     max-width:38ch;
@@ -378,7 +354,6 @@
     margin-top:6px;
   }
 
-  /* -------- encabezados de sección -------- */
   h2{
     font-size:clamp(1.8rem, 4vw, 2.4rem);
     margin-bottom:32px;
@@ -388,34 +363,6 @@
   .mensaje p{
     font-size:1.15rem;
     max-width:56ch;
-  }
-
-  /* -------- nuestra historia -------- */
-  .historia-item{
-    display:flex;
-    gap:24px;
-    padding:20px 0;
-    border-top:1px solid var(--arena);
-  }
-  .historia-item:last-child{border-bottom:1px solid var(--arena);}
-
-  .historia-item .numero{
-    font-family:'Fraunces', serif;
-    color:var(--dorado);
-    min-width:44px;
-    font-size:1.05rem;
-  }
-
-  .historia-item .detalle strong{
-    display:block;
-    font-weight:500;
-    margin-bottom:4px;
-    font-size:1.1rem;
-  }
-
-  .historia-item .detalle p{
-    opacity:0.8;
-    font-size:0.98rem;
   }
 
   /* -------- ubicación -------- */
@@ -473,29 +420,13 @@
     flex:0 0 auto;
     scroll-snap-align:center;
   }
-  /* cada foto conserva su proporción: las verticales salen altas y las
-     horizontales anchas, sin recortar a nadie */
   .carrusel-slide img{
     display:block;
     height:auto;
   }
   .carrusel-slide img.v{width:min(330px, 76vw);}
   .carrusel-slide img.h{width:min(500px, 88vw);}
-  .foto-placeholder{
-    width:300px;
-    max-width:75vw;
-    aspect-ratio:3/4;
-    background:var(--blush);
-    border:1px dashed var(--arena);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:0.8rem;
-    text-align:center;
-    color:var(--texto);
-    opacity:0.55;
-    padding:12px;
-  }
+  
   .carrusel-btn{
     position:absolute;
     top:50%;
@@ -589,8 +520,6 @@
     section{padding:72px 0;}
   }
 
-  /* -------- overrides: texto sobre la foto de portada --------
-     (van al final para asegurar que ganen sobre los colores originales) */
   .hero .foto-portada .nos-casamos{color:var(--crema); opacity:0.9;}
   .hero .foto-portada .amp{color:var(--crema);}
   .hero .foto-portada h1{color:var(--crema); text-shadow:0 2px 14px rgba(0,0,0,0.35);}
@@ -599,7 +528,6 @@
   .hero .foto-portada .mes-anio{color:var(--crema); opacity:0.85;}
   .hero .foto-portada .linea-lateral{background:rgba(248,244,238,0.45);}
 
-  /* -------- animación de entrada al hacer scroll, alternando lados -------- */
   .reveal-derecha,
   .reveal-izquierda{
     opacity:0;
@@ -669,7 +597,6 @@
 </header>
 
 <!-- ============ MENSAJE ============ -->
-<!-- EDITA: aquí va el mensaje personal para los invitados -->
 <section class="mensaje reveal-derecha">
   <div class="wrap">
     <h2 class="serif">Con mucha alegría</h2>
@@ -680,7 +607,7 @@
   </div>
 </section>
 
-<!-- ============ NUESTRA HISTORIA (SOLO FOTOS) ============ -->
+<!-- ============ NUESTRA HISTORIA (SOLO FOTOS - LOOP INFINITO) ============ -->
 <section class="historia reveal-izquierda" id="historia">
   <div class="wrap">
     <h2 class="serif">Nuestra historia</h2>
@@ -693,7 +620,7 @@
         <div class="carrusel-slide"><img class="h" src="fotos/foto4.jpg" width="1400" height="1050" alt="Juan Antonio y Anahí" loading="lazy" decoding="async"></div>
         <div class="carrusel-slide"><img class="h" src="fotos/foto5.jpg" width="1400" height="1050" alt="Juan Antonio y Anahí" loading="lazy" decoding="async"></div>
         <div class="carrusel-slide"><img class="h" src="fotos/foto6.jpg" width="1400" height="1050" alt="Juan Antonio y Anahí" loading="lazy" decoding="async"></div>
-        <div class="carrusel-slide"><img class="h" src="fotos/foto7.jpg" width="1400" height="1050" alt="Juan Antonio y Anahí" loading="lazy" decoding="async"></div>
+        <div class="carrusel-slide"><img class="v" src="fotos/foto7.jpg" width="1350" height="1800" alt="Juan Antonio y Anahí" loading="lazy" decoding="async"></div>
       </div>
       <button class="carrusel-btn prev" id="carrusel-prev" aria-label="Foto anterior">&#8249;</button>
       <button class="carrusel-btn next" id="carrusel-next" aria-label="Foto siguiente">&#8250;</button>
@@ -870,6 +797,7 @@
 </script>
 
 <script>
+  // Carrusel infinito (bucle)
   (function () {
     const track = document.getElementById("carrusel-track");
     const dotsBox = document.getElementById("carrusel-dots");
@@ -894,7 +822,12 @@
     }
 
     function irA(indice) {
-      const i = Math.max(0, Math.min(slides.length - 1, indice));
+      let i = indice;
+      if (i >= slides.length) {
+        i = 0; // Si pasa de la última, regresa a la primera
+      } else if (i < 0) {
+        i = slides.length - 1; // Si va antes de la primera, salta a la última
+      }
       const s = slides[i];
       track.scrollTo({ left: s.offsetLeft - (track.clientWidth - s.offsetWidth) / 2, behavior: "smooth" });
     }
@@ -903,8 +836,10 @@
     window.addEventListener("load", actualizarDots);
     window.addEventListener("resize", actualizarDots);
     track.querySelectorAll("img").forEach(im => im.addEventListener("load", actualizarDots));
+    
     document.getElementById("carrusel-prev").addEventListener("click", () => irA(slideActivo() - 1));
     document.getElementById("carrusel-next").addEventListener("click", () => irA(slideActivo() + 1));
+    
     actualizarDots();
   })();
 </script>
