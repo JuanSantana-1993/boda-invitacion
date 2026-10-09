@@ -614,13 +614,13 @@
     
     <div class="carrusel">
       <div class="carrusel-track" id="carrusel-track">
-        <div class="carrusel-slide"><img class="v" src="fotos/foto1.jpg" width="1350" height="1800" alt="Juan Antonio y Anahí" decoding="async"></div>
+        <div class="carrusel-slide"><img class="v" src="fotos/foto1.JPG" width="1350" height="1800" alt="Juan Antonio y Anahí" decoding="async"></div>
         <div class="carrusel-slide"><img class="h" src="fotos/foto2.jpg" width="1400" height="1050" alt="Juan Antonio y Anahí" loading="lazy" decoding="async"></div>
         <div class="carrusel-slide"><img class="v" src="fotos/foto3.jpg" width="1350" height="1800" alt="Juan Antonio y Anahí" loading="lazy" decoding="async"></div>
         <div class="carrusel-slide"><img class="h" src="fotos/foto4.jpg" width="1400" height="1050" alt="Juan Antonio y Anahí" loading="lazy" decoding="async"></div>
-        <div class="carrusel-slide"><img class="h" src="fotos/foto5.jpg" width="1400" height="1050" alt="Juan Antonio y Anahí" loading="lazy" decoding="async"></div>
+        <div class="carrusel-slide"><img class="v" src="fotos/foto5.JPG" width="1350" height="1800" alt="Juan Antonio y Anahí" loading="lazy" decoding="async"></div>
         <div class="carrusel-slide"><img class="h" src="fotos/foto6.jpg" width="1400" height="1050" alt="Juan Antonio y Anahí" loading="lazy" decoding="async"></div>
-        <div class="carrusel-slide"><img class="v" src="fotos/foto7.jpg" width="1350" height="1800" alt="Juan Antonio y Anahí" loading="lazy" decoding="async"></div>
+        <div class="carrusel-slide"><img class="v" src="fotos/foto7.JPG" width="1350" height="1800" alt="Juan Antonio y Anahí" decoding="async"></div>
       </div>
       <button class="carrusel-btn prev" id="carrusel-prev" aria-label="Foto anterior">&#8249;</button>
       <button class="carrusel-btn next" id="carrusel-next" aria-label="Foto siguiente">&#8250;</button>
@@ -804,7 +804,6 @@
     const originalSlides = Array.from(track.querySelectorAll(".carrusel-slide"));
     const totalOriginal = originalSlides.length;
 
-    // Duplicar elementos al inicio y al final para lograr el efecto rueda sin cortes abruptos
     originalSlides.forEach(slide => {
       track.appendChild(slide.cloneNode(true));
     });
@@ -814,11 +813,9 @@
 
     const allSlides = Array.from(track.querySelectorAll(".carrusel-slide"));
 
-    // Crear los puntos indicadores basados únicamente en las fotos originales
     originalSlides.forEach(() => dotsBox.appendChild(document.createElement("span")));
     const dots = Array.from(dotsBox.children);
 
-    // Posicionar el scroll inicialmente en el bloque central (fotos originales)
     function centrarInicial() {
       const targetSlide = allSlides[totalOriginal];
       track.scrollLeft = targetSlide.offsetLeft - (track.clientWidth - targetSlide.offsetWidth) / 2;
@@ -840,7 +837,6 @@
       dots.forEach((d, i) => d.classList.toggle("activo", i === dotIndex));
     }
 
-    // Control de desplazamiento en bucle continuo estilo rueda
     function mover(direccion) {
       const indexActual = slideActivoReal();
       const nuevoIndex = indexActual + direccion;
@@ -850,21 +846,17 @@
       }
     }
 
-    // Manejar el salto invisible cuando el usuario llega a los extremos duplicados
     let isScrolling;
     track.addEventListener("scroll", () => {
       window.clearTimeout(isScrolling);
       isScrolling = setTimeout(() => {
         const indexActual = slideActivoReal();
-        // Si se acerca al bloque clonado del inicio, salta invisiblemente al centro equivalente
         if (indexActual < totalOriginal) {
           track.style.scrollBehavior = "auto";
           const target = allSlides[indexActual + totalOriginal];
           track.scrollLeft = target.offsetLeft - (track.clientWidth - target.offsetWidth) / 2;
           track.style.scrollBehavior = "smooth";
-        } 
-        // Si se acerca al bloque clonado del final, salta invisiblemente al centro equivalente
-        else if (indexActual >= totalOriginal * 2) {
+        } else if (indexActual >= totalOriginal * 2) {
           track.style.scrollBehavior = "auto";
           const target = allSlides[indexActual - totalOriginal];
           track.scrollLeft = target.offsetLeft - (track.clientWidth - target.offsetWidth) / 2;
