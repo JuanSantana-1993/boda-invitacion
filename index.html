@@ -607,7 +607,7 @@
   </div>
 </section>
 
-<!-- ============ NUESTRA HISTORIA (SOLO FOTOS - LOOP INFINITO) ============ -->
+<!-- ============ NUESTRA HISTORIA (CARRUSEL RUEDA CONTINUA) ============ -->
 <section class="historia reveal-izquierda" id="historia">
   <div class="wrap">
     <h2 class="serif">Nuestra historia</h2>
@@ -797,50 +797,97 @@
 </script>
 
 <script>
-  // Carrusel infinito (bucle)
+  // Carrusel en rueda continua (infinito fluido)
   (function () {
     const track = document.getElementById("carrusel-track");
     const dotsBox = document.getElementById("carrusel-dots");
-    const slides = Array.from(track.querySelectorAll(".carrusel-slide"));
+    const originalSlides = Array.from(track.querySelectorAll(".carrusel-slide"));
+    const totalOriginal = originalSlides.length;
 
-    slides.forEach(() => dotsBox.appendChild(document.createElement("span")));
+    // Duplicar elementos al inicio y al final para lograr el efecto rueda sin cortes abruptos
+    originalSlides.forEach(slide => {
+      track.appendChild(slide.cloneNode(true));
+    });
+    originalSlides.slice().reverse().forEach(slide => {
+      track.insertBefore(slide.cloneNode(true), track.firstChild);
+    });
+
+    const allSlides = Array.from(track.querySelectorAll(".carrusel-slide"));
+
+    // Crear los puntos indicadores basados únicamente en las fotos originales
+    originalSlides.forEach(() => dotsBox.appendChild(document.createElement("span")));
     const dots = Array.from(dotsBox.children);
 
-    function slideActivo() {
+    // Posicionar el scroll inicialmente en el bloque central (fotos originales)
+    function centrarInicial() {
+      const targetSlide = allSlides[totalOriginal];
+      track.scrollLeft = targetSlide.offsetLeft - (track.clientWidth - targetSlide.offsetWidth) / 2;
+    }
+
+    function slideActivoReal() {
       const centro = track.scrollLeft + track.clientWidth / 2;
-      let mejor = 0, menorDist = Infinity;
-      slides.forEach((s, i) => {
+      let mejorIndex = 0, menorDist = Infinity;
+      allSlides.forEach((s, i) => {
         const dist = Math.abs(s.offsetLeft + s.offsetWidth / 2 - centro);
-        if (dist < menorDist) { menorDist = dist; mejor = i; }
+        if (dist < menorDist) { menorDist = dist; mejorIndex = i; }
       });
-      return mejor;
+      return mejorIndex;
     }
 
     function actualizarDots() {
-      const activo = slideActivo();
-      dots.forEach((d, i) => d.classList.toggle("activo", i === activo));
+      const indexActual = slideActivoReal();
+      const dotIndex = indexActual % totalOriginal;
+      dots.forEach((d, i) => d.classList.toggle("activo", i === dotIndex));
     }
 
-    function irA(indice) {
-      let i = indice;
-      if (i >= slides.length) {
-        i = 0; // Si pasa de la última, regresa a la primera
-      } else if (i < 0) {
-        i = slides.length - 1; // Si va antes de la primera, salta a la última
+    // Control de desplazamiento en bucle continuo estilo rueda
+    function mover(direccion) {
+      const indexActual = slideActivoReal();
+      const nuevoIndex = indexActual + direccion;
+      const s = allSlides[nuevoIndex];
+      if (s) {
+        track.scrollTo({ left: s.offsetLeft - (track.clientWidth - s.offsetWidth) / 2, behavior: "smooth" });
       }
-      const s = slides[i];
-      track.scrollTo({ left: s.offsetLeft - (track.clientWidth - s.offsetWidth) / 2, behavior: "smooth" });
     }
 
-    track.addEventListener("scroll", actualizarDots, { passive: true });
-    window.addEventListener("load", actualizarDots);
-    window.addEventListener("resize", actualizarDots);
+    // Manejar el salto invisible cuando el usuario llega a los extremos duplicados
+    let isScrolling;
+    track.addEventListener("scroll", () => {
+      window.clearTimeout(isScrolling);
+      isScrolling = setTimeout(() => {
+        const indexActual = slideActivoReal();
+        // Si se acerca al bloque clonado del inicio, salta invisiblemente al centro equivalente
+        if (indexActual < totalOriginal) {
+          track.style.scrollBehavior = "auto";
+          const target = allSlides[indexActual + totalOriginal];
+          track.scrollLeft = target.offsetLeft - (track.clientWidth - target.offsetWidth) / 2;
+          track.style.scrollBehavior = "smooth";
+        } 
+        // Si se acerca al bloque clonado del final, salta invisiblemente al centro equivalente
+        else if (indexActual >= totalOriginal * 2) {
+          track.style.scrollBehavior = "auto";
+          const target = allSlides[indexActual - totalOriginal];
+          track.scrollLeft = target.offsetLeft - (track.clientWidth - target.offsetWidth) / 2;
+          track.style.scrollBehavior = "smooth";
+        }
+      }, 100);
+
+      actualizarDots();
+    }, { passive: true });
+
+    window.addEventListener("load", () => {
+      centrarInicial();
+      actualizarDots();
+    });
+    window.addEventListener("resize", () => {
+      centrarInicial();
+      actualizarDots();
+    });
+
     track.querySelectorAll("img").forEach(im => im.addEventListener("load", actualizarDots));
-    
-    document.getElementById("carrusel-prev").addEventListener("click", () => irA(slideActivo() - 1));
-    document.getElementById("carrusel-next").addEventListener("click", () => irA(slideActivo() + 1));
-    
-    actualizarDots();
+
+    document.getElementById("carrusel-prev").addEventListener("click", () => mover(-1));
+    document.getElementById("carrusel-next").addEventListener("click", () => mover(1));
   })();
 </script>
 
