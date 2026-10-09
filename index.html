@@ -656,7 +656,7 @@
   </div>
 
   <div class="versiculo">
-    <p class="texto-manuscrito">"Después de esto vi una enorme multitud de todo pueblo y toda nación, tribu y lengua, que era tan numerosa que nadie podía contarla. Estaban de pie delante del trono y delante del Cordero. Vestían túnicas blancas y tenían en sus manos ramas de palmeras, y gritaban con gran estruendo: ¡La salvación viene de nuestro Dios que está sentado en el trono y del Cordero!"</p>
+    <p class="texto-manuscrito">"Alegrémonos y llenémonos de gozo y démosle honor a él, porque el tiempo ha llegado para la boda del Cordero, y su novia se ha preparado"</p>
     <span class="cita-biblica">Apocalipsis 7:9-10, NTV</span>
   </div>
 
@@ -726,20 +726,18 @@
 </section>
 
 <!-- ============ FOTOS ============ -->
-<!-- EDITA: dentro de cada .carrusel-slide, reemplaza el <div class="foto-placeholder"> por <img src="fotos/nombre.jpg" alt="...">
-     (puedes agregar o quitar slides copiando/borrando un bloque <div class="carrusel-slide">) -->
 <section class="fotos reveal-izquierda" id="fotos">
   <div class="wrap">
     <h2 class="serif">Nosotros</h2>
     <div class="carrusel">
       <div class="carrusel-track" id="carrusel-track">
-        <div class="carrusel-slide"><img class="v" src="fotos/foto1.jpg" width="1350" height="1800" alt="Juan Antonio y Anahí" decoding="async"></div>
+        <div class="carrusel-slide"><img class="v" src="fotos/foto7.jpg" width="1350" height="1800" alt="Juan Antonio y Anahí" decoding="async"></div>
         <div class="carrusel-slide"><img class="h" src="fotos/foto2.jpg" width="1400" height="1050" alt="Juan Antonio y Anahí" loading="lazy" decoding="async"></div>
         <div class="carrusel-slide"><img class="v" src="fotos/foto3.jpg" width="1350" height="1800" alt="Juan Antonio y Anahí" loading="lazy" decoding="async"></div>
         <div class="carrusel-slide"><img class="h" src="fotos/foto4.jpg" width="1400" height="1050" alt="Juan Antonio y Anahí" loading="lazy" decoding="async"></div>
-        <div class="carrusel-slide"><div class="foto-placeholder">Foto 5</div></div>
+        <div class="carrusel-slide"><img class="h" src="fotos/foto5.jpg" width="1400" height="1050" alt="Juan Antonio y Anahí" loading="lazy" decoding="async"></div>
         <div class="carrusel-slide"><img class="h" src="fotos/foto6.jpg" width="1400" height="1050" alt="Juan Antonio y Anahí" loading="lazy" decoding="async"></div>
-        <div class="carrusel-slide"><div class="foto-placeholder">Foto 7</div></div>
+        <div class="carrusel-slide"><img class="h" src="fotos/foto1.jpg" width="1400" height="1050" alt="Juan Antonio y Anahí" loading="lazy" decoding="async"></div>
       </div>
       <button class="carrusel-btn prev" id="carrusel-prev" aria-label="Foto anterior">&#8249;</button>
       <button class="carrusel-btn next" id="carrusel-next" aria-label="Foto siguiente">&#8250;</button>
@@ -940,7 +938,6 @@
     }
 
     track.addEventListener("scroll", actualizarDots, { passive: true });
-    // las fotos pueden terminar de cargar después: se recalculan los puntos
     window.addEventListener("load", actualizarDots);
     window.addEventListener("resize", actualizarDots);
     track.querySelectorAll("img").forEach(im => im.addEventListener("load", actualizarDots));
