@@ -409,7 +409,7 @@
     gap: 0px;
     overflow-x:auto;
     scroll-snap-type:x mandatory;
-    scroll-behavior:auto; /* Cambiado a auto para evitar conflictos de inercia con CSS */
+    scroll-behavior:auto;
     -webkit-overflow-scrolling:touch;
     scrollbar-width:none;
     align-items:center;
@@ -761,6 +761,48 @@
   Juan Antonio &amp; Anahí · 23.01.2027
 </footer>
 
+<!-- SCRIPT DE APERTURA DEL AVIÓN DE PAPEL CORREGIDO -->
+<script>
+  (function () {
+    const overlay = document.getElementById("intro-overlay");
+    const avion = document.getElementById("avion-wrap");
+    const textoIntro = document.querySelector(".intro-texto");
+    const flechaIntro = document.querySelector(".intro-flecha");
+    let abierto = false;
+    let listoParaAbrir = false;
+
+    avion.addEventListener("animationend", (e) => {
+      if (e.animationName === "entrada-vuelo") {
+        avion.classList.remove("entrando");
+        avion.classList.add("flotando");
+        textoIntro.classList.add("visible");
+        flechaIntro.classList.add("visible");
+        listoParaAbrir = true;
+      }
+    });
+
+    function abrirIntro() {
+      if (abierto || !listoParaAbrir) return;
+      abierto = true;
+
+      avion.classList.remove("flotando");
+      avion.classList.add("desplegando");
+      textoIntro.classList.remove("visible");
+      flechaIntro.classList.remove("visible");
+
+      setTimeout(() => {
+        overlay.classList.add("oculto");
+        document.querySelector(".hero").classList.add("revelado");
+      }, 500);
+      document.body.classList.remove("bloqueado");
+      setTimeout(() => { overlay.style.display = "none"; }, 1150);
+    }
+
+    overlay.addEventListener("pointerdown", abrirIntro);
+    overlay.addEventListener("click", abrirIntro);
+  })();
+</script>
+
 <script>
   // Carrusel infinito con inercia optimizada y sin bloqueos en múltiples vueltas
   (function () {
@@ -774,7 +816,6 @@
       if (im) slide.style.setProperty("--foto", 'url("' + im.getAttribute("src") + '")');
     });
 
-    // Clonar múltiples veces para garantizar un búfer amplio de giros continuos
     for (let i = 0; i < 3; i++) {
       originalSlides.forEach(slide => {
         track.appendChild(slide.cloneNode(true));
@@ -837,7 +878,6 @@
     function verificarReubicacion() {
       const indexActual = slideActivoReal();
       const offsetRelativo = indexActual % totalOriginal;
-      // Reubicar de forma imperceptible al bloque central cuando se aleja mucho
       if (indexActual < totalOriginal * 2 || indexActual > totalOriginal * 5) {
         const target = allSlides[bloqueCentral + offsetRelativo];
         track.scrollLeft = target.offsetLeft - (track.clientWidth - target.offsetWidth) / 2;
