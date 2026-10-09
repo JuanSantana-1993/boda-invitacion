@@ -453,13 +453,37 @@
     margin-top:4px;
   }
 
-  /* -------- galería -------- */
-  .galeria{
-    display:grid;
-    grid-template-columns:repeat(3, 1fr);
-    gap:12px;
+  /* -------- galería en carrusel -------- */
+  .carrusel{
+    position:relative;
   }
+  .carrusel-track{
+    display:flex;
+    gap:14px;
+    overflow-x:auto;
+    scroll-snap-type:x mandatory;
+    scroll-behavior:smooth;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+    align-items:center;
+    padding:4px 0 8px;
+  }
+  .carrusel-track::-webkit-scrollbar{display:none;}
+  .carrusel-slide{
+    flex:0 0 auto;
+    scroll-snap-align:center;
+  }
+  /* cada foto conserva su proporción: las verticales salen altas y las
+     horizontales anchas, sin recortar a nadie */
+  .carrusel-slide img{
+    display:block;
+    height:auto;
+  }
+  .carrusel-slide img.v{width:min(330px, 76vw);}
+  .carrusel-slide img.h{width:min(500px, 88vw);}
   .foto-placeholder{
+    width:300px;
+    max-width:75vw;
     aspect-ratio:3/4;
     background:var(--blush);
     border:1px dashed var(--arena);
@@ -471,6 +495,41 @@
     color:var(--texto);
     opacity:0.55;
     padding:12px;
+  }
+  .carrusel-btn{
+    position:absolute;
+    top:50%;
+    transform:translateY(-50%);
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    border:1px solid var(--arena);
+    background:rgba(248,244,238,0.92);
+    color:var(--texto);
+    font-size:1.3rem;
+    line-height:1;
+    cursor:pointer;
+    z-index:2;
+  }
+  .carrusel-btn:hover{background:var(--dorado); color:var(--crema); border-color:var(--dorado);}
+  .carrusel-btn.prev{left:-6px;}
+  .carrusel-btn.next{right:-6px;}
+  .carrusel-dots{
+    display:flex;
+    justify-content:center;
+    gap:8px;
+    margin-top:14px;
+  }
+  .carrusel-dots span{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:var(--arena);
+    transition:background 0.3s ease, transform 0.3s ease;
+  }
+  .carrusel-dots span.activo{
+    background:var(--dorado);
+    transform:scale(1.3);
   }
 
   /* -------- regalos -------- */
@@ -527,7 +586,6 @@
   }
 
   @media (max-width:560px){
-    .galeria{grid-template-columns:repeat(2, 1fr);}
     section{padding:72px 0;}
   }
 
@@ -668,17 +726,24 @@
 </section>
 
 <!-- ============ FOTOS ============ -->
-<!-- EDITA: reemplaza cada .foto-placeholder con <img src="fotos/nombre.jpg" alt="..."> -->
+<!-- EDITA: dentro de cada .carrusel-slide, reemplaza el <div class="foto-placeholder"> por <img src="fotos/nombre.jpg" alt="...">
+     (puedes agregar o quitar slides copiando/borrando un bloque <div class="carrusel-slide">) -->
 <section class="fotos reveal-izquierda" id="fotos">
   <div class="wrap">
     <h2 class="serif">Nosotros</h2>
-    <div class="galeria">
-      <div class="foto-placeholder">Foto 1</div>
-      <div class="foto-placeholder">Foto 2</div>
-      <div class="foto-placeholder">Foto 3</div>
-      <div class="foto-placeholder">Foto 4</div>
-      <div class="foto-placeholder">Foto 5</div>
-      <div class="foto-placeholder">Foto 6</div>
+    <div class="carrusel">
+      <div class="carrusel-track" id="carrusel-track">
+        <div class="carrusel-slide"><img class="v" src="fotos/foto1.jpg" width="1350" height="1800" alt="Juan Antonio y Anahí" decoding="async"></div>
+        <div class="carrusel-slide"><img class="h" src="fotos/foto2.jpg" width="1400" height="1050" alt="Juan Antonio y Anahí" loading="lazy" decoding="async"></div>
+        <div class="carrusel-slide"><img class="v" src="fotos/foto3.jpg" width="1350" height="1800" alt="Juan Antonio y Anahí" loading="lazy" decoding="async"></div>
+        <div class="carrusel-slide"><img class="h" src="fotos/foto4.jpg" width="1400" height="1050" alt="Juan Antonio y Anahí" loading="lazy" decoding="async"></div>
+        <div class="carrusel-slide"><div class="foto-placeholder">Foto 5</div></div>
+        <div class="carrusel-slide"><img class="h" src="fotos/foto6.jpg" width="1400" height="1050" alt="Juan Antonio y Anahí" loading="lazy" decoding="async"></div>
+        <div class="carrusel-slide"><div class="foto-placeholder">Foto 7</div></div>
+      </div>
+      <button class="carrusel-btn prev" id="carrusel-prev" aria-label="Foto anterior">&#8249;</button>
+      <button class="carrusel-btn next" id="carrusel-next" aria-label="Foto siguiente">&#8250;</button>
+      <div class="carrusel-dots" id="carrusel-dots"></div>
     </div>
   </div>
 </section>
@@ -840,6 +905,48 @@
       inicioY = null;
       abrirIntro(); // también sirve un simple toque/clic, por si no arrastran
     });
+  })();
+</script>
+
+<script>
+  // Carrusel de fotos: los puntos se generan solos según cuántas fotos haya.
+  (function () {
+    const track = document.getElementById("carrusel-track");
+    const dotsBox = document.getElementById("carrusel-dots");
+    const slides = Array.from(track.querySelectorAll(".carrusel-slide"));
+
+    slides.forEach(() => dotsBox.appendChild(document.createElement("span")));
+    const dots = Array.from(dotsBox.children);
+
+    function slideActivo() {
+      const centro = track.scrollLeft + track.clientWidth / 2;
+      let mejor = 0, menorDist = Infinity;
+      slides.forEach((s, i) => {
+        const dist = Math.abs(s.offsetLeft + s.offsetWidth / 2 - centro);
+        if (dist < menorDist) { menorDist = dist; mejor = i; }
+      });
+      return mejor;
+    }
+
+    function actualizarDots() {
+      const activo = slideActivo();
+      dots.forEach((d, i) => d.classList.toggle("activo", i === activo));
+    }
+
+    function irA(indice) {
+      const i = Math.max(0, Math.min(slides.length - 1, indice));
+      const s = slides[i];
+      track.scrollTo({ left: s.offsetLeft - (track.clientWidth - s.offsetWidth) / 2, behavior: "smooth" });
+    }
+
+    track.addEventListener("scroll", actualizarDots, { passive: true });
+    // las fotos pueden terminar de cargar después: se recalculan los puntos
+    window.addEventListener("load", actualizarDots);
+    window.addEventListener("resize", actualizarDots);
+    track.querySelectorAll("img").forEach(im => im.addEventListener("load", actualizarDots));
+    document.getElementById("carrusel-prev").addEventListener("click", () => irA(slideActivo() - 1));
+    document.getElementById("carrusel-next").addEventListener("click", () => irA(slideActivo() + 1));
+    actualizarDots();
   })();
 </script>
 
