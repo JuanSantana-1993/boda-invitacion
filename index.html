@@ -400,13 +400,13 @@
     margin-top:4px;
   }
 
-  /* -------- galería en carrusel (tamaño vertical unificado) -------- */
+  /* -------- galería en carrusel (fotos juntas y fluidas) -------- */
   .carrusel{
     position:relative;
   }
   .carrusel-track{
     display:flex;
-    gap:14px;
+    gap: 0px; /* Fotos completamente juntas sin espacios en blanco */
     overflow-x:auto;
     scroll-snap-type:x mandatory;
     scroll-behavior:smooth;
@@ -423,12 +423,8 @@
     width:min(300px, 75vw);
     aspect-ratio:3/4;
     overflow:hidden;
-    border-radius:4px;
     background:var(--blush);
   }
-  /* Todas las fotos van en el mismo marco (3:4) y se ven COMPLETAS.
-     Si la foto es horizontal, los bordes se rellenan con la misma foto
-     desenfocada, para que no queden barras vacías. */
   .carrusel-slide::before{
     content:"";
     position:absolute;
@@ -625,7 +621,7 @@
   </div>
 </section>
 
-<!-- ============ NUESTRA HISTORIA (CARRUSEL VERTICAL UNIFORME) ============ -->
+<!-- ============ NUESTRA HISTORIA (CARRUSEL CON INERCIA Y FOTOS UNIDAS) ============ -->
 <section class="historia reveal-izquierda" id="historia">
   <div class="wrap">
     <h2 class="serif">Nuestra historia</h2>
@@ -815,14 +811,13 @@
 </script>
 
 <script>
-  // Carrusel en rueda continua (infinito fluido)
+  // Carrusel con efecto de inercia fluida y fotos unidas
   (function () {
     const track = document.getElementById("carrusel-track");
     const dotsBox = document.getElementById("carrusel-dots");
     const originalSlides = Array.from(track.querySelectorAll(".carrusel-slide"));
     const totalOriginal = originalSlides.length;
 
-    // fondo desenfocado: usa la misma foto de cada slide (se hace antes de clonar)
     originalSlides.forEach(slide => {
       const im = slide.querySelector("img");
       if (im) slide.style.setProperty("--foto", 'url("' + im.getAttribute("src") + '")');
@@ -861,12 +856,36 @@
       dots.forEach((d, i) => d.classList.toggle("activo", i === dotIndex));
     }
 
+    // Efecto de deslizamiento con inercia de rueda personalizada
+    function moverConInercia(destinoX, duracion = 600) {
+      const inicioX = track.scrollLeft;
+      const distancia = destinoX - inicioX;
+      let tiempoInicio = null;
+
+      function paso(tiempoActual) {
+        if (!tiempoInicio) tiempoInicio = tiempoActual;
+        const tiempoTranscurrido = tiempoActual - tiempoInicio;
+        const progreso = Math.min(tiempoTranscurrido / duracion, 1);
+        
+        // Curva de aceleración/desaceleración suave tipo "frenado de rueda" (easeOutCubic)
+        const easeOut = 1 - Math.pow(1 - progreso, 3);
+        
+        track.scrollLeft = inicioX + (distancia * easeOut);
+
+        if (progreso < 1) {
+          requestAnimationFrame(paso);
+        }
+      }
+      requestAnimationFrame(paso);
+    }
+
     function mover(direccion) {
       const indexActual = slideActivoReal();
       const nuevoIndex = indexActual + direccion;
       const s = allSlides[nuevoIndex];
       if (s) {
-        track.scrollTo({ left: s.offsetLeft - (track.clientWidth - s.offsetWidth) / 2, behavior: "smooth" });
+        const destinoX = s.offsetLeft - (track.clientWidth - s.offsetWidth) / 2;
+        moverConInercia(destinoX, 700); // 700ms de animación fluida con desaceleración natural
       }
     }
 
@@ -876,15 +895,11 @@
       isScrolling = setTimeout(() => {
         const indexActual = slideActivoReal();
         if (indexActual < totalOriginal) {
-          track.style.scrollBehavior = "auto";
           const target = allSlides[indexActual + totalOriginal];
           track.scrollLeft = target.offsetLeft - (track.clientWidth - target.offsetWidth) / 2;
-          track.style.scrollBehavior = "smooth";
         } else if (indexActual >= totalOriginal * 2) {
-          track.style.scrollBehavior = "auto";
           const target = allSlides[indexActual - totalOriginal];
           track.scrollLeft = target.offsetLeft - (track.clientWidth - target.offsetWidth) / 2;
-          track.style.scrollBehavior = "smooth";
         }
       }, 100);
 
