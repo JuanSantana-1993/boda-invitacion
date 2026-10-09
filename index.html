@@ -419,16 +419,32 @@
   .carrusel-slide{
     flex:0 0 auto;
     scroll-snap-align:center;
+    position:relative;
+    width:min(300px, 75vw);
+    aspect-ratio:3/4;
+    overflow:hidden;
+    border-radius:4px;
+    background:var(--blush);
   }
-  /* Forzar todas las fotos al mismo tamaño y orientación vertical */
-  .carrusel-slide img {
-    width: min(300px, 75vw);
-    height: 400px;
-    object-fit: cover;
-    display: block;
-    border-radius: 4px;
+  /* Todas las fotos van en el mismo marco (3:4) y se ven COMPLETAS.
+     Si la foto es horizontal, los bordes se rellenan con la misma foto
+     desenfocada, para que no queden barras vacías. */
+  .carrusel-slide::before{
+    content:"";
+    position:absolute;
+    inset:-24px;
+    background:var(--foto) center/cover no-repeat;
+    filter:blur(18px);
+    opacity:0.85;
   }
-  
+  .carrusel-slide img{
+    position:relative;
+    display:block;
+    width:100%;
+    height:100%;
+    object-fit:contain;
+  }
+
   .carrusel-btn{
     position:absolute;
     top:50%;
@@ -616,13 +632,13 @@
     
     <div class="carrusel">
       <div class="carrusel-track" id="carrusel-track">
-        <div class="carrusel-slide"><img src="fotos/foto1.JPG" alt="Juan Antonio y Anahí" decoding="async"></div>
+        <div class="carrusel-slide"><img src="fotos/foto1.jpg" alt="Juan Antonio y Anahí" decoding="async"></div>
         <div class="carrusel-slide"><img src="fotos/foto2.jpg" alt="Juan Antonio y Anahí" loading="lazy" decoding="async"></div>
         <div class="carrusel-slide"><img src="fotos/foto3.jpg" alt="Juan Antonio y Anahí" decoding="async"></div>
         <div class="carrusel-slide"><img src="fotos/foto4.jpg" alt="Juan Antonio y Anahí" loading="lazy" decoding="async"></div>
-        <div class="carrusel-slide"><img src="fotos/foto5.JPG" alt="Juan Antonio y Anahí" loading="lazy" decoding="async"></div>
+        <div class="carrusel-slide"><img src="fotos/foto5.jpg" alt="Juan Antonio y Anahí" loading="lazy" decoding="async"></div>
         <div class="carrusel-slide"><img src="fotos/foto6.jpg" alt="Juan Antonio y Anahí" loading="lazy" decoding="async"></div>
-        <div class="carrusel-slide"><img src="fotos/foto7.JPG" alt="Juan Antonio y Anahí" decoding="async"></div>
+        <div class="carrusel-slide"><img src="fotos/foto7.jpg" alt="Juan Antonio y Anahí" decoding="async"></div>
       </div>
       <button class="carrusel-btn prev" id="carrusel-prev" aria-label="Foto anterior">&#8249;</button>
       <button class="carrusel-btn next" id="carrusel-next" aria-label="Foto siguiente">&#8250;</button>
@@ -805,6 +821,12 @@
     const dotsBox = document.getElementById("carrusel-dots");
     const originalSlides = Array.from(track.querySelectorAll(".carrusel-slide"));
     const totalOriginal = originalSlides.length;
+
+    // fondo desenfocado: usa la misma foto de cada slide (se hace antes de clonar)
+    originalSlides.forEach(slide => {
+      const im = slide.querySelector("img");
+      if (im) slide.style.setProperty("--foto", 'url("' + im.getAttribute("src") + '")');
+    });
 
     originalSlides.forEach(slide => {
       track.appendChild(slide.cloneNode(true));
