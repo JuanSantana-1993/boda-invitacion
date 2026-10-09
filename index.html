@@ -406,10 +406,10 @@
   }
   .carrusel-track{
     display:flex;
-    gap: 0px; /* Fotos completamente juntas sin espacios en blanco */
+    gap: 0px;
     overflow-x:auto;
     scroll-snap-type:x mandatory;
-    scroll-behavior:smooth;
+    scroll-behavior:auto; /* Cambiado a auto para evitar conflictos de inercia con CSS */
     -webkit-overflow-scrolling:touch;
     scrollbar-width:none;
     align-items:center;
@@ -621,7 +621,7 @@
   </div>
 </section>
 
-<!-- ============ NUESTRA HISTORIA (CARRUSEL CON INERCIA Y FOTOS UNIDAS) ============ -->
+<!-- ============ NUESTRA HISTORIA (CARRUSEL INICIO INFINITO SIN TRABAS) ============ -->
 <section class="historia reveal-izquierda" id="historia">
   <div class="wrap">
     <h2 class="serif">Nuestra historia</h2>
@@ -762,56 +762,7 @@
 </footer>
 
 <script>
-  (function () {
-    const overlay = document.getElementById("intro-overlay");
-    const avion = document.getElementById("avion-wrap");
-    const textoIntro = document.querySelector(".intro-texto");
-    const flechaIntro = document.querySelector(".intro-flecha");
-    let inicioY = null;
-    let abierto = false;
-    let listoParaAbrir = false;
-
-    avion.addEventListener("animationend", (e) => {
-      if (e.animationName === "entrada-vuelo") {
-        avion.classList.remove("entrando");
-        avion.classList.add("flotando");
-        textoIntro.classList.add("visible");
-        flechaIntro.classList.add("visible");
-        listoParaAbrir = true;
-      }
-    });
-
-    function abrirIntro() {
-      if (abierto || !listoParaAbrir) return;
-      abierto = true;
-
-      avion.classList.remove("flotando");
-      avion.classList.add("desplegando");
-      textoIntro.classList.remove("visible");
-      flechaIntro.classList.remove("visible");
-
-      setTimeout(() => {
-        overlay.classList.add("oculto");
-        document.querySelector(".hero").classList.add("revelado");
-      }, 500);
-      document.body.classList.remove("bloqueado");
-      setTimeout(() => { overlay.style.display = "none"; }, 1150);
-    }
-
-    overlay.addEventListener("pointerdown", (e) => { inicioY = e.clientY; });
-    overlay.addEventListener("pointermove", (e) => {
-      if (inicioY === null) return;
-      if (inicioY - e.clientY > 45) abrirIntro();
-    });
-    overlay.addEventListener("pointerup", () => {
-      inicioY = null;
-      abrirIntro();
-    });
-  })();
-</script>
-
-<script>
-  // Carrusel con efecto de inercia fluida y fotos unidas
+  // Carrusel infinito con inercia optimizada y sin bloqueos en múltiples vueltas
   (function () {
     const track = document.getElementById("carrusel-track");
     const dotsBox = document.getElementById("carrusel-dots");
@@ -823,20 +774,25 @@
       if (im) slide.style.setProperty("--foto", 'url("' + im.getAttribute("src") + '")');
     });
 
-    originalSlides.forEach(slide => {
-      track.appendChild(slide.cloneNode(true));
-    });
-    originalSlides.slice().reverse().forEach(slide => {
-      track.insertBefore(slide.cloneNode(true), track.firstChild);
-    });
+    // Clonar múltiples veces para garantizar un búfer amplio de giros continuos
+    for (let i = 0; i < 3; i++) {
+      originalSlides.forEach(slide => {
+        track.appendChild(slide.cloneNode(true));
+      });
+      originalSlides.slice().reverse().forEach(slide => {
+        track.insertBefore(slide.cloneNode(true), track.firstChild);
+      });
+    }
 
     const allSlides = Array.from(track.querySelectorAll(".carrusel-slide"));
 
     originalSlides.forEach(() => dotsBox.appendChild(document.createElement("span")));
     const dots = Array.from(dotsBox.children);
 
+    const bloqueCentral = totalOriginal * 3;
+
     function centrarInicial() {
-      const targetSlide = allSlides[totalOriginal];
+      const targetSlide = allSlides[bloqueCentral];
       track.scrollLeft = targetSlide.offsetLeft - (track.clientWidth - targetSlide.offsetWidth) / 2;
     }
 
@@ -856,8 +812,7 @@
       dots.forEach((d, i) => d.classList.toggle("activo", i === dotIndex));
     }
 
-    // Efecto de deslizamiento con inercia de rueda personalizada
-    function moverConInercia(destinoX, duracion = 600) {
+    function moverConInercia(destinoX, duracion = 500) {
       const inicioX = track.scrollLeft;
       const distancia = destinoX - inicioX;
       let tiempoInicio = null;
@@ -867,16 +822,26 @@
         const tiempoTranscurrido = tiempoActual - tiempoInicio;
         const progreso = Math.min(tiempoTranscurrido / duracion, 1);
         
-        // Curva de aceleración/desaceleración suave tipo "frenado de rueda" (easeOutCubic)
         const easeOut = 1 - Math.pow(1 - progreso, 3);
-        
         track.scrollLeft = inicioX + (distancia * easeOut);
 
         if (progreso < 1) {
           requestAnimationFrame(paso);
+        } else {
+          verificarReubicacion();
         }
       }
       requestAnimationFrame(paso);
+    }
+
+    function verificarReubicacion() {
+      const indexActual = slideActivoReal();
+      const offsetRelativo = indexActual % totalOriginal;
+      // Reubicar de forma imperceptible al bloque central cuando se aleja mucho
+      if (indexActual < totalOriginal * 2 || indexActual > totalOriginal * 5) {
+        const target = allSlides[bloqueCentral + offsetRelativo];
+        track.scrollLeft = target.offsetLeft - (track.clientWidth - target.offsetWidth) / 2;
+      }
     }
 
     function mover(direccion) {
@@ -885,7 +850,7 @@
       const s = allSlides[nuevoIndex];
       if (s) {
         const destinoX = s.offsetLeft - (track.clientWidth - s.offsetWidth) / 2;
-        moverConInercia(destinoX, 700); // 700ms de animación fluida con desaceleración natural
+        moverConInercia(destinoX, 500);
       }
     }
 
@@ -893,15 +858,8 @@
     track.addEventListener("scroll", () => {
       window.clearTimeout(isScrolling);
       isScrolling = setTimeout(() => {
-        const indexActual = slideActivoReal();
-        if (indexActual < totalOriginal) {
-          const target = allSlides[indexActual + totalOriginal];
-          track.scrollLeft = target.offsetLeft - (track.clientWidth - target.offsetWidth) / 2;
-        } else if (indexActual >= totalOriginal * 2) {
-          const target = allSlides[indexActual - totalOriginal];
-          track.scrollLeft = target.offsetLeft - (track.clientWidth - target.offsetWidth) / 2;
-        }
-      }, 100);
+        verificarReubicacion();
+      }, 150);
 
       actualizarDots();
     }, { passive: true });
