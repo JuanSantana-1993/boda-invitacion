@@ -456,6 +456,7 @@
   /* -------- galería en carrusel -------- */
   .carrusel{
     position:relative;
+    margin-top: 32px;
   }
   .carrusel-track{
     display:flex;
@@ -682,7 +683,7 @@
 </section>
 
 <!-- ============ NUESTRA HISTORIA ============ -->
-<!-- EDITA: reemplaza cada bloque con su historia real (cómo se conocieron, el noviazgo, la propuesta, etc.) -->
+<!-- EDITA: reemplaza cada bloque con su historia real y disfruta del carrusel de fotos integrado -->
 <section class="historia reveal-izquierda" id="historia">
   <div class="wrap">
     <h2 class="serif">Nuestra historia</h2>
@@ -710,25 +711,8 @@
         <p>Aquí va cómo fue el momento en que decidieron dar el siguiente paso.</p>
       </div>
     </div>
-  </div>
-</section>
 
-<!-- ============ UBICACIÓN ============ -->
-<section class="ubicacion reveal-derecha" id="ubicacion">
-  <div class="wrap">
-    <h2 class="serif">Ubicación</h2>
-    <p class="nombre-lugar">Jardín Quinta Santa Fe, Atlixco, Puebla</p>
-    <p>Te esperamos para celebrar juntos este día tan especial.</p>
-    <a class="btn" href="https://maps.app.goo.gl/hDU6dDWUqxerV5o89" target="_blank" rel="noopener">
-      Cómo llegar
-    </a>
-  </div>
-</section>
-
-<!-- ============ FOTOS ============ -->
-<section class="fotos reveal-izquierda" id="fotos">
-  <div class="wrap">
-    <h2 class="serif">Nosotros</h2>
+    <!-- Carrusel de fotos integrado en Nuestra historia -->
     <div class="carrusel">
       <div class="carrusel-track" id="carrusel-track">
         <div class="carrusel-slide"><img class="v" src="fotos/foto1.jpg" width="1350" height="1800" alt="Juan Antonio y Anahí" decoding="async"></div>
@@ -746,9 +730,21 @@
   </div>
 </section>
 
+<!-- ============ UBICACIÓN ============ -->
+<section class="ubicacion reveal-derecha" id="ubicacion">
+  <div class="wrap">
+    <h2 class="serif">Ubicación</h2>
+    <p class="nombre-lugar">Jardín Quinta Santa Fe, Atlixco, Puebla</p>
+    <p>Te esperamos para celebrar juntos este día tan especial.</p>
+    <a class="btn" href="https://maps.app.goo.gl/hDU6dDWUqxerV5o89" target="_blank" rel="noopener">
+      Cómo llegar
+    </a>
+  </div>
+</section>
+
 <!-- ============ MESA DE REGALOS / DONATIVOS ============ -->
 <!-- EDITA: link real de mesa de regalos y datos bancarios -->
-<section class="regalos reveal-derecha" id="regalos">
+<section class="regalos reveal-izquierda" id="regalos">
   <div class="wrap">
     <h2 class="serif">Mesa de regalos</h2>
 
@@ -768,7 +764,7 @@
 </section>
 
 <!-- ============ RSVP ============ -->
-<section class="rsvp reveal-izquierda" id="rsvp">
+<section class="rsvp reveal-derecha" id="rsvp">
   <div class="wrap">
     <h2 class="serif">Confirma tu asistencia</h2>
     <p style="margin-bottom:28px;">Te pedimos confirmar antes del [fecha límite].</p>
