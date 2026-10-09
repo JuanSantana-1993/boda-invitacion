@@ -456,7 +456,6 @@
   /* -------- galería en carrusel -------- */
   .carrusel{
     position:relative;
-    margin-top: 32px;
   }
   .carrusel-track{
     display:flex;
@@ -677,42 +676,15 @@
     <p>
       Con la bendición de Dios y nuestras familias, queremos invitarte a celebrar
       con nosotros el día en que unimos nuestras vidas para siempre.
-      <!-- Reemplaza este párrafo con su mensaje real -->
     </p>
   </div>
 </section>
 
-<!-- ============ NUESTRA HISTORIA ============ -->
-<!-- EDITA: reemplaza cada bloque con su historia real y disfruta del carrusel de fotos integrado -->
+<!-- ============ NUESTRA HISTORIA (SOLO FOTOS) ============ -->
 <section class="historia reveal-izquierda" id="historia">
   <div class="wrap">
     <h2 class="serif">Nuestra historia</h2>
-
-    <div class="historia-item">
-      <div class="numero">01</div>
-      <div class="detalle">
-        <strong>Cómo nos conocimos</strong>
-        <p>Aquí va el relato de cómo se conocieron — el lugar, el momento, cómo fue.</p>
-      </div>
-    </div>
-
-    <div class="historia-item">
-      <div class="numero">02</div>
-      <div class="detalle">
-        <strong>El camino juntos</strong>
-        <p>Aquí va lo que han vivido desde entonces — momentos, viajes, lo que los une.</p>
-      </div>
-    </div>
-
-    <div class="historia-item">
-      <div class="numero">03</div>
-      <div class="detalle">
-        <strong>La propuesta</strong>
-        <p>Aquí va cómo fue el momento en que decidieron dar el siguiente paso.</p>
-      </div>
-    </div>
-
-    <!-- Carrusel de fotos integrado en Nuestra historia -->
+    
     <div class="carrusel">
       <div class="carrusel-track" id="carrusel-track">
         <div class="carrusel-slide"><img class="v" src="fotos/foto1.jpg" width="1350" height="1800" alt="Juan Antonio y Anahí" decoding="async"></div>
@@ -743,7 +715,6 @@
 </section>
 
 <!-- ============ MESA DE REGALOS / DONATIVOS ============ -->
-<!-- EDITA: link real de mesa de regalos y datos bancarios -->
 <section class="regalos reveal-izquierda" id="regalos">
   <div class="wrap">
     <h2 class="serif">Mesa de regalos</h2>
@@ -859,8 +830,6 @@
     let abierto = false;
     let listoParaAbrir = false;
 
-    // Cuando termina la animación de entrada, el avión se queda
-    // "estacionado" con el vaivén continuo, y ya se puede interactuar.
     avion.addEventListener("animationend", (e) => {
       if (e.animationName === "entrada-vuelo") {
         avion.classList.remove("entrando");
@@ -880,8 +849,6 @@
       textoIntro.classList.remove("visible");
       flechaIntro.classList.remove("visible");
 
-      // el overlay se desvanece a la mitad del desdoblado, para que se
-      // sienta como que el papel se convierte en la página de abajo
       setTimeout(() => {
         overlay.classList.add("oculto");
         document.querySelector(".hero").classList.add("revelado");
@@ -893,17 +860,16 @@
     overlay.addEventListener("pointerdown", (e) => { inicioY = e.clientY; });
     overlay.addEventListener("pointermove", (e) => {
       if (inicioY === null) return;
-      if (inicioY - e.clientY > 45) abrirIntro(); // deslizó hacia arriba lo suficiente
+      if (inicioY - e.clientY > 45) abrirIntro();
     });
     overlay.addEventListener("pointerup", () => {
       inicioY = null;
-      abrirIntro(); // también sirve un simple toque/clic, por si no arrastran
+      abrirIntro();
     });
   })();
 </script>
 
 <script>
-  // Carrusel de fotos: los puntos se generan solos según cuántas fotos haya.
   (function () {
     const track = document.getElementById("carrusel-track");
     const dotsBox = document.getElementById("carrusel-dots");
@@ -944,8 +910,6 @@
 </script>
 
 <script>
-  // Revela cada sección (alternando izquierda/derecha) la primera vez
-  // que entra en pantalla al hacer scroll.
   (function () {
     const secciones = document.querySelectorAll(".reveal-derecha, .reveal-izquierda");
     const observador = new IntersectionObserver((entradas) => {
@@ -962,8 +926,6 @@
 </script>
 
 <script>
-  // Conteo regresivo — la fecha es fija (23 de enero, 2027), la hora
-  // de las 12pm es tentativa, pero sirve de referencia para el conteo.
   (function () {
     const objetivo = new Date(2027, 0, 23, 12, 0, 0).getTime();
 
