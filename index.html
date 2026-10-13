@@ -499,6 +499,16 @@
     flex-wrap:wrap;
   }
   .rsvp-botones .btn{margin-top:0; width:auto;}
+  .rsvp-pases{
+    font-family:'Fraunces', serif;
+    font-size:1.2rem;
+    margin-bottom:22px;
+    color:var(--texto);
+  }
+  .rsvp-pases strong{
+    color:var(--dorado);
+    font-weight:600;
+  }
   .aviso-cambios{
     margin-top:20px;
     font-size:0.82rem;
@@ -594,7 +604,7 @@
 
   <div class="versiculo">
     <p class="texto-manuscrito">"Alegrémonos y llenémonos de gozo y démosle honor a él, porque el tiempo ha llegado para la boda del Cordero, y su novia se ha preparado"</p>
-    <span class="cita-biblica">Apocalipsis 19:7 NTV</span>
+    <span class="cita-biblica">Apocalipsis 7:9-10, NTV</span>
   </div>
 
   <div class="conteo" id="conteo">
@@ -716,7 +726,13 @@
 
   function renderBotones() {
     const yaRespondio = familia.estado === "confirmado" || familia.estado === "cancelado";
+    // Cuántos lugares tiene esta invitación (el número que está en el panel)
+    const n = parseInt(familia.personas_esperadas, 10);
+    const textoPases = n > 0
+      ? `Invitación para <strong>${n} ${n === 1 ? "persona" : "personas"}</strong>`
+      : "";
     contenedor.innerHTML = `
+      ${textoPases ? `<p class="rsvp-pases">${textoPases}</p>` : ""}
       ${yaRespondio ? `<p style="margin-bottom:18px; opacity:0.75;">Ya nos habías avisado: <strong>${familia.estado === "confirmado" ? "asistirán" : "no podrán asistir"}</strong>. Puedes cambiar tu respuesta si hace falta.</p>` : ""}
       <div class="rsvp-botones">
         <button class="btn btn-relleno" id="btn-rsvp-si">Sí, ahí estaremos</button>
