@@ -407,19 +407,11 @@
   }
   .carrusel-track{
     display:flex;
-    gap: 0px;
-    overflow-x:auto;
-    scroll-snap-type:x mandatory;
-    scroll-behavior: smooth; /* Habilita el deslizamiento suave nativo */
-    -webkit-overflow-scrolling:touch;
-    scrollbar-width:none;
-    align-items:center;
-    padding:4px 0 8px;
+    gap:0;                       /* fotos pegadas, sin espacio entre ellas */
+    will-change:transform;
   }
-  .carrusel-track::-webkit-scrollbar{display:none;}
   .carrusel-slide{
     flex:0 0 auto;
-    scroll-snap-align:center;
     position:relative;
     width:min(300px, 75vw);
     aspect-ratio:3/4;
@@ -435,6 +427,8 @@
     opacity:0.85;
   }
   .carrusel-slide img{
+    pointer-events:none;
+    -webkit-user-drag:none;
     position:relative;
     display:block;
     width:100%;
@@ -628,6 +622,7 @@
     <h2 class="serif">Nuestra historia</h2>
     
     <div class="carrusel">
+      <div class="carrusel-viewport" id="carrusel-viewport" tabindex="0" role="region" aria-label="Galería de fotos">
       <div class="carrusel-track" id="carrusel-track">
         <div class="carrusel-slide"><img src="fotos/nosotros-1.jpg" alt="Juan Antonio y Anahí" decoding="async"></div>
         <div class="carrusel-slide"><img src="fotos/nosotros-2.jpg" alt="Juan Antonio y Anahí" loading="lazy" decoding="async"></div>
@@ -636,6 +631,7 @@
         <div class="carrusel-slide"><img src="fotos/nosotros-5.jpg" alt="Juan Antonio y Anahí" loading="lazy" decoding="async"></div>
         <div class="carrusel-slide"><img src="fotos/nosotros-6.jpg" alt="Juan Antonio y Anahí" loading="lazy" decoding="async"></div>
         <div class="carrusel-slide"><img src="fotos/nosotros-7.jpg" alt="Juan Antonio y Anahí" decoding="async"></div>
+      </div>
       </div>
       <button class="carrusel-btn prev" id="carrusel-prev" aria-label="Foto anterior">&#8249;</button>
       <button class="carrusel-btn next" id="carrusel-next" aria-label="Foto siguiente">&#8250;</button>
@@ -805,98 +801,154 @@
 </script>
 
 <script>
-  // Carrusel infinito con desplazamiento suave y fluido
+  // Carrusel infinito con inercia: arrastras y al soltar sigue girando,
+  // frena solo (más fuerte el empujón, más lejos llega) y se detiene
+  // con una foto centrada. Funciona con dedo, mouse, flechas y teclado.
   (function () {
+    const viewport = document.getElementById("carrusel-viewport");
     const track = document.getElementById("carrusel-track");
     const dotsBox = document.getElementById("carrusel-dots");
-    const originalSlides = Array.from(track.querySelectorAll(".carrusel-slide"));
-    const totalOriginal = originalSlides.length;
+    const originales = Array.from(track.querySelectorAll(".carrusel-slide"));
+    const N = originales.length;
 
-    originalSlides.forEach(slide => {
+    // Fondo desenfocado de cada foto (se hace antes de clonar)
+    originales.forEach(slide => {
       const im = slide.querySelector("img");
       if (im) slide.style.setProperty("--foto", 'url("' + im.getAttribute("src") + '")');
     });
 
-    for (let i = 0; i < 3; i++) {
-      originalSlides.forEach(slide => {
-        track.appendChild(slide.cloneNode(true));
-      });
-      originalSlides.slice().reverse().forEach(slide => {
-        track.insertBefore(slide.cloneNode(true), track.firstChild);
-      });
-    }
+    // Tres juegos de fotos (antes / originales / después) para que gire sin fin
+    const antes = originales.map(s => { const c = s.cloneNode(true); c.setAttribute("aria-hidden", "true"); return c; });
+    const despues = originales.map(s => { const c = s.cloneNode(true); c.setAttribute("aria-hidden", "true"); return c; });
+    track.prepend(...antes);
+    track.append(...despues);
 
-    const allSlides = Array.from(track.querySelectorAll(".carrusel-slide"));
+    // Las fotos se cargan en cuanto el carrusel está cerca de aparecer,
+    // para que no haya huecos en blanco al girar rápido
+    const todasImg = Array.from(track.querySelectorAll("img"));
+    new IntersectionObserver((entradas, obs) => {
+      if (entradas[0].isIntersecting) {
+        todasImg.forEach(im => { im.loading = "eager"; });
+        obs.disconnect();
+      }
+    }, { rootMargin: "900px" }).observe(viewport);
 
-    originalSlides.forEach(() => dotsBox.appendChild(document.createElement("span")));
+    for (let i = 0; i < N; i++) dotsBox.appendChild(document.createElement("span"));
     const dots = Array.from(dotsBox.children);
 
-    const bloqueCentral = totalOriginal * 3;
+    // ---- Ajustes de sensación (puedes jugar con estos números) ----
+    const EMPUJE_MS = 380;      // cuánto "rueda" por cada px/ms de velocidad al soltar
+    const VEL_MAX = 2.0;        // tope de velocidad: evita que salga disparado
+    const UMBRAL_EMPUJE = 0.25; // por debajo de esto cuenta como arrastre lento (solo se acomoda)
 
-    function centrarInicial() {
-      const targetSlide = allSlides[bloqueCentral];
-      track.scrollLeft = targetSlide.offsetLeft - (track.clientWidth - targetSlide.offsetWidth) / 2;
+    let w = 0, vw = 0, P = 0;   // ancho de foto, ancho visible, ancho de un juego completo
+    let pos = 0;                // posición (sin límite); lo visible se calcula con módulo
+    let anim = null, raf = 0, puntoActivo = -1;
+
+    const mod = (a, n) => ((a % n) + n) % n;
+    const posDeFoto = k => k * w + w / 2 - vw / 2;               // posición que deja la foto k al centro
+    const fotoCercana = p => Math.round((p + vw / 2 - w / 2) / w);
+
+    function medir() {
+      w = originales[0].getBoundingClientRect().width;
+      vw = viewport.clientWidth;
+      P = w * N;
     }
 
-    function slideActivoReal() {
-      const centro = track.scrollLeft + track.clientWidth / 2;
-      let mejorIndex = 0, menorDist = Infinity;
-      allSlides.forEach((s, i) => {
-        const dist = Math.abs(s.offsetLeft + s.offsetWidth / 2 - centro);
-        if (dist < menorDist) { menorDist = dist; mejorIndex = i; }
-      });
-      return mejorIndex;
-    }
-
-    function actualizarDots() {
-      const indexActual = slideActivoReal();
-      const dotIndex = indexActual % totalOriginal;
-      dots.forEach((d, i) => d.classList.toggle("activo", i === dotIndex));
-    }
-
-    function verificarReubicacion() {
-      const indexActual = slideActivoReal();
-      const offsetRelativo = indexActual % totalOriginal;
-      if (indexActual < totalOriginal * 2 || indexActual > totalOriginal * 5) {
-        track.style.scrollBehavior = "auto";
-        const target = allSlides[bloqueCentral + offsetRelativo];
-        track.scrollLeft = target.offsetLeft - (track.clientWidth - target.offsetWidth) / 2;
-        track.style.scrollBehavior = "smooth";
+    function pintar() {
+      track.style.transform = "translate3d(" + (-(P + mod(pos, P))) + "px,0,0)";
+      const idx = Math.floor(mod(pos + vw / 2, P) / w) % N;
+      if (idx !== puntoActivo) {
+        puntoActivo = idx;
+        dots.forEach((d, i) => d.classList.toggle("activo", i === idx));
       }
     }
 
-    function mover(direccion) {
-      const indexActual = slideActivoReal();
-      const nuevoIndex = indexActual + direccion;
-      const s = allSlides[nuevoIndex];
-      if (s) {
-        track.scrollTo({ left: s.offsetLeft - (track.clientWidth - s.offsetWidth) / 2, behavior: "smooth" });
-      }
+    function tick(ahora) {
+      raf = 0;
+      if (!anim) return;
+      const t = Math.min(1, (ahora - anim.t0) / anim.dur);
+      const suave = 1 - Math.pow(1 - t, 4);          // frena poco a poco, como una rueda
+      pos = anim.desde + (anim.hasta - anim.desde) * suave;
+      pintar();
+      if (t < 1) raf = requestAnimationFrame(tick); else anim = null;
     }
 
-    let isScrolling;
-    track.addEventListener("scroll", () => {
-      window.clearTimeout(isScrolling);
-      isScrolling = setTimeout(() => {
-        verificarReubicacion();
-      }, 150);
+    function irA(hasta, dur) {
+      anim = { desde: pos, hasta, dur, t0: performance.now() };
+      if (!raf) raf = requestAnimationFrame(tick);
+    }
 
-      actualizarDots();
-    }, { passive: true });
+    // ---- Arrastre con dedo o mouse ----
+    let arrastrando = false, x0 = 0, pos0 = 0, muestras = [];
 
-    window.addEventListener("load", () => {
-      centrarInicial();
-      actualizarDots();
+    viewport.addEventListener("pointerdown", e => {
+      if (e.pointerType === "mouse" && e.button !== 0) return;
+      arrastrando = true;
+      anim = null;                                    // si estaba girando, lo detienes con el dedo
+      x0 = e.clientX; pos0 = pos;
+      muestras = [{ x: e.clientX, t: performance.now() }];
+      viewport.setPointerCapture(e.pointerId);
+      viewport.classList.add("arrastrando");
     });
-    window.addEventListener("resize", () => {
-      centrarInicial();
-      actualizarDots();
+
+    viewport.addEventListener("pointermove", e => {
+      if (!arrastrando) return;
+      pos = pos0 - (e.clientX - x0);
+      const ahora = performance.now();
+      muestras.push({ x: e.clientX, t: ahora });
+      while (muestras.length > 1 && ahora - muestras[0].t > 100) muestras.shift();
+      pintar();
     });
 
-    track.querySelectorAll("img").forEach(im => im.addEventListener("load", actualizarDots));
+    function soltar() {
+      if (!arrastrando) return;
+      arrastrando = false;
+      viewport.classList.remove("arrastrando");
 
+      // velocidad al soltar (px por ms); si el dedo estaba quieto, cuenta como 0
+      let v = 0;
+      const ult = muestras[muestras.length - 1];
+      if (muestras.length > 1 && performance.now() - ult.t < 80) {
+        const a = muestras[0];
+        const dt = ult.t - a.t;
+        if (dt > 0) v = -(ult.x - a.x) / dt;
+      }
+      v = Math.max(-VEL_MAX, Math.min(VEL_MAX, v));
+
+      // a dónde llegaría con ese empujón, y se detiene en la foto más cercana a ese punto
+      const hasta = posDeFoto(fotoCercana(pos + v * EMPUJE_MS));
+      const dist = Math.abs(hasta - pos);
+      const dur = Math.abs(v) < UMBRAL_EMPUJE
+        ? Math.min(700, 300 + dist * 1.2)
+        : Math.max(500, Math.min(2200, 4 * dist / Math.abs(v)));   // arranca a la misma velocidad con que soltaste
+      irA(hasta, dur);
+    }
+    viewport.addEventListener("pointerup", soltar);
+    viewport.addEventListener("pointercancel", soltar);
+
+    // ---- Flechas y teclado ----
+    function mover(dir) {
+      const base = anim ? fotoCercana(anim.hasta) : fotoCercana(pos);
+      irA(posDeFoto(base + dir), 650);
+    }
     document.getElementById("carrusel-prev").addEventListener("click", () => mover(-1));
     document.getElementById("carrusel-next").addEventListener("click", () => mover(1));
+    viewport.addEventListener("keydown", e => {
+      if (e.key === "ArrowLeft") { e.preventDefault(); mover(-1); }
+      if (e.key === "ArrowRight") { e.preventDefault(); mover(1); }
+    });
+
+    function iniciar() {
+      const k = fotoCercana(pos);
+      medir();
+      pos = posDeFoto(isFinite(k) && w ? k : 0);
+      anim = null;
+      pintar();
+    }
+    window.addEventListener("resize", iniciar);
+    window.addEventListener("load", iniciar);
+    medir(); pos = posDeFoto(0); pintar();
   })();
 </script>
 

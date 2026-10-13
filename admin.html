@@ -159,56 +159,51 @@
   #csv-input{display:none;}
   #importar-status{font-size:0.85rem; color:var(--gris-calido);}
 
-  /* -------- planeación / checklist -------- */
-  .planeacion-grid{
+  /* -------- planeación: lo que tenemos, costos y abonos -------- */
+  .planeacion-titulo{font-size:1.1rem; margin:8px 0 6px;}
+  .planeacion-ayuda{font-size:0.85rem; color:var(--gris-calido); margin-bottom:16px;}
+  .resumen.plan .numero{font-size:1.55rem;}
+  .agregar-gasto{
     display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:32px;
-  }
-  @media (max-width:640px){
-    .planeacion-grid{grid-template-columns:1fr;}
-  }
-  .planeacion-col h3{font-size:1.1rem; margin-bottom:14px;}
-  .agregar-item{
-    display:flex;
+    grid-template-columns:2fr 1fr 1fr auto;
     gap:8px;
-    margin-bottom:16px;
+    margin-bottom:22px;
   }
-  .agregar-item input{
-    flex:1;
+  .agregar-gasto input{
     padding:10px 12px;
     border:1px solid var(--arena);
     background:#fff;
     font-family:inherit;
     font-size:0.9rem;
+    min-width:0;
   }
-  .lista-checklist{list-style:none;}
-  .lista-checklist li{
+  .agregar-gasto .btn{width:auto;}
+  @media (max-width:720px){
+    .agregar-gasto{grid-template-columns:1fr 1fr;}
+    .agregar-gasto input:first-child,
+    .agregar-gasto .btn{grid-column:1 / -1;}
+  }
+  .tabla-scroll{overflow-x:auto;}
+  .tabla-gastos th.monto, .tabla-gastos td.monto{text-align:right; white-space:nowrap;}
+  .tabla-gastos td.acciones{white-space:nowrap;}
+  .gasto-nombre{font-weight:500;}
+  .gasto-sub{display:block; font-size:0.75rem; color:var(--gris-calido); margin-top:2px;}
+  .estado-parcial{background:rgba(193,129,91,0.18); color:var(--terracota);}
+  .historial-pagos{list-style:none; font-size:0.85rem;}
+  .historial-pagos li{
     display:flex;
+    justify-content:space-between;
     align-items:center;
     gap:10px;
-    padding:10px 0;
+    padding:7px 0;
     border-bottom:1px solid var(--arena);
   }
-  .lista-checklist li input[type="checkbox"]{width:auto; flex-shrink:0;}
-  .lista-checklist li span.nombre-item{
-    flex:1;
-    font-size:0.92rem;
+  .historial-pagos .quitar{
+    background:none; border:none; cursor:pointer;
+    color:var(--rojo-cancelado); font-size:0.78rem;
+    text-decoration:underline; font-family:inherit;
   }
-  .lista-checklist li.hecho span.nombre-item{
-    text-decoration:line-through;
-    opacity:0.5;
-  }
-  .lista-checklist li button{
-    background:none;
-    border:none;
-    color:var(--rojo-cancelado);
-    cursor:pointer;
-    font-size:0.78rem;
-    text-decoration:underline;
-    font-family:inherit;
-  }
-  .lista-vacia{color:var(--gris-calido); font-size:0.88rem; padding:12px 0;}
+  .historial-vacio{color:var(--gris-calido); font-size:0.85rem;}
 
   /* -------- resumen -------- */
   .resumen{
@@ -474,26 +469,49 @@
 
     <!-- ============ TAB: PLANEACIÓN ============ -->
     <div id="tab-planeacion" style="display:none;">
-      <div class="planeacion-grid">
-        <div class="planeacion-col">
-          <h3 class="serif">Lo que ya tenemos</h3>
-          <div class="agregar-item">
-            <input type="text" id="nuevo-tenemos" placeholder="Ej. Salón reservado">
-            <button class="btn" id="btn-agregar-tenemos" style="width:auto;">Agregar</button>
-          </div>
-          <ul class="lista-checklist" id="lista-tenemos"></ul>
+
+      <div class="resumen plan">
+        <div class="tarjeta-resumen">
+          <div class="numero" id="plan-total">$0</div>
+          <div class="etiqueta">Costo total</div>
         </div>
-        <div class="planeacion-col">
-          <h3 class="serif">Lo que queremos conseguir</h3>
-          <div class="agregar-item">
-            <input type="text" id="nuevo-queremos" placeholder="Ej. Cotizar banda en vivo">
-            <button class="btn" id="btn-agregar-queremos" style="width:auto;">Agregar</button>
-          </div>
-          <ul class="lista-checklist" id="lista-queremos"></ul>
+        <div class="tarjeta-resumen">
+          <div class="numero" id="plan-pagado">$0</div>
+          <div class="etiqueta">Ya pagado</div>
+        </div>
+        <div class="tarjeta-resumen">
+          <div class="numero" id="plan-pendiente">$0</div>
+          <div class="etiqueta">Por pagar</div>
         </div>
       </div>
-    </div>
 
+      <h3 class="serif planeacion-titulo">Lo que ya tenemos</h3>
+      <p class="planeacion-ayuda">Agrega cada cosa que ya contrataron o compraron, cuánto cuesta y lo que ya han pagado. Si dan otro abono después, usa "Abonar" en esa fila.</p>
+
+      <div class="agregar-gasto">
+        <input type="text" id="gasto-nombre" placeholder="Concepto (Ej. Jardín Quinta Santa Fe)">
+        <input type="number" id="gasto-costo" placeholder="Costo total" min="0" step="any">
+        <input type="number" id="gasto-pagado" placeholder="Ya pagado (opcional)" min="0" step="any">
+        <button class="btn" id="btn-agregar-gasto">Agregar</button>
+      </div>
+
+      <div class="tabla-scroll">
+        <table class="tabla-gastos">
+          <thead>
+            <tr>
+              <th>Concepto</th>
+              <th class="monto">Costo</th>
+              <th class="monto">Pagado</th>
+              <th class="monto">Por pagar</th>
+              <th>Estado</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="tabla-gastos"></tbody>
+        </table>
+      </div>
+      <p id="gastos-vacio" style="display:none; text-align:center; padding:40px 20px; color:var(--gris-calido);">Todavía no hay nada agregado.</p>
+    </div>
   </div>
 </div>
 
@@ -518,12 +536,8 @@
     </div>
 
     <div class="campo" id="campo-estado">
-      <label for="edit-estado">Estado</label>
-      <select id="edit-estado">
-        <option value="pendiente">Pendiente</option>
-        <option value="confirmado">Confirmado</option>
-        <option value="cancelado">Cancelado</option>
-      </select>
+      <label for="edit-estado" id="label-estado">Estado</label>
+      <select id="edit-estado"></select>
     </div>
 
     <div class="campo" id="campo-confirmados">
@@ -531,14 +545,49 @@
       <input type="number" id="edit-confirmados" min="0">
     </div>
 
-    <div class="campo campo-checkbox" id="campo-espera">
-      <input type="checkbox" id="edit-espera">
-      <label for="edit-espera">Va a la lista de espera (en vez de la lista principal)</label>
-    </div>
-
     <div class="modal-botones">
       <button class="btn btn-cancelar" id="modal-cancelar">Cancelar</button>
       <button class="btn btn-principal" id="modal-guardar" style="background:var(--terracota); color:#fff; border:none;">Guardar cambios</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL DE GASTOS ============ -->
+<div class="modal-overlay" id="modal-gasto">
+  <div class="modal-box">
+    <h3 class="serif" id="gasto-modal-titulo">Editar concepto</h3>
+
+    <div id="gasto-modo-editar">
+      <div class="campo">
+        <label for="g-nombre">Concepto</label>
+        <input type="text" id="g-nombre">
+      </div>
+      <div class="campo">
+        <label for="g-costo">Costo total</label>
+        <input type="number" id="g-costo" min="0" step="any">
+      </div>
+    </div>
+
+    <div id="gasto-modo-abonar">
+      <p id="g-resumen" style="font-size:0.88rem; color:var(--gris-calido); margin-bottom:14px;"></p>
+      <div class="campo">
+        <label for="g-monto">Monto del abono</label>
+        <input type="number" id="g-monto" min="0" step="any">
+      </div>
+      <div class="campo">
+        <label for="g-nota">Nota (opcional)</label>
+        <input type="text" id="g-nota" placeholder="Ej. anticipo, transferencia">
+      </div>
+    </div>
+
+    <div class="campo">
+      <label>Abonos registrados</label>
+      <ul class="historial-pagos" id="g-historial"></ul>
+    </div>
+
+    <div class="modal-botones">
+      <button class="btn btn-cancelar" id="gasto-cancelar">Cancelar</button>
+      <button class="btn btn-principal" id="gasto-guardar" style="background:var(--terracota); color:#fff; border:none;">Guardar</button>
     </div>
   </div>
 </div>
@@ -678,7 +727,6 @@
           ` : `
             <button class="editar-btn" data-id="${f.id}">Editar</button>
             ${!f.lista_espera ? `<button class="editar-btn copiar-btn" data-id="${f.id}">Copiar link</button>` : ""}
-            ${f.lista_espera ? `<button class="editar-btn mover-btn" data-id="${f.id}">Mover a lista principal</button>` : ""}
             <button class="editar-btn eliminar-btn" data-id="${f.id}">Eliminar</button>
           `}
         </td>
@@ -686,11 +734,8 @@
       tbody.appendChild(tr);
     });
 
-    document.querySelectorAll(".editar-btn:not(.mover-btn):not(.copiar-btn):not(.eliminar-btn)").forEach(btn => {
+    document.querySelectorAll(".editar-btn:not(.copiar-btn):not(.eliminar-btn)").forEach(btn => {
       btn.addEventListener("click", () => abrirModalEditar(btn.dataset.id));
-    });
-    document.querySelectorAll(".mover-btn").forEach(btn => {
-      btn.addEventListener("click", () => moverALisitaPrincipal(btn.dataset.id));
     });
     document.querySelectorAll(".copiar-btn").forEach(btn => {
       btn.addEventListener("click", () => copiarLink(btn));
@@ -721,16 +766,43 @@
     });
   }
 
-  async function moverALisitaPrincipal(id) {
-    const familia = familias.find(f => f.id === id);
-    if (!familia) return;
-    const ok = confirm(`¿Mover a ${familia.contacto_nombre || id} de la lista de espera a la lista principal? Se le podrá mandar su link para confirmar.`);
-    if (!ok) return;
-    await updateDoc(doc(db, "familias", id), { lista_espera: false });
-  }
-
   let idEnEdicion = null;
   let modoNuevo = false;
+
+  // "En lista de espera" es una opción más del Estado: al elegirla la familia
+  // sale de la lista principal; al elegir otra, regresa a la lista principal.
+  const OPCIONES_EDITAR = [
+    ["pendiente", "Pendiente"],
+    ["confirmado", "Confirmado"],
+    ["cancelado", "Cancelado"],
+    ["espera", "En lista de espera"],
+  ];
+  const OPCIONES_NUEVO = [
+    ["pendiente", "Lista principal"],
+    ["espera", "Lista de espera"],
+  ];
+
+  function llenarEstados(opciones, valor) {
+    const sel = document.getElementById("edit-estado");
+    sel.innerHTML = opciones.map(([v, t]) => `<option value="${v}">${t}</option>`).join("");
+    sel.value = valor;
+    actualizarCampoConfirmados();
+  }
+
+  // "Personas confirmadas" solo tiene sentido cuando el estado es Confirmado
+  function actualizarCampoConfirmados() {
+    const conf = document.getElementById("edit-estado").value === "confirmado";
+    document.getElementById("campo-confirmados").style.display = (conf && !modoNuevo) ? "block" : "none";
+  }
+
+  document.getElementById("edit-estado").addEventListener("change", () => {
+    actualizarCampoConfirmados();
+    const inp = document.getElementById("edit-confirmados");
+    // al pasar a Confirmado, propone todos los lugares asignados
+    if (document.getElementById("edit-estado").value === "confirmado" && !(parseInt(inp.value) > 0)) {
+      inp.value = document.getElementById("edit-esperados").value || 1;
+    }
+  });
 
   function abrirModalEditar(id) {
     const f = familias.find(x => x.id === id);
@@ -740,16 +812,13 @@
 
     document.getElementById("modal-titulo").textContent = "Editar familia";
     document.getElementById("modal-guardar").textContent = "Guardar cambios";
-    document.getElementById("campo-estado").style.display = "block";
-    document.getElementById("campo-confirmados").style.display = "block";
-    document.getElementById("campo-espera").style.display = "none";
+    document.getElementById("label-estado").textContent = "Estado";
 
     document.getElementById("edit-nombre").value = f.contacto_nombre || "";
     document.getElementById("edit-telefono").value = f.contacto_telefono || "";
     document.getElementById("edit-esperados").value = f.personas_esperadas ?? 1;
-    document.getElementById("edit-estado").value = f.estado || "pendiente";
     document.getElementById("edit-confirmados").value = f.personas_confirmadas ?? 0;
-    document.getElementById("edit-espera").checked = !!f.lista_espera;
+    llenarEstados(OPCIONES_EDITAR, f.lista_espera ? "espera" : (f.estado || "pendiente"));
 
     document.getElementById("modal-overlay").classList.add("activo");
   }
@@ -760,18 +829,13 @@
 
     document.getElementById("modal-titulo").textContent = "Agregar invitado nuevo";
     document.getElementById("modal-guardar").textContent = "Agregar invitado";
-    // estado/confirmados no aplican para alguien que aún no ha respondido,
-    // pero sí hay que elegir si va a la lista principal o a la de espera
-    document.getElementById("campo-estado").style.display = "none";
-    document.getElementById("campo-confirmados").style.display = "none";
-    document.getElementById("campo-espera").style.display = "flex";
+    document.getElementById("label-estado").textContent = "Lista";
 
     document.getElementById("edit-nombre").value = "";
     document.getElementById("edit-telefono").value = "";
     document.getElementById("edit-esperados").value = 1;
-    document.getElementById("edit-estado").value = "pendiente";
     document.getElementById("edit-confirmados").value = 0;
-    document.getElementById("edit-espera").checked = false;
+    llenarEstados(OPCIONES_NUEVO, "pendiente");
 
     document.getElementById("modal-overlay").classList.add("activo");
   }
@@ -794,6 +858,9 @@
     if (!nombre) { alert("El nombre del contacto no puede quedar vacío."); return; }
 
     const esperados = Math.max(parseInt(document.getElementById("edit-esperados").value) || 1, 1);
+    const telefono = document.getElementById("edit-telefono").value.trim();
+    const eleccion = document.getElementById("edit-estado").value;
+    const enEspera = eleccion === "espera";
 
     if (modoNuevo) {
       // Alta manual: mismo generador de id que el CSV, para que no se
@@ -803,25 +870,29 @@
 
       await setDoc(doc(db, "familias", idNuevo), {
         contacto_nombre: nombre,
-        contacto_telefono: document.getElementById("edit-telefono").value.trim(),
+        contacto_telefono: telefono,
         personas_esperadas: esperados,
         personas_confirmadas: 0,
         estado: "pendiente",
         nombres: [],
         alergias: "",
         mensaje: "",
-        lista_espera: document.getElementById("edit-espera").checked,
+        lista_espera: enEspera,
       });
     } else {
       if (!idEnEdicion) return;
-      let confirmados = Math.max(parseInt(document.getElementById("edit-confirmados").value) || 0, 0);
-      if (confirmados > esperados) confirmados = esperados;
+      let confirmados = 0;
+      if (eleccion === "confirmado") {
+        confirmados = Math.max(parseInt(document.getElementById("edit-confirmados").value) || 0, 0);
+        if (confirmados > esperados) confirmados = esperados;
+      }
 
       await updateDoc(doc(db, "familias", idEnEdicion), {
         contacto_nombre: nombre,
-        contacto_telefono: document.getElementById("edit-telefono").value.trim(),
+        contacto_telefono: telefono,
         personas_esperadas: esperados,
-        estado: document.getElementById("edit-estado").value,
+        estado: enEspera ? "pendiente" : eleccion,
+        lista_espera: enEspera,
         personas_confirmadas: confirmados,
       });
     }
@@ -829,9 +900,15 @@
     cerrarModal();
   });
 
-  // ---------- planeación de la boda (checklist) ----------
+  // ---------- planeación: lo que tenemos, costos y abonos ----------
   let itemsPlaneacion = [];
   let yaEscuchandoPlaneacion = false;
+
+  const mxn = n => new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN", maximumFractionDigits: 2 }).format(n || 0);
+  const esc = t => String(t ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const totalPagado = it => (it.pagos || []).reduce((s, p) => s + (Number(p.monto) || 0), 0);
+  const hoy = () => { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
+  const fechaCorta = iso => { const [y, m, d] = String(iso || "").split("-"); return d ? `${d}/${m}/${y}` : ""; };
 
   function escucharPlaneacion() {
     if (yaEscuchandoPlaneacion) return;
@@ -839,55 +916,153 @@
     onSnapshot(collection(db, "planeacion"), (snapshot) => {
       itemsPlaneacion = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
       renderPlaneacion();
+      if (gastoEnModal) renderHistorialModal();
     });
   }
 
   function renderPlaneacion() {
-    renderListaPlaneacion("tenemos", "lista-tenemos");
-    renderListaPlaneacion("queremos", "lista-queremos");
+    const items = [...itemsPlaneacion].sort((a, b) => (a.creado || 0) - (b.creado || 0));
+
+    const total = items.reduce((s, i) => s + (Number(i.costo) || 0), 0);
+    const pagado = items.reduce((s, i) => s + totalPagado(i), 0);
+    const porPagar = items.reduce((s, i) => s + Math.max((Number(i.costo) || 0) - totalPagado(i), 0), 0);
+    document.getElementById("plan-total").textContent = mxn(total);
+    document.getElementById("plan-pagado").textContent = mxn(pagado);
+    document.getElementById("plan-pendiente").textContent = mxn(porPagar);
+
+    document.getElementById("gastos-vacio").style.display = items.length ? "none" : "block";
+    const tbody = document.getElementById("tabla-gastos");
+    tbody.innerHTML = items.map(i => {
+      const costo = Number(i.costo) || 0;
+      const pag = totalPagado(i);
+      const falta = Math.max(costo - pag, 0);
+      const n = (i.pagos || []).length;
+      const liquidado = costo > 0 && pag >= costo;
+      let pill = ["estado-pendiente", "Sin pagos"];
+      if (liquidado) pill = ["estado-confirmado", "Liquidado"];
+      else if (pag > 0) pill = ["estado-parcial", "Con abonos"];
+      else if (costo === 0) pill = ["estado-pendiente", "Sin costo"];
+
+      return `
+        <tr>
+          <td><span class="gasto-nombre">${esc(i.nombre)}</span>
+              <span class="gasto-sub">${n ? n + (n > 1 ? " abonos" : " abono") : "sin abonos"}</span></td>
+          <td class="monto">${mxn(costo)}</td>
+          <td class="monto">${mxn(pag)}</td>
+          <td class="monto">${mxn(falta)}</td>
+          <td><span class="estado-pill ${pill[0]}">${pill[1]}</span></td>
+          <td class="acciones">
+            ${liquidado ? "" : `<button class="editar-btn gasto-abonar" data-id="${i.id}">Abonar</button>`}
+            <button class="editar-btn gasto-editar" data-id="${i.id}">Editar</button>
+            <button class="editar-btn eliminar-btn gasto-eliminar" data-id="${i.id}">Eliminar</button>
+          </td>
+        </tr>`;
+    }).join("");
+
+    tbody.querySelectorAll(".gasto-abonar").forEach(b => b.addEventListener("click", () => abrirModalGasto(b.dataset.id, "abonar")));
+    tbody.querySelectorAll(".gasto-editar").forEach(b => b.addEventListener("click", () => abrirModalGasto(b.dataset.id, "editar")));
+    tbody.querySelectorAll(".gasto-eliminar").forEach(b => b.addEventListener("click", () => eliminarGasto(b.dataset.id)));
   }
 
-  function renderListaPlaneacion(tipo, idLista) {
-    const ul = document.getElementById(idLista);
-    const items = itemsPlaneacion.filter(i => i.tipo === tipo);
+  async function agregarGasto() {
+    const nombre = document.getElementById("gasto-nombre").value.trim();
+    const costo = parseFloat(document.getElementById("gasto-costo").value) || 0;
+    const pagado = parseFloat(document.getElementById("gasto-pagado").value) || 0;
+    if (!nombre) { alert("Escribe el concepto (por ejemplo: Salón, Banquete, Fotógrafo)."); return; }
 
-    if (items.length === 0) {
-      ul.innerHTML = `<li class="lista-vacia">Nada agregado todavía.</li>`;
-      return;
+    const pagos = pagado > 0 ? [{ monto: pagado, fecha: hoy(), nota: "Pago inicial" }] : [];
+    await addDoc(collection(db, "planeacion"), { nombre, costo, pagos, creado: Date.now() });
+
+    ["gasto-nombre", "gasto-costo", "gasto-pagado"].forEach(id => { document.getElementById(id).value = ""; });
+    document.getElementById("gasto-nombre").focus();
+  }
+  document.getElementById("btn-agregar-gasto").addEventListener("click", agregarGasto);
+  ["gasto-nombre", "gasto-costo", "gasto-pagado"].forEach(id =>
+    document.getElementById(id).addEventListener("keydown", e => { if (e.key === "Enter") agregarGasto(); }));
+
+  async function eliminarGasto(id) {
+    const it = itemsPlaneacion.find(x => x.id === id);
+    if (!it) return;
+    if (!confirm(`¿Eliminar "${it.nombre}" y todos sus abonos? No se puede deshacer.`)) return;
+    await deleteDoc(doc(db, "planeacion", id));
+  }
+
+  // ---- modal: editar concepto/costo o registrar un abono ----
+  let gastoEnModal = null;
+  let gastoModo = "editar";
+
+  function abrirModalGasto(id, modo) {
+    const it = itemsPlaneacion.find(x => x.id === id);
+    if (!it) return;
+    gastoEnModal = id;
+    gastoModo = modo;
+
+    document.getElementById("gasto-modal-titulo").textContent = modo === "abonar" ? "Registrar abono" : "Editar concepto";
+    document.getElementById("gasto-modo-editar").style.display = modo === "editar" ? "block" : "none";
+    document.getElementById("gasto-modo-abonar").style.display = modo === "abonar" ? "block" : "none";
+    document.getElementById("gasto-guardar").textContent = modo === "abonar" ? "Registrar abono" : "Guardar cambios";
+
+    document.getElementById("g-nombre").value = it.nombre || "";
+    document.getElementById("g-costo").value = it.costo ?? "";
+    document.getElementById("g-monto").value = "";
+    document.getElementById("g-nota").value = "";
+    if (modo === "abonar") {
+      const falta = Math.max((Number(it.costo) || 0) - totalPagado(it), 0);
+      document.getElementById("g-resumen").textContent = `${it.nombre} · Costo ${mxn(it.costo)} · Pagado ${mxn(totalPagado(it))} · Falta ${mxn(falta)}`;
     }
-
-    ul.innerHTML = items.map(i => `
-      <li class="${i.hecho ? "hecho" : ""}">
-        <input type="checkbox" data-id="${i.id}" ${i.hecho ? "checked" : ""}>
-        <span class="nombre-item">${i.nombre}</span>
-        <button data-id="${i.id}">Eliminar</button>
-      </li>
-    `).join("");
-
-    ul.querySelectorAll("input[type=checkbox]").forEach(chk => {
-      chk.addEventListener("change", () => {
-        updateDoc(doc(db, "planeacion", chk.dataset.id), { hecho: chk.checked });
-      });
-    });
-    ul.querySelectorAll("button").forEach(btn => {
-      btn.addEventListener("click", () => {
-        deleteDoc(doc(db, "planeacion", btn.dataset.id));
-      });
-    });
+    renderHistorialModal();
+    document.getElementById("modal-gasto").classList.add("activo");
   }
 
-  async function agregarItemPlaneacion(tipo, inputId) {
-    const input = document.getElementById(inputId);
-    const nombre = input.value.trim();
-    if (!nombre) return;
-    await addDoc(collection(db, "planeacion"), { tipo, nombre, hecho: false });
-    input.value = "";
+  function renderHistorialModal() {
+    const it = itemsPlaneacion.find(x => x.id === gastoEnModal);
+    const ul = document.getElementById("g-historial");
+    const pagos = it ? (it.pagos || []) : [];
+    if (!pagos.length) { ul.innerHTML = `<li class="historial-vacio">Todavía no hay abonos.</li>`; return; }
+    ul.innerHTML = pagos.map((p, k) => `
+      <li>
+        <span>${esc(fechaCorta(p.fecha))} · <strong>${mxn(p.monto)}</strong>${p.nota ? " · " + esc(p.nota) : ""}</span>
+        <button class="quitar" data-k="${k}">Quitar</button>
+      </li>`).join("");
+    ul.querySelectorAll(".quitar").forEach(b => b.addEventListener("click", () => quitarAbono(parseInt(b.dataset.k))));
   }
 
-  document.getElementById("btn-agregar-tenemos").addEventListener("click", () => agregarItemPlaneacion("tenemos", "nuevo-tenemos"));
-  document.getElementById("btn-agregar-queremos").addEventListener("click", () => agregarItemPlaneacion("queremos", "nuevo-queremos"));
-  document.getElementById("nuevo-tenemos").addEventListener("keydown", (e) => { if (e.key === "Enter") agregarItemPlaneacion("tenemos", "nuevo-tenemos"); });
-  document.getElementById("nuevo-queremos").addEventListener("keydown", (e) => { if (e.key === "Enter") agregarItemPlaneacion("queremos", "nuevo-queremos"); });
+  async function quitarAbono(k) {
+    const it = itemsPlaneacion.find(x => x.id === gastoEnModal);
+    if (!it) return;
+    if (!confirm("¿Quitar este abono del registro?")) return;
+    const pagos = (it.pagos || []).filter((_, idx) => idx !== k);
+    await updateDoc(doc(db, "planeacion", it.id), { pagos });
+  }
+
+  function cerrarModalGasto() {
+    document.getElementById("modal-gasto").classList.remove("activo");
+    gastoEnModal = null;
+  }
+  document.getElementById("gasto-cancelar").addEventListener("click", cerrarModalGasto);
+  document.getElementById("modal-gasto").addEventListener("click", e => { if (e.target.id === "modal-gasto") cerrarModalGasto(); });
+
+  document.getElementById("gasto-guardar").addEventListener("click", async () => {
+    const it = itemsPlaneacion.find(x => x.id === gastoEnModal);
+    if (!it) return;
+
+    if (gastoModo === "editar") {
+      const nombre = document.getElementById("g-nombre").value.trim();
+      if (!nombre) { alert("El concepto no puede quedar vacío."); return; }
+      const costo = Math.max(parseFloat(document.getElementById("g-costo").value) || 0, 0);
+      await updateDoc(doc(db, "planeacion", it.id), { nombre, costo });
+    } else {
+      const monto = parseFloat(document.getElementById("g-monto").value);
+      if (!(monto > 0)) { alert("Escribe el monto del abono."); return; }
+      const falta = Math.max((Number(it.costo) || 0) - totalPagado(it), 0);
+      if ((Number(it.costo) || 0) > 0 && monto > falta &&
+          !confirm(`Este abono (${mxn(monto)}) es mayor a lo que falta por pagar (${mxn(falta)}). ¿Registrarlo de todos modos?`)) return;
+      const nota = document.getElementById("g-nota").value.trim();
+      const pagos = [...(it.pagos || []), { monto, fecha: hoy(), nota }];
+      await updateDoc(doc(db, "planeacion", it.id), { pagos });
+    }
+    cerrarModalGasto();
+  });
 
   // ---------- filtros y búsqueda ----------
   document.querySelectorAll(".filtro-btn").forEach(btn => {
