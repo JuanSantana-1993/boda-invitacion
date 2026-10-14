@@ -725,7 +725,14 @@
   }
 
   function renderBotones() {
-    const yaRespondio = familia.estado === "confirmado" || familia.estado === "cancelado";
+    // Si ya respondieron (confirmaron o rechazaron), la invitación queda cerrada:
+    // ven su mensaje final y ya no pueden volver a votar. Si cambian de opinión,
+    // nos avisan directamente y lo ajustamos desde el panel.
+    if (familia.estado === "confirmado" || familia.estado === "cancelado") {
+      mostrarRespuestaFinal(familia.estado);
+      return;
+    }
+
     // Cuántos lugares tiene esta invitación (el número que está en el panel)
     const n = parseInt(familia.personas_esperadas, 10);
     const textoPases = n > 0
@@ -733,7 +740,6 @@
       : "";
     contenedor.innerHTML = `
       ${textoPases ? `<p class="rsvp-pases">${textoPases}</p>` : ""}
-      ${yaRespondio ? `<p style="margin-bottom:18px; opacity:0.75;">Ya nos habías avisado: <strong>${familia.estado === "confirmado" ? "asistirán" : "no podrán asistir"}</strong>. Puedes cambiar tu respuesta si hace falta.</p>` : ""}
       <div class="rsvp-botones">
         <button class="btn btn-relleno" id="btn-rsvp-si">Sí, ahí estaremos</button>
         <button class="btn" id="btn-rsvp-no">No podremos acompañarlos</button>
@@ -750,21 +756,22 @@
     try {
       await updateDoc(doc(db, "familias", famId), { estado, personas_confirmadas });
       familia = { ...familia, estado, personas_confirmadas };
-      mostrarGracias(estado);
+      mostrarRespuestaFinal(estado);
     } catch (err) {
       contenedor.innerHTML = `<p style="opacity:0.75;">No pudimos guardar tu respuesta, intenta de nuevo en un momento.</p>`;
     }
   }
 
-  function mostrarGracias(estado) {
-    const titulo = estado === "confirmado" ? "Nos alegra mucho que estés presente" : "Gracias por tu respuesta";
-    const texto = estado === "confirmado" ? "Guardamos tu confirmación." : "Lamentamos que no puedan acompañarnos.";
+  // Pantalla final: es la misma al abrir el link de nuevo y justo después de responder
+  function mostrarRespuestaFinal(estado) {
+    const confirmado = estado === "confirmado";
+    const titulo = confirmado ? "Tu asistencia quedó confirmada" : "Gracias por tu respuesta";
+    const texto = confirmado ? "Nos alegra mucho que estés presente." : "Lamentamos que no puedan acompañarnos.";
     contenedor.innerHTML = `
       <p class="serif" style="font-size:1.2rem; margin-bottom:6px;">${titulo}</p>
       <p style="opacity:0.75; margin-bottom:14px;">${texto}</p>
-      <button class="btn-texto" id="btn-cambiar">¿Necesitas cambiar tu respuesta?</button>
+      <p class="aviso-cambios">Ante cualquier duda, comunícate directamente con nosotros.</p>
     `;
-    document.getElementById("btn-cambiar").addEventListener("click", renderBotones);
   }
 
   iniciarRSVP();
