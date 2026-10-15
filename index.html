@@ -499,6 +499,19 @@
     flex-wrap:wrap;
   }
   .rsvp-botones .btn{margin-top:0; width:auto;}
+  .rsvp-final{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    margin-bottom:14px;
+  }
+  .rsvp-final-texto{flex:1;}
+  .rsvp-gif{
+    flex:0 0 auto;
+    width:84px;          /* <- tamaño del GIF; cámbialo si lo quieres más grande o chico */
+    height:84px;
+    object-fit:contain;
+  }
   .rsvp-pases{
     font-family:'Fraunces', serif;
     font-size:1.2rem;
@@ -685,7 +698,7 @@
 <!-- ============ RSVP ============ -->
 <section class="rsvp reveal-derecha" id="rsvp">
   <div class="wrap">
-    <h2 class="serif">Confirma tu asistencia</h2>
+    <h2 class="serif" id="rsvp-titulo">Confirma tu asistencia</h2>
     <p style="margin-bottom:28px;">Te pedimos confirmar antes del [fecha límite].</p>
     <div id="rsvp-contenido">
       <p style="opacity:0.7;">Cargando…</p>
@@ -706,6 +719,29 @@
   const famId = params.get("fam");
   let familia = null;
 
+  // ================== GIFs DE LA RESPUESTA (los agregas tú) ==================
+  // Ponlos en una carpeta "gifs" junto a index.html, con estos nombres.
+  // Si un archivo no existe, simplemente no se muestra (no sale imagen rota).
+  const GIF_CONFIRMADO = "gifs/confirmado.gif";   // <- se ve cuando confirman
+  const GIF_CANCELADO  = "gifs/cancelado.gif";    // <- se ve cuando cancelan
+  // ===========================================================================
+
+  // Textos que cambian según si la invitación es para 1 persona o para varias
+  function textos() {
+    const n = parseInt(familia.personas_esperadas, 10);
+    const plural = n > 1;
+    return {
+      titulo:           plural ? "¿Nos acompañan?" : "¿Nos acompañas?",
+      si:               plural ? "Sí, ahí estaremos" : "Sí, ahí estaré",
+      no:               plural ? "No podremos asistir" : "No podré asistir",
+      confirmadaTitulo: plural ? "Su asistencia quedó confirmada" : "Tu asistencia quedó confirmada",
+      confirmadaTexto:  plural ? "Nos alegra mucho que estén presentes." : "Nos alegra mucho que estés presente.",
+      rechazoTitulo:    plural ? "Gracias por su respuesta" : "Gracias por tu respuesta",
+      rechazoTexto:     plural ? "Lamentamos que no puedan acompañarnos." : "Lamentamos que no puedas acompañarnos.",
+      duda:             plural ? "Ante cualquier duda, comuníquense directamente con nosotros." : "Ante cualquier duda, comunícate directamente con nosotros.",
+    };
+  }
+
   async function iniciarRSVP() {
     if (!famId) {
       contenedor.innerHTML = `<p style="opacity:0.75;">Este es el link general de la invitación. Usa el link personalizado que te enviamos por WhatsApp para poder confirmar.</p>`;
@@ -718,6 +754,7 @@
         return;
       }
       familia = { id: snap.id, ...snap.data() };
+      document.getElementById("rsvp-titulo").textContent = textos().titulo;
       renderBotones();
     } catch (err) {
       contenedor.innerHTML = `<p style="opacity:0.75;">Ocurrió un problema cargando tu invitación, intenta de nuevo en un momento.</p>`;
@@ -735,16 +772,17 @@
 
     // Cuántos lugares tiene esta invitación (el número que está en el panel)
     const n = parseInt(familia.personas_esperadas, 10);
+    const t = textos();
     const textoPases = n > 0
       ? `Invitación para <strong>${n} ${n === 1 ? "persona" : "personas"}</strong>`
       : "";
     contenedor.innerHTML = `
       ${textoPases ? `<p class="rsvp-pases">${textoPases}</p>` : ""}
       <div class="rsvp-botones">
-        <button class="btn btn-relleno" id="btn-rsvp-si">Sí, ahí estaremos</button>
-        <button class="btn" id="btn-rsvp-no">No podremos acompañarlos</button>
+        <button class="btn btn-relleno" id="btn-rsvp-si">${t.si}</button>
+        <button class="btn" id="btn-rsvp-no">${t.no}</button>
       </div>
-      <p class="aviso-cambios">Ante cualquier duda, comunícate directamente con nosotros.</p>
+      <p class="aviso-cambios">${t.duda}</p>
     `;
     document.getElementById("btn-rsvp-si").addEventListener("click", () => responder("confirmado"));
     document.getElementById("btn-rsvp-no").addEventListener("click", () => responder("cancelado"));
@@ -764,13 +802,20 @@
 
   // Pantalla final: es la misma al abrir el link de nuevo y justo después de responder
   function mostrarRespuestaFinal(estado) {
+    const t = textos();
     const confirmado = estado === "confirmado";
-    const titulo = confirmado ? "Tu asistencia quedó confirmada" : "Gracias por tu respuesta";
-    const texto = confirmado ? "Nos alegra mucho que estés presente." : "Lamentamos que no puedan acompañarnos.";
+    const titulo = confirmado ? t.confirmadaTitulo : t.rechazoTitulo;
+    const texto = confirmado ? t.confirmadaTexto : t.rechazoTexto;
+    const gif = confirmado ? GIF_CONFIRMADO : GIF_CANCELADO;
     contenedor.innerHTML = `
-      <p class="serif" style="font-size:1.2rem; margin-bottom:6px;">${titulo}</p>
-      <p style="opacity:0.75; margin-bottom:14px;">${texto}</p>
-      <p class="aviso-cambios">Ante cualquier duda, comunícate directamente con nosotros.</p>
+      <div class="rsvp-final">
+        <div class="rsvp-final-texto">
+          <p class="serif" style="font-size:1.2rem; margin-bottom:6px;">${titulo}</p>
+          <p style="opacity:0.75;">${texto}</p>
+        </div>
+        ${gif ? `<img class="rsvp-gif" src="${gif}" alt="" onerror="this.remove()">` : ""}
+      </div>
+      <p class="aviso-cambios">${t.duda}</p>
     `;
   }
 
