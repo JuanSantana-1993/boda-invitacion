@@ -31,6 +31,12 @@
 
   html{scroll-behavior:smooth;}
 
+  /* La invitación nunca se desplaza de lado (solo el carrusel de fotos se arrastra) */
+  html, body{
+    overflow-x:hidden;
+    overflow-x:clip;
+  }
+
   body.bloqueado{overflow:hidden; height:100vh;}
 
   /* -------- intro: avión de papel -------- */
@@ -401,10 +407,22 @@
     margin-top:4px;
   }
 
-  /* -------- galería en carrusel (deslizamiento suave) -------- */
+  /* -------- galería en carrusel (arrastre con inercia) -------- */
   .carrusel{
     position:relative;
   }
+  /* Marco que recorta el carrusel: solo las fotos se mueven, la página no.
+     touch-action:pan-y deja que el dedo suba/baje la página normal, pero el
+     movimiento de lado lo toma el carrusel. */
+  .carrusel-viewport{
+    overflow:hidden;
+    cursor:grab;
+    touch-action:pan-y;
+    user-select:none;
+    -webkit-user-select:none;
+    outline-offset:4px;
+  }
+  .carrusel-viewport.arrastrando{cursor:grabbing;}
   .carrusel-track{
     display:flex;
     gap:0;                       /* fotos pegadas, sin espacio entre ellas */
@@ -436,24 +454,6 @@
     object-fit:contain;
   }
 
-  .carrusel-btn{
-    position:absolute;
-    top:50%;
-    transform:translateY(-50%);
-    width:40px;
-    height:40px;
-    border-radius:50%;
-    border:1px solid var(--arena);
-    background:rgba(248,244,238,0.92);
-    color:var(--texto);
-    font-size:1.3rem;
-    line-height:1;
-    cursor:pointer;
-    z-index:2;
-  }
-  .carrusel-btn:hover{background:var(--dorado); color:var(--crema); border-color:var(--dorado);}
-  .carrusel-btn.prev{left:-6px;}
-  .carrusel-btn.next{right:-6px;}
   .carrusel-dots{
     display:flex;
     justify-content:center;
@@ -617,7 +617,7 @@
 
   <div class="versiculo">
     <p class="texto-manuscrito">"Alegrémonos y llenémonos de gozo y démosle honor a él, porque el tiempo ha llegado para la boda del Cordero, y su novia se ha preparado"</p>
-    <span class="cita-biblica">Apocalipsis 7:9-10, NTV</span>
+    <span class="cita-biblica">Apocalipsis 19:7, NTV</span>
   </div>
 
   <div class="conteo" id="conteo">
@@ -656,8 +656,6 @@
         <div class="carrusel-slide"><img src="fotos/nosotros-7.jpg" alt="Juan Antonio y Anahí" decoding="async"></div>
       </div>
       </div>
-      <button class="carrusel-btn prev" id="carrusel-prev" aria-label="Foto anterior">&#8249;</button>
-      <button class="carrusel-btn next" id="carrusel-next" aria-label="Foto siguiente">&#8250;</button>
       <div class="carrusel-dots" id="carrusel-dots"></div>
     </div>
   </div>
@@ -995,13 +993,21 @@
     viewport.addEventListener("pointerup", soltar);
     viewport.addEventListener("pointercancel", soltar);
 
-    // ---- Flechas y teclado ----
+    // ---- Teclado (flechas del teclado) y trackpad ----
     function mover(dir) {
       const base = anim ? fotoCercana(anim.hasta) : fotoCercana(pos);
       irA(posDeFoto(base + dir), 650);
     }
-    document.getElementById("carrusel-prev").addEventListener("click", () => mover(-1));
-    document.getElementById("carrusel-next").addEventListener("click", () => mover(1));
+    let temporizadorRueda = 0;
+    viewport.addEventListener("wheel", e => {
+      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;   // scroll vertical normal de la página
+      e.preventDefault();
+      anim = null;
+      pos += e.deltaX;
+      pintar();
+      clearTimeout(temporizadorRueda);
+      temporizadorRueda = setTimeout(() => irA(posDeFoto(fotoCercana(pos)), 450), 140);
+    }, { passive: false });
     viewport.addEventListener("keydown", e => {
       if (e.key === "ArrowLeft") { e.preventDefault(); mover(-1); }
       if (e.key === "ArrowRight") { e.preventDefault(); mover(1); }
