@@ -31,7 +31,6 @@
 
   html{scroll-behavior:smooth;}
 
-  /* La invitación nunca se desplaza de lado (solo el carrusel de fotos se arrastra) */
   html, body{
     overflow-x:hidden;
     overflow-x:clip;
@@ -70,7 +69,6 @@
   #avion-wrap.flotando{
     animation:planear 2.8s ease-in-out infinite;
   }
-  /* Animación mejorada para que el avión se desdoble con claridad */
   #avion-wrap.desplegando{
     animation:desplegar 1.4s cubic-bezier(.25,.8,.25,1) forwards;
   }
@@ -94,7 +92,7 @@
 
   @keyframes desplegar{
     0%{ transform:scale(1) rotate(-4deg); opacity:1; }
-    20%{ transform:scale(1.25, 0.75) rotate(4deg); opacity:1; } /* Simula el aleteo/apertura */
+    20%{ transform:scale(1.25, 0.75) rotate(4deg); opacity:1; }
     45%{ transform:scale(0.88, 1.15) rotate(-2deg); opacity:1; }
     70%{ transform:scale(1.4) rotate(0deg); opacity:1; }
     100%{ transform:scale(40) rotate(4deg); opacity:0; }
@@ -383,7 +381,7 @@
     max-width:56ch;
   }
 
-  /* -------- ubicación y mapa -------- */
+  /* -------- ubicación y mapa con botón integrado -------- */
   .ubicacion .nombre-lugar{
     font-size:1.3rem;
     margin-bottom:8px;
@@ -393,16 +391,18 @@
     opacity:0.85;
   }
 
-  /* Contenedor estético para el mapa de Google Maps */
+  /* Contenedor del mapa que incluye el botón flotante dentro */
   .mapa-contenedor{
+    position: relative;
     width: 100%;
     max-width: 600px;
-    height: 320px;
+    height: 350px;
     margin: 24px auto 0 auto;
-    border-radius: 6px;
+    border-radius: 8px;
     overflow: hidden;
     border: 1px solid var(--arena);
     background: var(--blush);
+    box-shadow: 0 4px 16px rgba(59, 42, 34, 0.08);
   }
   .mapa-contenedor iframe{
     width: 100%;
@@ -411,33 +411,29 @@
     display: block;
   }
 
-  .btn{
-    display:inline-block;
-    margin-top:24px;
-    padding:14px 32px;
-    border:1px solid var(--dorado);
-    background:none;
-    color:var(--marfil);
-    text-decoration:none;
-    font-family:inherit;
-    font-size:0.95rem;
-    letter-spacing:0.02em;
-    cursor:pointer;
-    transition:background 0.25s ease, color 0.25s ease;
+  /* Botón de Cómo llegar estilizado en tono café flotando dentro del mapa (abajo al centro) */
+  .btn-mapa-flotante{
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--texto);      /* Color café oscuro que combina */
+    color: var(--crema);                /* Letras claras legibles */
+    padding: 12px 28px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-family: 'Work Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    transition: background-color 0.25s ease, transform 0.2s ease;
+    z-index: 10;
+    white-space: nowrap;
   }
-  .btn:hover{
-    background:var(--dorado);
-    color:var(--verde-oscuro);
-  }
-  .btn-texto{
-    background:none;
-    border:none;
-    color:var(--marfil-suave);
-    text-decoration:underline;
-    font-size:0.85rem;
-    cursor:pointer;
-    font-family:inherit;
-    margin-top:4px;
+  .btn-mapa-flotante:hover{
+    background-color: var(--terracota);  /* Tono terracota al pasar el mouse */
+    transform: translateX(-50%) translateY(-2px);
   }
 
   /* -------- galería en carrusel (arrastre con inercia) -------- */
@@ -705,14 +701,15 @@
     <p class="direccion-lugar">Camino a la uvera s/n, Atlixco, Puebla Ex-Hacienda La Blanca</p>
     <p>Te esperamos para celebrar juntos este día tan especial.</p>
 
-    <!-- Mapa interactivo de Google Maps -->
+    <!-- Mapa con el botón "Cómo llegar" flotando dentro del cuadro -->
     <div class="mapa-contenedor">
       <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3773.35123456789!2d-98.43!3d18.91!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTjCsDU0JzM2LjAiTiA5OMKwMjUnNDguMCJX!5e0!3m2!1ses!2smx!4v1650000000000!5m2!1ses!2smx" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      
+      <a class="btn-mapa-flotante" href="https://maps.app.goo.gl/hDU6dDWUqxerV5o89" target="_blank" rel="noopener">
+        Cómo llegar
+      </a>
     </div>
 
-    <a class="btn" href="https://maps.app.goo.gl/hDU6dDWUqxerV5o89" target="_blank" rel="noopener">
-      Cómo llegar
-    </a>
   </div>
 </section>
 
@@ -723,7 +720,7 @@
 
     <div class="tarjeta">
       <h3>Mesa de regalos en línea</h3>
-      <p>Tu presencia es nuestro mejor regalo, pero si deseas obsequiarnos algo:</p>
+      <p>Tu presencia is nuestro mejor regalo, pero si deseas obsequiarnos algo:</p>
       <a class="btn" href="#" target="_blank" rel="noopener">Ver mesa de regalos</a>
     </div>
 
@@ -778,7 +775,7 @@
       confirmadaTitulo: plural ? "Su asistencia quedó confirmada" : "Tu asistencia quedó confirmada",
       confirmadaTexto:  plural ? "Nos alegra mucho que estén presentes." : "Nos alegra mucho que estés presente.",
       rechazoTitulo:    plural ? "Gracias por su respuesta" : "Gracias por tu respuesta",
-      rechazoTexto:     plural ? "Lamentamos que não puedan acompañarnos." : "Lamentamos que no puedas acompañarnos.",
+      rechazoTexto:     plural ? "Lamentamos que no puedan acompañarnos." : "Lamentamos que no puedas acompañarnos.",
       duda:             plural ? "Ante cualquier duda, comuníquense directamente con nosotros." : "Ante cualquier duda, comunícate directamente con nosotros.",
     };
   }
