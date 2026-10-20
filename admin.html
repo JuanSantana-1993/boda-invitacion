@@ -229,6 +229,10 @@
     margin-top:4px;
   }
 
+  .tarjeta-resumen .sub{font-size:0.72rem; color:var(--gris-calido); margin-top:5px; line-height:1.3;}
+  .campo-fila{display:flex; gap:12px;}
+  .campo-fila .campo{flex:1; min-width:0;}
+
   /* -------- filtros -------- */
   .filtros{
     display:flex;
@@ -422,10 +426,12 @@
         <div class="tarjeta-resumen">
           <div class="numero" id="num-esperados">0</div>
           <div class="etiqueta">Personas esperadas</div>
+          <div class="sub" id="sub-esperados"></div>
         </div>
         <div class="tarjeta-resumen">
           <div class="numero" id="num-confirmados">0</div>
           <div class="etiqueta">Confirmados</div>
+          <div class="sub" id="sub-confirmados"></div>
         </div>
         <div class="tarjeta-resumen">
           <div class="numero" id="num-cancelados">0</div>
@@ -455,7 +461,8 @@
         <thead>
           <tr>
             <th>Familia / Contacto</th>
-            <th>Esperados</th>
+            <th>Adultos</th>
+            <th>Niños</th>
             <th class="col-condicional">Confirmados</th>
             <th class="col-condicional">Estado</th>
             <th></th>
@@ -530,9 +537,15 @@
       <input type="text" id="edit-telefono" placeholder="Ej. 2221234567">
     </div>
 
-    <div class="campo">
-      <label for="edit-esperados">Lugares totales asignados</label>
-      <input type="number" id="edit-esperados" min="1">
+    <div class="campo-fila">
+      <div class="campo">
+        <label for="edit-adultos">Adultos (incluye al titular)</label>
+        <input type="number" id="edit-adultos" min="1">
+      </div>
+      <div class="campo">
+        <label for="edit-ninos">Niños</label>
+        <input type="number" id="edit-ninos" min="0">
+      </div>
     </div>
 
     <div class="campo" id="campo-estado">
@@ -540,9 +553,15 @@
       <select id="edit-estado"></select>
     </div>
 
-    <div class="campo" id="campo-confirmados">
-      <label for="edit-confirmados">Personas confirmadas</label>
-      <input type="number" id="edit-confirmados" min="0">
+    <div class="campo-fila" id="campo-confirmados">
+      <div class="campo">
+        <label for="edit-adultos-conf">Adultos confirmados</label>
+        <input type="number" id="edit-adultos-conf" min="0">
+      </div>
+      <div class="campo">
+        <label for="edit-ninos-conf">Niños confirmados</label>
+        <input type="number" id="edit-ninos-conf" min="0">
+      </div>
     </div>
 
     <div class="modal-botones">
@@ -672,16 +691,40 @@
     });
   }
 
+  // ---- Adultos y niños ----
+  // (los registros viejos solo traían "personas_esperadas": se leen como adultos, sin niños)
+  const adultosDe = f => (Number.isFinite(f.adultos) ? f.adultos : (f.personas_esperadas || 0));
+  const ninosDe = f => (Number.isFinite(f.ninos) ? f.ninos : 0);
+  const totalDe = f => adultosDe(f) + ninosDe(f);
+
+  // Cuántos adultos y niños confirmaron esa familia (0 si no está confirmada)
+  function confirmadosDe(f) {
+    if (f.estado !== "confirmado") return { a: 0, n: 0 };
+    if (Number.isFinite(f.adultos_confirmados) || Number.isFinite(f.ninos_confirmados)) {
+      return { a: f.adultos_confirmados || 0, n: f.ninos_confirmados || 0 };
+    }
+    const total = f.personas_confirmadas ?? totalDe(f);            // registro viejo: solo traía el total
+    if (total >= totalDe(f)) return { a: adultosDe(f), n: ninosDe(f) };
+    return { a: Math.min(total, adultosDe(f)), n: 0 };
+  }
+  const txtPersonas = (a, n) => `${a} ${a === 1 ? "adulto" : "adultos"}` + (n > 0 ? ` · ${n} ${n === 1 ? "niño" : "niños"}` : "");
+
   function renderTodo() {
     // resumen — la lista de espera no cuenta como invitados confirmados todavía
     const activos = familias.filter(f => !f.lista_espera);
-    const esperados = activos.reduce((s, f) => s + (f.personas_esperadas || 0), 0);
-    const confirmados = activos.reduce((s, f) => s + (f.estado === "confirmado" ? (f.personas_confirmadas ?? f.personas_esperadas) : 0), 0);
+    const espA = activos.reduce((s, f) => s + adultosDe(f), 0);
+    const espN = activos.reduce((s, f) => s + ninosDe(f), 0);
+    let confA = 0, confN = 0;
+    activos.forEach(f => { const c = confirmadosDe(f); confA += c.a; confN += c.n; });
+    const esperados = espA + espN;
+    const confirmados = confA + confN;
     const cancelados = activos.filter(f => f.estado === "cancelado").length;
     const pendientes = activos.filter(f => !f.estado || f.estado === "pendiente").length;
 
     document.getElementById("num-esperados").textContent = esperados;
+    document.getElementById("sub-esperados").textContent = `${espA} adultos · ${espN} niños`;
     document.getElementById("num-confirmados").textContent = confirmados;
+    document.getElementById("sub-confirmados").textContent = `${confA} adultos · ${confN} niños`;
     document.getElementById("num-cancelados").textContent = cancelados;
     document.getElementById("num-pendientes").textContent = pendientes;
     document.getElementById("num-espera").textContent = familias.filter(f => f.lista_espera).length;
@@ -718,8 +761,9 @@
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td>${f.contacto_nombre || f.id}</td>
-        <td>${f.personas_esperadas ?? "-"}</td>
-        <td class="col-condicional">${f.estado === "confirmado" ? (f.personas_confirmadas ?? f.personas_esperadas) : "-"}</td>
+        <td>${adultosDe(f)}</td>
+        <td>${ninosDe(f)}</td>
+        <td class="col-condicional">${f.estado === "confirmado" ? (() => { const c = confirmadosDe(f); return txtPersonas(c.a, c.n); })() : "-"}</td>
         <td class="col-condicional"><span class="estado-pill estado-${estado}">${estado}</span></td>
         <td>
           ${estado === "cancelado" ? `
@@ -789,18 +833,22 @@
     actualizarCampoConfirmados();
   }
 
-  // "Personas confirmadas" solo tiene sentido cuando el estado es Confirmado
+  // Los campos de "confirmados" solo tienen sentido cuando el estado es Confirmado
   function actualizarCampoConfirmados() {
     const conf = document.getElementById("edit-estado").value === "confirmado";
-    document.getElementById("campo-confirmados").style.display = (conf && !modoNuevo) ? "block" : "none";
+    document.getElementById("campo-confirmados").style.display = (conf && !modoNuevo) ? "flex" : "none";
   }
 
   document.getElementById("edit-estado").addEventListener("change", () => {
     actualizarCampoConfirmados();
-    const inp = document.getElementById("edit-confirmados");
-    // al pasar a Confirmado, propone todos los lugares asignados
-    if (document.getElementById("edit-estado").value === "confirmado" && !(parseInt(inp.value) > 0)) {
-      inp.value = document.getElementById("edit-esperados").value || 1;
+    // al pasar a Confirmado, propone que vengan todos los asignados
+    if (document.getElementById("edit-estado").value === "confirmado") {
+      const ac = document.getElementById("edit-adultos-conf");
+      const nc = document.getElementById("edit-ninos-conf");
+      if (!(parseInt(ac.value) > 0) && !(parseInt(nc.value) > 0)) {
+        ac.value = document.getElementById("edit-adultos").value || 1;
+        nc.value = document.getElementById("edit-ninos").value || 0;
+      }
     }
   });
 
@@ -814,10 +862,13 @@
     document.getElementById("modal-guardar").textContent = "Guardar cambios";
     document.getElementById("label-estado").textContent = "Estado";
 
+    const c = confirmadosDe(f);
     document.getElementById("edit-nombre").value = f.contacto_nombre || "";
     document.getElementById("edit-telefono").value = f.contacto_telefono || "";
-    document.getElementById("edit-esperados").value = f.personas_esperadas ?? 1;
-    document.getElementById("edit-confirmados").value = f.personas_confirmadas ?? 0;
+    document.getElementById("edit-adultos").value = adultosDe(f) || 1;
+    document.getElementById("edit-ninos").value = ninosDe(f);
+    document.getElementById("edit-adultos-conf").value = c.a;
+    document.getElementById("edit-ninos-conf").value = c.n;
     llenarEstados(OPCIONES_EDITAR, f.lista_espera ? "espera" : (f.estado || "pendiente"));
 
     document.getElementById("modal-overlay").classList.add("activo");
@@ -833,8 +884,10 @@
 
     document.getElementById("edit-nombre").value = "";
     document.getElementById("edit-telefono").value = "";
-    document.getElementById("edit-esperados").value = 1;
-    document.getElementById("edit-confirmados").value = 0;
+    document.getElementById("edit-adultos").value = 1;
+    document.getElementById("edit-ninos").value = 0;
+    document.getElementById("edit-adultos-conf").value = 0;
+    document.getElementById("edit-ninos-conf").value = 0;
     llenarEstados(OPCIONES_NUEVO, "pendiente");
 
     document.getElementById("modal-overlay").classList.add("activo");
@@ -853,11 +906,18 @@
     if (e.target.id === "modal-overlay") cerrarModal();
   });
 
+  const entero = (id, min, max) => {
+    let v = parseInt(document.getElementById(id).value);
+    if (isNaN(v)) v = min;
+    return Math.max(min, max === undefined ? v : Math.min(v, max));
+  };
+
   document.getElementById("modal-guardar").addEventListener("click", async () => {
     const nombre = document.getElementById("edit-nombre").value.trim();
     if (!nombre) { alert("El nombre del contacto no puede quedar vacío."); return; }
 
-    const esperados = Math.max(parseInt(document.getElementById("edit-esperados").value) || 1, 1);
+    const adultos = entero("edit-adultos", 1);     // el titular cuenta como adulto
+    const ninos = entero("edit-ninos", 0);
     const telefono = document.getElementById("edit-telefono").value.trim();
     const eleccion = document.getElementById("edit-estado").value;
     const enEspera = eleccion === "espera";
@@ -871,8 +931,12 @@
       await setDoc(doc(db, "familias", idNuevo), {
         contacto_nombre: nombre,
         contacto_telefono: telefono,
-        personas_esperadas: esperados,
+        adultos,
+        ninos,
+        personas_esperadas: adultos + ninos,       // total (lo usan las reglas de seguridad)
         personas_confirmadas: 0,
+        adultos_confirmados: 0,
+        ninos_confirmados: 0,
         estado: "pendiente",
         nombres: [],
         alergias: "",
@@ -881,19 +945,24 @@
       });
     } else {
       if (!idEnEdicion) return;
-      let confirmados = 0;
+      let ac = 0, nc = 0;
       if (eleccion === "confirmado") {
-        confirmados = Math.max(parseInt(document.getElementById("edit-confirmados").value) || 0, 0);
-        if (confirmados > esperados) confirmados = esperados;
+        ac = entero("edit-adultos-conf", 0, adultos);
+        nc = entero("edit-ninos-conf", 0, ninos);
+        if (ac + nc === 0) { ac = adultos; nc = ninos; }   // confirmado sin números = vienen todos
       }
 
       await updateDoc(doc(db, "familias", idEnEdicion), {
         contacto_nombre: nombre,
         contacto_telefono: telefono,
-        personas_esperadas: esperados,
+        adultos,
+        ninos,
+        personas_esperadas: adultos + ninos,
         estado: enEspera ? "pendiente" : eleccion,
         lista_espera: enEspera,
-        personas_confirmadas: confirmados,
+        personas_confirmadas: ac + nc,
+        adultos_confirmados: ac,
+        ninos_confirmados: nc,
       });
     }
 
@@ -1095,23 +1164,43 @@
     return id;
   }
 
-  // Parser sencillo de CSV (soporta comas dentro de campos con comillas,
-  // y detecta automáticamente si el separador es , o ; — Excel en
-  // español a veces exporta con ; porque usa la coma para decimales)
+  // Lector de CSV: respeta campos vacíos (por ejemplo, un teléfono sin llenar),
+  // comillas con comas adentro, y detecta si el separador es , o ; (Excel en
+  // español a veces exporta con ;). Los encabezados se leen sin acentos ni
+  // mayúsculas: "Niños" y "ninos" son lo mismo.
   function parseCSV(texto) {
-    const lineas = texto.trim().split(/\r?\n/);
-    const primeraLinea = lineas[0];
-    const separador = (primeraLinea.split(";").length > primeraLinea.split(",").length) ? ";" : ",";
-    const regexCampo = separador === ";" ? /(".*?"|[^;]+)(?=;|$)/g : /(".*?"|[^,]+)(?=,|$)/g;
+    texto = texto.replace(/^\uFEFF/, "");
+    const primera = texto.split(/\r?\n/, 1)[0] || "";
+    const sep = (primera.split(";").length > primera.split(",").length) ? ";" : ",";
 
-    const encabezados = primeraLinea.split(separador).map(h => h.trim());
-    return lineas.slice(1).filter(l => l.trim() !== "").map(linea => {
-      const valores = linea.match(regexCampo) || [];
-      const fila = {};
-      encabezados.forEach((h, i) => {
-        fila[h] = (valores[i] || "").replace(/^"|"$/g, "").trim();
-      });
-      return fila;
+    const filas = [];
+    let fila = [], campo = "", enComillas = false;
+    for (let i = 0; i < texto.length; i++) {
+      const c = texto[i];
+      if (enComillas) {
+        if (c === '"') { if (texto[i + 1] === '"') { campo += '"'; i++; } else enComillas = false; }
+        else campo += c;
+      } else if (c === '"') {
+        enComillas = true;
+      } else if (c === sep) {
+        fila.push(campo); campo = "";
+      } else if (c === "\n" || c === "\r") {
+        if (c === "\r" && texto[i + 1] === "\n") i++;
+        fila.push(campo); campo = ""; filas.push(fila); fila = [];
+      } else {
+        campo += c;
+      }
+    }
+    if (campo !== "" || fila.length) { fila.push(campo); filas.push(fila); }
+
+    const utiles = filas.filter(f => f.some(x => x.trim() !== ""));
+    if (!utiles.length) return [];
+    const normal = h => h.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "_");
+    const encabezados = utiles[0].map(normal);
+    return utiles.slice(1).map(valores => {
+      const obj = {};
+      encabezados.forEach((h, i) => { obj[h] = (valores[i] || "").trim(); });
+      return obj;
     });
   }
 
@@ -1126,13 +1215,18 @@
 
     // ids que ya existen en el sistema, para no duplicar a nadie
     const idsExistentes = new Set(familias.map(f => f.id));
-    let omitidos = 0, invalidos = 0;
+    let omitidos = 0;
+    const invalidos = [];
     const nuevos = [];
 
     for (const fila of filas) {
       const nombre = (fila.contacto_nombre || "").trim();
-      const esperados = parseInt(fila.personas_esperadas, 10);
-      if (!nombre || isNaN(esperados) || esperados < 1) { invalidos++; continue; }
+      let adultos = parseInt(fila.adultos ?? fila.adulto, 10);
+      let ninos = parseInt(fila.ninos ?? fila.nino, 10);
+      // compatibilidad con el formato viejo (una sola columna personas_esperadas)
+      if (isNaN(adultos) && fila.personas_esperadas) { adultos = parseInt(fila.personas_esperadas, 10); ninos = 0; }
+      if (isNaN(ninos)) ninos = 0;                       // niños vacío = 0
+      if (!nombre || isNaN(adultos) || adultos < 1 || ninos < 0) { invalidos.push(nombre || "(sin nombre)"); continue; }
 
       const idTentativo = nombre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
         .replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
@@ -1142,14 +1236,18 @@
         continue;
       }
 
-      const enEspera = ["si", "sí", "true", "1"].includes((fila.lista_espera || "").toLowerCase());
+      const enEspera = ["si", "sí", "true", "1"].includes((fila.lista_espera ?? fila.lista_de_espera ?? "").toLowerCase());
 
       idsExistentes.add(idTentativo);
       await setDoc(doc(db, "familias", idTentativo), {
         contacto_nombre: nombre,
         contacto_telefono: (fila.contacto_telefono || "").trim(),
-        personas_esperadas: esperados,
+        adultos,
+        ninos,
+        personas_esperadas: adultos + ninos,         // total (lo usan las reglas de seguridad)
         personas_confirmadas: 0,
+        adultos_confirmados: 0,
+        ninos_confirmados: 0,
         estado: "pendiente",
         nombres: [],
         alergias: "",
@@ -1162,11 +1260,12 @@
       // a la lista principal (ahí ya les aparece el botón "Copiar link").
       if (!enEspera) {
         const link = `${location.origin}${location.pathname.replace("admin.html", "index.html")}?fam=${encodeURIComponent(idTentativo)}`;
-        nuevos.push({ contacto_nombre: nombre, personas_esperadas: esperados, link });
+        nuevos.push({ contacto_nombre: nombre, adultos, ninos, link });
       }
     }
 
-    status.textContent = `Listo: ${nuevos.length} nuevos, ${omitidos} ya existían (omitidos)${invalidos ? `, ${invalidos} filas inválidas` : ""}.`;
+    status.textContent = `Listo: ${nuevos.length} nuevos, ${omitidos} ya existían (omitidos)` +
+      (invalidos.length ? `, ${invalidos.length} filas inválidas (revisa adultos y niños): ${invalidos.slice(0, 5).join(", ")}${invalidos.length > 5 ? "…" : ""}` : "") + ".";
     e.target.value = "";
     mostrarResultadosImportacion(nuevos);
   });
@@ -1184,12 +1283,13 @@
 
     const conLinks = pendientes.map(f => ({
       contacto_nombre: f.contacto_nombre || f.id,
-      personas_esperadas: f.personas_esperadas ?? "",
+      adultos: adultosDe(f),
+      ninos: ninosDe(f),
       link: `${location.origin}${location.pathname.replace("admin.html", "index.html")}?fam=${encodeURIComponent(f.id)}`
     }));
 
-    const encabezado = "contacto_nombre,personas_esperadas,link\n";
-    const cuerpo = conLinks.map(r => `"${r.contacto_nombre}",${r.personas_esperadas},${r.link}`).join("\n");
+    const encabezado = "contacto_nombre,adultos,ninos,link\n";
+    const cuerpo = conLinks.map(r => `"${r.contacto_nombre}",${r.adultos},${r.ninos},${r.link}`).join("\n");
     const blob = new Blob([encabezado + cuerpo], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -1212,8 +1312,8 @@
     `;
 
     document.getElementById("descargar-links-btn").addEventListener("click", () => {
-      const encabezado = "contacto_nombre,personas_esperadas,link\n";
-      const cuerpo = nuevos.map(r => `"${r.contacto_nombre}",${r.personas_esperadas},${r.link}`).join("\n");
+      const encabezado = "contacto_nombre,adultos,ninos,link\n";
+      const cuerpo = nuevos.map(r => `"${r.contacto_nombre}",${r.adultos},${r.ninos},${r.link}`).join("\n");
       const blob = new Blob([encabezado + cuerpo], { type: "text/csv;charset=utf-8;" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");

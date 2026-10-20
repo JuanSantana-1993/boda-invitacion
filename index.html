@@ -724,10 +724,17 @@
   const GIF_CANCELADO  = "gifs/cancelado.gif";    // <- se ve cuando cancelan
   // ===========================================================================
 
+  // Cuántos adultos y niños tiene esta invitación (lo que está en el panel).
+  // Si es un registro viejo que solo traía el total, todo cuenta como adultos.
+  function lugares() {
+    const a = Number.isFinite(familia.adultos) ? familia.adultos : (parseInt(familia.personas_esperadas, 10) || 0);
+    const k = Number.isFinite(familia.ninos) ? familia.ninos : 0;
+    return { a, k, total: a + k };
+  }
+
   // Textos que cambian según si la invitación es para 1 persona o para varias
   function textos() {
-    const n = parseInt(familia.personas_esperadas, 10);
-    const plural = n > 1;
+    const plural = lugares().total > 1;
     return {
       titulo:           plural ? "¿Nos acompañan?" : "¿Nos acompañas?",
       si:               plural ? "Sí, ahí estaremos" : "Sí, ahí estaré",
@@ -768,11 +775,14 @@
       return;
     }
 
-    // Cuántos lugares tiene esta invitación (el número que está en el panel)
-    const n = parseInt(familia.personas_esperadas, 10);
+    // Para quién es esta invitación (los números que están en el panel)
     const t = textos();
-    const textoPases = n > 0
-      ? `Invitación para <strong>${n} ${n === 1 ? "persona" : "personas"}</strong>`
+    const { a, k } = lugares();
+    const partes = [];
+    if (a > 0) partes.push(`${a} ${a === 1 ? "adulto" : "adultos"}`);
+    if (k > 0) partes.push(`${k} ${k === 1 ? "niño" : "niños"}`);
+    const textoPases = partes.length
+      ? `Invitación para <strong>${partes.join(" y ")}</strong>`
       : "";
     contenedor.innerHTML = `
       ${textoPases ? `<p class="rsvp-pases">${textoPases}</p>` : ""}
@@ -787,11 +797,19 @@
   }
 
   async function responder(estado) {
-    const personas_confirmadas = estado === "confirmado" ? familia.personas_esperadas : 0;
+    // Al confirmar vienen todos los de la invitación; al cancelar, ninguno
+    const { a, k, total } = lugares();
+    const confirmado = estado === "confirmado";
+    const respuesta = {
+      estado,
+      personas_confirmadas: confirmado ? total : 0,
+      adultos_confirmados: confirmado ? a : 0,
+      ninos_confirmados: confirmado ? k : 0,
+    };
     contenedor.innerHTML = `<p style="opacity:0.7;">Guardando tu respuesta…</p>`;
     try {
-      await updateDoc(doc(db, "familias", famId), { estado, personas_confirmadas });
-      familia = { ...familia, estado, personas_confirmadas };
+      await updateDoc(doc(db, "familias", famId), respuesta);
+      familia = { ...familia, ...respuesta };
       mostrarRespuestaFinal(estado);
     } catch (err) {
       contenedor.innerHTML = `<p style="opacity:0.75;">No pudimos guardar tu respuesta, intenta de nuevo en un momento.</p>`;

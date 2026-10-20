@@ -1,0 +1,60 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /familias/{familiaId} {
+
+      // Cualquiera puede leer UN documento si conoce su id exacto
+      // (el id viene en el link personalizado que le mandas por WhatsApp,
+      // nadie puede "adivinarlo" navegando la colección completa).
+      allow get: if true;
+
+      // Leer la colección COMPLETA (el panel de control) solo si
+      // iniciaste sesión con tu correo o el de tu novia.
+      allow list: if request.auth != null;
+
+      // Actualizar: los novios (autenticados) pueden editar cualquier campo
+      // desde el panel. Un invitado sin sesión (desde la invitación) solo
+      // puede confirmar/cancelar su propia familia, sin tocar el resto.
+      allow update: if request.auth != null || isRespuestaValida();
+
+      // Crear o borrar familias: solo tú, autenticado (el script de
+      // importación usa una llave de administrador aparte, así que no
+      // le afecta esta regla).
+      allow create, delete: if request.auth != null;
+    }
+
+    // Lista de planeación (lo que tenemos / lo que queremos) — privada,
+    // ningún invitado la ve, solo ustedes dos con sesión iniciada.
+    match /planeacion/{itemId} {
+      allow read, write: if request.auth != null;
+    }
+
+    // Lo único que puede cambiar un invitado (sin sesión) es su respuesta:
+    // el estado y cuántos adultos y niños confirman. No puede cambiar cuántos
+    // lugares tiene asignados ni su nombre/teléfono, ni confirmar de más.
+    function isRespuestaValida() {
+      let antes = resource.data;
+      let despues = request.resource.data;
+      // los registros viejos solo traían "personas_esperadas": se leen como adultos
+      let adultos = antes.get('adultos', antes.personas_esperadas);
+      let ninos = antes.get('ninos', 0);
+      return despues.personas_esperadas == antes.personas_esperadas
+        && despues.get('adultos', adultos) == adultos
+        && despues.get('ninos', ninos) == ninos
+        && despues.contacto_nombre == antes.contacto_nombre
+        && despues.contacto_telefono == antes.contacto_telefono
+        && despues.personas_confirmadas is int
+        && despues.personas_confirmadas >= 0
+        && despues.personas_confirmadas <= antes.personas_esperadas
+        && despues.get('adultos_confirmados', 0) is int
+        && despues.get('adultos_confirmados', 0) >= 0
+        && despues.get('adultos_confirmados', 0) <= adultos
+        && despues.get('ninos_confirmados', 0) is int
+        && despues.get('ninos_confirmados', 0) >= 0
+        && despues.get('ninos_confirmados', 0) <= ninos
+        && despues.estado in ['confirmado', 'cancelado', 'pendiente'];
+    }
+  }
+}

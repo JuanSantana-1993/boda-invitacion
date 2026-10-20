@@ -47,7 +47,11 @@ function generarId(nombre, idsUsados) {
 
 async function importar() {
   const csvTexto = fs.readFileSync(RUTA_CSV, "utf-8");
-  const filas = parse(csvTexto, { columns: true, skip_empty_lines: true, trim: true });
+  // los encabezados se leen sin acentos ni mayúsculas ("Niños" = "ninos")
+  const normal = h => h.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "_");
+  const filas = parse(csvTexto.replace(/^\uFEFF/, ""), {
+    columns: cabecera => cabecera.map(normal), skip_empty_lines: true, trim: true, relax_column_count: true,
+  });
 
   if (filas.length === 0) {
     console.log("El CSV no tiene filas, no hay nada que importar.");
@@ -64,9 +68,13 @@ async function importar() {
   for (const fila of filas) {
     const nombre = fila.contacto_nombre?.trim();
     const telefono = fila.contacto_telefono?.trim() || "";
-    const esperados = parseInt(fila.personas_esperadas, 10);
+    let adultos = parseInt(fila.adultos ?? fila.adulto, 10);
+    let ninos = parseInt(fila.ninos ?? fila.nino, 10);
+    // formato viejo: una sola columna personas_esperadas
+    if (isNaN(adultos) && fila.personas_esperadas) { adultos = parseInt(fila.personas_esperadas, 10); ninos = 0; }
+    if (isNaN(ninos)) ninos = 0;
 
-    if (!nombre || isNaN(esperados) || esperados < 1) {
+    if (!nombre || isNaN(adultos) || adultos < 1 || ninos < 0) {
       console.warn(`⚠️  Fila inválida, se omite: ${JSON.stringify(fila)}`);
       continue;
     }
@@ -81,12 +89,16 @@ async function importar() {
     }
 
     const id = generarId(nombre, idsUsados);
-    const enEspera = ["si", "sí", "true", "1"].includes((fila.lista_espera || "").toLowerCase());
+    const enEspera = ["si", "sí", "true", "1"].includes((fila.lista_espera ?? fila.lista_de_espera ?? "").toLowerCase());
 
     await db.collection("familias").doc(id).set({
       contacto_nombre: nombre,
       contacto_telefono: telefono,
-      personas_esperadas: esperados,
+      adultos,
+      ninos,
+      personas_esperadas: adultos + ninos,   // total (lo usan las reglas de seguridad)
+      adultos_confirmados: 0,
+      ninos_confirmados: 0,
       personas_confirmadas: 0,
       estado: "pendiente",
       nombres: [],
@@ -97,17 +109,17 @@ async function importar() {
     });
 
     const link = enEspera ? null : `${BASE_URL}?fam=${id}`;
-    resultados.push({ contacto_nombre: nombre, personas_esperadas: esperados, link, lista_espera: enEspera });
+    resultados.push({ contacto_nombre: nombre, adultos, ninos, link, lista_espera: enEspera });
     console.log(enEspera
-      ? `⏳ ${nombre} (${esperados} personas) → en lista de espera, sin link todavía`
-      : `✅ ${nombre} (${esperados} personas) → ${link}`);
+      ? `⏳ ${nombre} (${adultos} adultos, ${ninos} niños) → en lista de espera, sin link todavía`
+      : `✅ ${nombre} (${adultos} adultos, ${ninos} niños) → ${link}`);
   }
 
   // Guarda también un CSV con los links, listo para copiar/pegar a WhatsApp
-  const encabezado = "contacto_nombre,personas_esperadas,link\n";
+  const encabezado = "contacto_nombre,adultos,ninos,link\n";
   const filasCsv = resultados
     .filter(r => !r.lista_espera)
-    .map(r => `"${r.contacto_nombre}",${r.personas_esperadas},${r.link}`)
+    .map(r => `"${r.contacto_nombre}",${r.adultos},${r.ninos},${r.link}`)
     .join("\n");
   fs.writeFileSync("links-generados.csv", encabezado + filasCsv);
 
