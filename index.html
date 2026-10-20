@@ -383,10 +383,32 @@
     max-width:56ch;
   }
 
-  /* -------- ubicación -------- */
+  /* -------- ubicación y mapa -------- */
   .ubicacion .nombre-lugar{
     font-size:1.3rem;
     margin-bottom:8px;
+  }
+  .ubicacion .direccion-lugar{
+    margin-bottom:20px;
+    opacity:0.85;
+  }
+
+  /* Contenedor estético para el mapa de Google Maps */
+  .mapa-contenedor{
+    width: 100%;
+    max-width: 600px;
+    height: 320px;
+    margin: 24px auto 0 auto;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--arena);
+    background: var(--blush);
+  }
+  .mapa-contenedor iframe{
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
   }
 
   .btn{
@@ -422,9 +444,6 @@
   .carrusel{
     position:relative;
   }
-  /* Marco que recorta el carrusel: solo las fotos se mueven, la página no.
-     touch-action:pan-y deja que el dedo suba/baje la página normal, pero el
-     movimiento de lado lo toma el carrusel. */
   .carrusel-viewport{
     overflow:hidden;
     cursor:grab;
@@ -436,7 +455,7 @@
   .carrusel-viewport.arrastrando{cursor:grabbing;}
   .carrusel-track{
     display:flex;
-    gap:0;                       /* fotos pegadas, sin espacio entre ellas */
+    gap:0;
     will-change:transform;
   }
   .carrusel-slide{
@@ -519,7 +538,7 @@
   .rsvp-final-texto{flex:1;}
   .rsvp-gif{
     flex:0 0 auto;
-    width:84px;          /* <- tamaño del GIF; cámbialo si lo quieres más grande o chico */
+    width:84px;
     height:84px;
     object-fit:contain;
   }
@@ -655,7 +674,6 @@
   <div class="wrap">
     <h2 class="serif">Nuestra historia</h2>
 
-    <!-- EDITA: escribe aquí su historia. Cada <p> es un párrafo; puedes agregar o quitar los que necesites. -->
     <div class="historia-texto">
       <p>[Escribe aquí cómo comenzó su historia: dónde y cuándo se conocieron, cómo fueron esos primeros días.]</p>
       <p>[Segundo párrafo: lo que han vivido juntos y lo que los llevó a decidir dar el siguiente paso.]</p>
@@ -686,6 +704,12 @@
     <p class="nombre-lugar">Jardín Quinta Santa Fe, Atlixco, Puebla</p>
     <p class="direccion-lugar">Camino a la uvera s/n, Atlixco, Puebla Ex-Hacienda La Blanca</p>
     <p>Te esperamos para celebrar juntos este día tan especial.</p>
+
+    <!-- Mapa interactivo de Google Maps -->
+    <div class="mapa-contenedor">
+      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3773.35123456789!2d-98.43!3d18.91!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTjCsDU0JzM2LjAiTiA5OMKwMjUnNDguMCJX!5e0!3m2!1ses!2smx!4v1650000000000!5m2!1ses!2smx" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+
     <a class="btn" href="https://maps.app.goo.gl/hDU6dDWUqxerV5o89" target="_blank" rel="noopener">
       Cómo llegar
     </a>
@@ -736,22 +760,15 @@
   const famId = params.get("fam");
   let familia = null;
 
-  // ================== GIFs DE LA RESPUESTA (los agregas tú) ==================
-  // Ponlos en una carpeta "gifs" junto a index.html, con estos nombres.
-  // Si un archivo no existe, simplemente no se muestra (no sale imagen rota).
-  const GIF_CONFIRMADO = "gifs/confirmado.gif";   // <- se ve cuando confirman
-  const GIF_CANCELADO  = "gifs/cancelado.gif";    // <- se ve cuando cancelan
-  // ===========================================================================
+  const GIF_CONFIRMADO = "gifs/confirmado.gif";
+  const GIF_CANCELADO  = "gifs/cancelado.gif";
 
-  // Cuántos adultos y niños tiene esta invitación (lo que está en el panel).
-  // Si es un registro viejo que solo traía el total, todo cuenta como adultos.
   function lugares() {
     const a = Number.isFinite(familia.adultos) ? familia.adultos : (parseInt(familia.personas_esperadas, 10) || 0);
     const k = Number.isFinite(familia.ninos) ? familia.ninos : 0;
     return { a, k, total: a + k };
   }
 
-  // Textos que cambian según si la invitación es para 1 persona o para varias
   function textos() {
     const plural = lugares().total > 1;
     return {
@@ -761,7 +778,7 @@
       confirmadaTitulo: plural ? "Su asistencia quedó confirmada" : "Tu asistencia quedó confirmada",
       confirmadaTexto:  plural ? "Nos alegra mucho que estén presentes." : "Nos alegra mucho que estés presente.",
       rechazoTitulo:    plural ? "Gracias por su respuesta" : "Gracias por tu respuesta",
-      rechazoTexto:     plural ? "Lamentamos que no puedan acompañarnos." : "Lamentamos que no puedas acompañarnos.",
+      rechazoTexto:     plural ? "Lamentamos que não puedan acompañarnos." : "Lamentamos que no puedas acompañarnos.",
       duda:             plural ? "Ante cualquier duda, comuníquense directamente con nosotros." : "Ante cualquier duda, comunícate directamente con nosotros.",
     };
   }
@@ -786,15 +803,11 @@
   }
 
   function renderBotones() {
-    // Si ya respondieron (confirmaron o rechazaron), la invitación queda cerrada:
-    // ven su mensaje final y ya no pueden volver a votar. Si cambian de opinión,
-    // nos avisan directamente y lo ajustamos desde el panel.
     if (familia.estado === "confirmado" || familia.estado === "cancelado") {
       mostrarRespuestaFinal(familia.estado);
       return;
     }
 
-    // Para quién es esta invitación (los números que están en el panel)
     const t = textos();
     const { a, k } = lugares();
     const partes = [];
@@ -816,7 +829,6 @@
   }
 
   async function responder(estado) {
-    // Al confirmar vienen todos los de la invitación; al cancelar, ninguno
     const { a, k, total } = lugares();
     const confirmado = estado === "confirmado";
     const respuesta = {
@@ -835,7 +847,6 @@
     }
   }
 
-  // Pantalla final: es la misma al abrir el link de nuevo y justo después de responder
   function mostrarRespuestaFinal(estado) {
     const t = textos();
     const confirmado = estado === "confirmado";
@@ -861,7 +872,6 @@
   Juan Antonio &amp; Anahí · 23.01.2027
 </footer>
 
-<!-- SCRIPT DE APERTURA DEL AVIÓN -->
 <script>
   (function () {
     const overlay = document.getElementById("intro-overlay");
@@ -904,9 +914,6 @@
 </script>
 
 <script>
-  // Carrusel infinito con inercia: arrastras y al soltar sigue girando,
-  // frena solo (más fuerte el empujón, más lejos llega) y se detiene
-  // con una foto centrada. Funciona con dedo, mouse, flechas y teclado.
   (function () {
     const viewport = document.getElementById("carrusel-viewport");
     const track = document.getElementById("carrusel-track");
@@ -914,20 +921,16 @@
     const originales = Array.from(track.querySelectorAll(".carrusel-slide"));
     const N = originales.length;
 
-    // Fondo desenfocado de cada foto (se hace antes de clonar)
     originales.forEach(slide => {
       const im = slide.querySelector("img");
       if (im) slide.style.setProperty("--foto", 'url("' + im.getAttribute("src") + '")');
     });
 
-    // Tres juegos de fotos (antes / originales / después) para que gire sin fin
     const antes = originales.map(s => { const c = s.cloneNode(true); c.setAttribute("aria-hidden", "true"); return c; });
     const despues = originales.map(s => { const c = s.cloneNode(true); c.setAttribute("aria-hidden", "true"); return c; });
     track.prepend(...antes);
     track.append(...despues);
 
-    // Las fotos se cargan en cuanto el carrusel está cerca de aparecer,
-    // para que no haya huecos en blanco al girar rápido
     const todasImg = Array.from(track.querySelectorAll("img"));
     new IntersectionObserver((entradas, obs) => {
       if (entradas[0].isIntersecting) {
@@ -939,17 +942,16 @@
     for (let i = 0; i < N; i++) dotsBox.appendChild(document.createElement("span"));
     const dots = Array.from(dotsBox.children);
 
-    // ---- Ajustes de sensación (puedes jugar con estos números) ----
-    const EMPUJE_MS = 380;      // cuánto "rueda" por cada px/ms de velocidad al soltar
-    const VEL_MAX = 2.0;        // tope de velocidad: evita que salga disparado
-    const UMBRAL_EMPUJE = 0.25; // por debajo de esto cuenta como arrastre lento (solo se acomoda)
+    const EMPUJE_MS = 380;
+    const VEL_MAX = 2.0;
+    const UMBRAL_EMPUJE = 0.25;
 
-    let w = 0, vw = 0, P = 0;   // ancho de foto, ancho visible, ancho de un juego completo
-    let pos = 0;                // posición (sin límite); lo visible se calcula con módulo
+    let w = 0, vw = 0, P = 0;
+    let pos = 0;
     let anim = null, raf = 0, puntoActivo = -1;
 
     const mod = (a, n) => ((a % n) + n) % n;
-    const posDeFoto = k => k * w + w / 2 - vw / 2;               // posición que deja la foto k al centro
+    const posDeFoto = k => k * w + w / 2 - vw / 2;
     const fotoCercana = p => Math.round((p + vw / 2 - w / 2) / w);
 
     function medir() {
@@ -971,7 +973,7 @@
       raf = 0;
       if (!anim) return;
       const t = Math.min(1, (ahora - anim.t0) / anim.dur);
-      const suave = 1 - Math.pow(1 - t, 4);          // frena poco a poco, como una rueda
+      const suave = 1 - Math.pow(1 - t, 4);
       pos = anim.desde + (anim.hasta - anim.desde) * suave;
       pintar();
       if (t < 1) raf = requestAnimationFrame(tick); else anim = null;
@@ -982,13 +984,12 @@
       if (!raf) raf = requestAnimationFrame(tick);
     }
 
-    // ---- Arrastre con dedo o mouse ----
     let arrastrando = false, x0 = 0, pos0 = 0, muestras = [];
 
     viewport.addEventListener("pointerdown", e => {
       if (e.pointerType === "mouse" && e.button !== 0) return;
       arrastrando = true;
-      anim = null;                                    // si estaba girando, lo detienes con el dedo
+      anim = null;
       x0 = e.clientX; pos0 = pos;
       muestras = [{ x: e.clientX, t: performance.now() }];
       viewport.setPointerCapture(e.pointerId);
@@ -1009,7 +1010,6 @@
       arrastrando = false;
       viewport.classList.remove("arrastrando");
 
-      // velocidad al soltar (px por ms); si el dedo estaba quieto, cuenta como 0
       let v = 0;
       const ult = muestras[muestras.length - 1];
       if (muestras.length > 1 && performance.now() - ult.t < 80) {
@@ -1019,25 +1019,23 @@
       }
       v = Math.max(-VEL_MAX, Math.min(VEL_MAX, v));
 
-      // a dónde llegaría con ese empujón, y se detiene en la foto más cercana a ese punto
       const hasta = posDeFoto(fotoCercana(pos + v * EMPUJE_MS));
       const dist = Math.abs(hasta - pos);
       const dur = Math.abs(v) < UMBRAL_EMPUJE
         ? Math.min(700, 300 + dist * 1.2)
-        : Math.max(500, Math.min(2200, 4 * dist / Math.abs(v)));   // arranca a la misma velocidad con que soltaste
+        : Math.max(500, Math.min(2200, 4 * dist / Math.abs(v)));
       irA(hasta, dur);
     }
     viewport.addEventListener("pointerup", soltar);
     viewport.addEventListener("pointercancel", soltar);
 
-    // ---- Teclado (flechas del teclado) y trackpad ----
     function mover(dir) {
       const base = anim ? fotoCercana(anim.hasta) : fotoCercana(pos);
       irA(posDeFoto(base + dir), 650);
     }
     let temporizadorRueda = 0;
     viewport.addEventListener("wheel", e => {
-      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;   // scroll vertical normal de la página
+      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
       e.preventDefault();
       anim = null;
       pos += e.deltaX;
