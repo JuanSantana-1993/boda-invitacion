@@ -391,7 +391,6 @@
     opacity:0.85;
   }
 
-  /* Contenedor del mapa que incluye el botón flotante dentro */
   .mapa-contenedor{
     position: relative;
     width: 100%;
@@ -411,14 +410,13 @@
     display: block;
   }
 
-  /* Botón de Cómo llegar estilizado en tono café flotando dentro del mapa (abajo al centro) */
   .btn-mapa-flotante{
     position: absolute;
     bottom: 16px;
     left: 50%;
     transform: translateX(-50%);
-    background-color: var(--texto);      /* Color café oscuro que combina */
-    color: var(--crema);                /* Letras claras legibles */
+    background-color: var(--texto);
+    color: var(--crema);
     padding: 12px 28px;
     border-radius: 30px;
     text-decoration: none;
@@ -432,8 +430,37 @@
     white-space: nowrap;
   }
   .btn-mapa-flotante:hover{
-    background-color: var(--terracota);  /* Tono terracota al pasar el mouse */
+    background-color: var(--terracota);
     transform: translateX(-50%) translateY(-2px);
+  }
+
+  .btn{
+    display:inline-block;
+    margin-top:24px;
+    padding:14px 32px;
+    border:1px solid var(--dorado);
+    background:none;
+    color:var(--marfil);
+    text-decoration:none;
+    font-family:inherit;
+    font-size:0.95rem;
+    letter-spacing:0.02em;
+    cursor:pointer;
+    transition:background 0.25s ease, color 0.25s ease;
+  }
+  .btn:hover{
+    background:var(--dorado);
+    color:var(--verde-oscuro);
+  }
+  .btn-texto{
+    background:none;
+    border:none;
+    color:var(--marfil-suave);
+    text-decoration:underline;
+    font-size:0.85rem;
+    cursor:pointer;
+    font-family:inherit;
+    margin-top:4px;
   }
 
   /* -------- galería en carrusel (arrastre con inercia) -------- */
@@ -524,7 +551,20 @@
     justify-content:center;
     flex-wrap:wrap;
   }
-  .rsvp-botones .btn{margin-top:0; width:auto;}
+  /* Estilos originales de los botones de RSVP */
+  .rsvp-botones .btn{
+    margin-top:0;
+    width:auto;
+  }
+  .btn-relleno{
+    background:var(--dorado);
+    color:var(--verde-oscuro);
+  }
+  .btn-relleno:hover{
+    background:transparent;
+    color:var(--marfil);
+  }
+
   .rsvp-final{
     display:flex;
     align-items:center;
@@ -556,14 +596,6 @@
     max-width:42ch;
     margin-left:auto;
     margin-right:auto;
-  }
-  .btn-relleno{
-    background:var(--dorado);
-    color:var(--verde-oscuro);
-  }
-  .btn-relleno:hover{
-    background:transparent;
-    color:var(--marfil);
   }
 
   /* -------- footer -------- */
@@ -720,7 +752,7 @@
 
     <div class="tarjeta">
       <h3>Mesa de regalos en línea</h3>
-      <p>Tu presencia is nuestro mejor regalo, pero si deseas obsequiarnos algo:</p>
+      <p>Tu presencia es nuestro mejor regalo, pero si deseas obsequiarnos algo:</p>
       <a class="btn" href="#" target="_blank" rel="noopener">Ver mesa de regalos</a>
     </div>
 
