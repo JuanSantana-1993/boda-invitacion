@@ -6,7 +6,8 @@
 <title>Juan Antonio & Anahí — 23 de enero, 2027</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,400&family=Sacramento&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<!-- Se cambió la fuente del versículo a una opción más limpia y legible (Work Sans) -->
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,400&family=Work+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
 <style>
   :root{
     /* paleta de la boda */
@@ -295,73 +296,44 @@
     margin-top:4px;
   }
 
-  /* -------- versículo -------- */
+  /* -------- versículo con tipografía legible (Work Sans) -------- */
   .versiculo{
-    max-width:38ch;
+    max-width:40ch;
     margin:32px 0 8px;
     opacity:0;
     transform:scale(0.4);
     transform-origin:center;
     transition:transform 1.4s cubic-bezier(.2,.7,.3,1), opacity 1.4s ease;
     transition-delay:0.45s;
+    text-align: center;
   }
   .hero.revelado .versiculo{
     opacity:1;
     transform:scale(1);
   }
-  .texto-manuscrito{
-    font-family:'Sacramento', cursive;
-    font-size:clamp(1.5rem, 3.4vw, 1.9rem);
-    line-height:1.4;
+  .texto-legible{
+    font-family:'Work Sans', sans-serif;
+    font-weight:300;
+    font-style:italic;
+    font-size:clamp(1rem, 2.2vw, 1.15rem);
+    line-height:1.6;
     color:var(--dorado);
   }
   .cita-biblica{
     display:block;
-    margin-top:12px;
-    font-size:0.92rem;
+    margin-top:8px;
+    font-size:0.85rem;
     letter-spacing:0.04em;
     color:var(--texto);
-    opacity:0.6;
+    opacity:0.7;
   }
 
-  /* -------- conteo regresivo -------- */
-  .conteo{
-    display:flex;
-    gap:clamp(18px, 3vw, 36px);
-    margin:8px 0 4px;
-    opacity:0;
-    transform:translateY(14px);
-    transition:transform 1.1s ease, opacity 1.1s ease;
-    transition-delay:0.75s;
-  }
-  .hero.revelado .conteo{
-    opacity:1;
-    transform:translateY(0);
-  }
-  .conteo-item{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    min-width:54px;
-  }
-  .conteo-num{
-    font-family:'Fraunces', serif;
-    font-weight:600;
-    font-size:clamp(2.1rem, 5vw, 3.2rem);
-    color:var(--dorado);
-    line-height:1;
-  }
-  .conteo-label{
-    font-size:clamp(0.72rem, 1.3vw, 0.85rem);
-    letter-spacing:0.06em;
-    color:var(--texto);
-    opacity:0.6;
-    margin-top:6px;
-  }
-
+  /* -------- encabezados de sección en MAYÚSCULAS -------- */
   h2{
-    font-size:clamp(1.8rem, 4vw, 2.4rem);
+    font-size:clamp(1.6rem, 3.5vw, 2.2rem);
     margin-bottom:32px;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
   }
 
   /* -------- mensaje -------- */
@@ -379,6 +351,42 @@
   .mensaje p{
     font-size:1.15rem;
     max-width:56ch;
+  }
+
+  /* -------- fecha y hora destacada (nuevo apartado) -------- */
+  .fecha-hora-bloque{
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  .fecha-hora-bloque p {
+    font-size: 1.1rem;
+    letter-spacing: 0.04em;
+    color: var(--texto);
+    opacity: 0.9;
+    margin: 6px 0;
+  }
+
+  /* -------- código de vestimenta (nuevo apartado) -------- */
+  .dresscode-tarjeta {
+    background: var(--blush);
+    border: 1px solid var(--arena);
+    padding: 32px 28px;
+    margin-top: 32px;
+    border-radius: 12px;
+    text-align: center;
+  }
+  .dresscode-tarjeta h3 {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 1.2rem;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .dresscode-tarjeta p {
+    font-size: 1.05rem;
+    opacity: 0.85;
+    letter-spacing: 0.02em;
   }
 
   /* -------- ubicación y mapa con botón integrado -------- */
@@ -637,6 +645,17 @@
     margin-right:auto;
   }
 
+  /* -------- cierre con frase final -------- */
+  .frase-cierre{
+    text-align: center;
+    padding: 64px 20px 32px 20px;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: clamp(1.3rem, 3vw, 1.6rem);
+    color: var(--dorado);
+    letter-spacing: 0.02em;
+  }
+
   /* -------- footer -------- */
   footer{
     text-align:center;
@@ -712,23 +731,19 @@
     </div>
   </div>
 
+  <!-- Versículo con tipografía más legible (Work Sans) -->
   <div class="versiculo">
-    <p class="texto-manuscrito">"Alegrémonos y llenémonos de gozo y démosle honor a él, porque el tiempo ha llegado para la boda del Cordero, y su novia se ha preparado"</p>
+    <p class="texto-legible">"Alegrémonos y llenémonos de gozo y démosle honor a él, porque el tiempo ha llegado para la boda del Cordero, y su novia se ha preparado"</p>
     <span class="cita-biblica">Apocalipsis 19:7, NTV</span>
   </div>
 
-  <div class="conteo" id="conteo">
-    <div class="conteo-item"><span class="conteo-num" id="cnt-dias">00</span><span class="conteo-label">Días</span></div>
-    <div class="conteo-item"><span class="conteo-num" id="cnt-horas">00</span><span class="conteo-label">Horas</span></div>
-    <div class="conteo-item"><span class="conteo-num" id="cnt-min">00</span><span class="conteo-label">Min</span></div>
-    <div class="conteo-item"><span class="conteo-num" id="cnt-seg">00</span><span class="conteo-label">Seg</span></div>
-  </div>
+  <!-- CONTEO REGRESIVO MOVIDO ABAJO (después del apartado de confirmar asistencia) -->
 </header>
 
 <!-- ============ MENSAJE ============ -->
 <section class="mensaje reveal-derecha">
   <div class="wrap">
-    <h2 class="serif">Con mucha alegría</h2>
+    <h2 class="serif">CON MUCHA ALEGRÍA</h2>
     <p>
       Con la bendición de Dios y nuestras familias, queremos invitarte a celebrar
       con nosotros el día en que unimos nuestras vidas para siempre.
@@ -736,15 +751,15 @@
   </div>
 </section>
 
-<!-- ============ NUESTRA HISTORIA (CARRUSEL) ============ -->
+<!-- ============ NUESTRA HISTORIA Y FOTOS (HISTORIA REDACTADA) ============ -->
 <section class="historia reveal-izquierda" id="historia">
   <div class="wrap">
-    <h2 class="serif">Nuestra historia</h2>
+    <h2 class="serif">NUESTRA HISTORIA</h2>
 
     <div class="historia-texto">
-      <p>[Escribe aquí cómo comenzó su historia: dónde y cuándo se conocieron, cómo fueron esos primeros días.]</p>
-      <p>[Segundo párrafo: lo que han vivido juntos y lo que los llevó a decidir dar el siguiente paso.]</p>
-      <p>[Último párrafo: cómo fue la propuesta y lo que sueñan para esta nueva etapa.]</p>
+      <p>Hay momentos en la vida que se quedan grabados para siempre en el corazón, y el instante en que nuestros caminos se cruzaron fue el inicio de todo lo hermoso que hoy construimos juntos.</p>
+      <p>Paso a paso, entre risas, complicidad y un amor que fue creciendo con cada día, supo convertirse en nuestro refugio y en la certeza de que queríamos caminar de la mano el resto de nuestra vida.</p>
+      <p>Hoy estamos listos para dar el paso más importante y comenzar este nuevo capítulo, sabiendo que la bendición de Dios guía nuestro hogar.</p>
     </div>
 
     <div class="carrusel">
@@ -764,10 +779,21 @@
   </div>
 </section>
 
+<!-- ============ FECHA Y HORA (NUEVO APARTADO) ============ -->
+<section class="reveal-derecha">
+  <div class="wrap" style="text-align: center;">
+    <h2 class="serif">CUÁNDO Y DÓNDE</h2>
+    <div class="fecha-hora-bloque">
+      <p style="font-family: 'Fraunces', serif; font-size: 1.3rem; color: var(--dorado); margin-bottom: 8px;">Sábado, 23 de Enero de 2027</p>
+      <p>Recepción: 12:00 PM</p>
+    </div>
+  </div>
+</section>
+
 <!-- ============ UBICACIÓN ============ -->
-<section class="ubicacion reveal-derecha" id="ubicacion">
+<section class="ubicacion reveal-izquierda" id="ubicacion">
   <div class="wrap">
-    <h2 class="serif">Ubicación</h2>
+    <h2 class="serif">UBICACIÓN</h2>
     <p class="nombre-lugar">Jardín Quinta Santa Fe, Atlixco, Puebla</p>
     <p class="direccion-lugar">Camino a la uvera s/n, Atlixco, Puebla Ex-Hacienda La Blanca</p>
     <p>Te esperamos para celebrar juntos este día tan especial.</p>
@@ -784,9 +810,9 @@
 </section>
 
 <!-- ============ MESA DE REGALOS / DONATIVOS ============ -->
-<section class="regalos reveal-izquierda" id="regalos">
+<section class="regalos reveal-derecha" id="regalos">
   <div class="wrap">
-    <h2 class="serif">Mesa de regalos</h2>
+    <h2 class="serif">MESA DE REGALOS</h2>
 
     <div class="tarjeta">
       <h3>Mesa de regalos en línea</h3>
@@ -823,16 +849,45 @@
   }
 </script>
 
-<!-- ============ RSVP ============ -->
+<!-- ============ CÓDIGO DE VESTIMENTA (NUEVO APARTADO) ============ -->
+<section class="reveal-izquierda">
+  <div class="wrap">
+    <h2 class="serif">CÓDIGO DE VESTIMENTA</h2>
+    <div class="dresscode-tarjeta">
+      <h3>Formal / Rigurosa etiqueta</h3>
+      <p>Reserva los tonos claros y blancos exclusivamente para los novios. Te sugerimos calzado cómodo para jardín.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RSVP (CONFIRMACIÓN Y VÍA DE CONFIRMACIÓN) ============ -->
 <section class="rsvp reveal-derecha" id="rsvp">
   <div class="wrap">
-    <h2 class="serif" id="rsvp-titulo">Confirma tu asistencia</h2>
-    <p style="margin-bottom:28px;">Te pedimos confirmar antes del [fecha límite].</p>
+    <h2 class="serif" id="rsvp-titulo">CONFIRMA TU ASISTENCIA</h2>
+    <p style="margin-bottom:28px;">Fecha límite para confirmar: <strong>15 de Diciembre, 2026</strong></p>
     <div id="rsvp-contenido">
       <p style="opacity:0.7;">Cargando…</p>
     </div>
   </div>
 </section>
+
+<!-- ============ CUENTA REGRESIVA (MOVIDA ABAJO DE RSVP) ============ -->
+<section class="reveal-izquierda" style="text-align: center; padding: 72px 0;">
+  <div class="wrap">
+    <h2 class="serif" style="margin-bottom: 24px;">FALTAN</h2>
+    <div class="conteo" id="conteo" style="display: flex; justify-content: center;">
+      <div class="conteo-item"><span class="conteo-num" id="cnt-dias">00</span><span class="conteo-label">Días</span></div>
+      <div class="conteo-item"><span class="conteo-num" id="cnt-horas">00</span><span class="conteo-label">Horas</span></div>
+      <div class="conteo-item"><span class="conteo-num" id="cnt-min">00</span><span class="conteo-label">Min</span></div>
+      <div class="conteo-item"><span class="conteo-num" id="cnt-seg">00</span><span class="conteo-label">Seg</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FRASE DE CIERRE ============ -->
+<div class="frase-cierre reveal-derecha">
+  <p>"No podemos esperar a celebrar contigo"</p>
+</div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
@@ -860,7 +915,7 @@
     const plural = lugares().total > 1;
     return {
       titulo:           plural ? "¿Nos acompañan?" : "¿Nos acompañas?",
-      si:               plural ? "¡Claro que sí, ahí estaremos!" : "¡Claro que sí, ahí estaré!",
+      si:               "¡Claro que sí, ahí estaremos!",
       no:               plural ? "No podremos asistir" : "No podré asistir",
       confirmadaTitulo: plural ? "Su asistencia quedó confirmada" : "Tu asistencia quedó confirmada",
       confirmadaTexto:  plural ? "¡Nos dará mucho gusto el poder verles!" : "¡Nos dará mucho gusto el poder verte!",
@@ -909,6 +964,7 @@
         <button class="btn btn-relleno" id="btn-rsvp-si">${t.si}</button>
         <button class="btn" id="btn-rsvp-no">${t.no}</button>
       </div>
+      <p style="margin-top: 14px; font-size: 0.85rem; opacity: 0.8;">Vía de confirmación seleccionada: Plataforma web de la invitación</p>
       <p class="aviso-cambios">${t.duda}</p>
     `;
     document.getElementById("btn-rsvp-si").addEventListener("click", () => responder("confirmado"));
