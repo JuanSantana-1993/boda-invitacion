@@ -6,8 +6,8 @@
 <title>Juan Antonio & Anahí — 23 de enero, 2027</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- Se cambió la fuente del versículo a una opción más limpia y legible (Work Sans) -->
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,400&family=Work+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+<!-- Fuentes originales para la invitación y Work Sans solo para el versículo -->
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,400&family=Sacramento&family=Work+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
 <style>
   :root{
     /* paleta de la boda */
@@ -353,7 +353,7 @@
     max-width:56ch;
   }
 
-  /* -------- fecha y hora destacada (nuevo apartado) -------- */
+  /* -------- fecha y hora destacada -------- */
   .fecha-hora-bloque{
     text-align: center;
     margin-bottom: 24px;
@@ -366,27 +366,16 @@
     margin: 6px 0;
   }
 
-  /* -------- código de vestimenta (nuevo apartado) -------- */
-  .dresscode-tarjeta {
-    background: var(--blush);
-    border: 1px solid var(--arena);
-    padding: 32px 28px;
-    margin-top: 32px;
-    border-radius: 12px;
+  /* -------- código de vestimenta (imagen sin recuadro) -------- */
+  .dresscode-contenedor {
     text-align: center;
+    margin-top: 24px;
   }
-  .dresscode-tarjeta h3 {
-    font-family: 'Fraunces', serif;
-    font-weight: 500;
-    font-size: 1.2rem;
-    margin-bottom: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-  }
-  .dresscode-tarjeta p {
-    font-size: 1.05rem;
-    opacity: 0.85;
-    letter-spacing: 0.02em;
+  .dresscode-imagen {
+    max-width: 280px;
+    width: 100%;
+    height: auto;
+    display: inline-block;
   }
 
   /* -------- ubicación y mapa con botón integrado -------- */
@@ -533,7 +522,7 @@
     transform:scale(1.3);
   }
 
-  /* -------- regalos (tarjetas con esquinas redondeadas y diseño de banco) -------- */
+  /* -------- regalos (tarjetas con esquinas redondeadas y logotipos) -------- */
   .regalos .tarjeta{
     background: var(--blush);
     border: 1px solid var(--arena);
@@ -547,18 +536,18 @@
     font-size:1.15rem;
     margin-bottom:10px;
   }
-  .regalos .tarjeta-banco-contenido{
+  .regalos .tarjeta-contenido{
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 16px;
     flex-wrap: wrap;
   }
-  .regalos .tarjeta-banco-info{
+  .regalos .tarjeta-info{
     flex: 1;
     min-width: 180px;
   }
-  .regalos .tarjeta-banco-logo{
+  .regalos .tarjeta-logo{
     flex: 0 0 auto;
     width: 110px;
     height: auto;
@@ -643,6 +632,28 @@
     max-width:42ch;
     margin-left:auto;
     margin-right:auto;
+  }
+
+  /* -------- cuenta regresiva restaurada a la fuente original (Fraunces) -------- */
+  .conteo-num{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:clamp(2.1rem, 5vw, 3.2rem);
+    color:var(--dorado);
+    line-height:1;
+  }
+  .conteo-label{
+    font-size:clamp(0.72rem, 1.3vw, 0.85rem);
+    letter-spacing:0.06em;
+    color:var(--texto);
+    opacity:0.6;
+    margin-top:6px;
+  }
+  .conteo-item{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    min-width:54px;
   }
 
   /* -------- cierre con frase final -------- */
@@ -737,7 +748,6 @@
     <span class="cita-biblica">Apocalipsis 19:7, NTV</span>
   </div>
 
-  <!-- CONTEO REGRESIVO MOVIDO ABAJO (después del apartado de confirmar asistencia) -->
 </header>
 
 <!-- ============ MENSAJE ============ -->
@@ -751,7 +761,7 @@
   </div>
 </section>
 
-<!-- ============ NUESTRA HISTORIA Y FOTOS (HISTORIA REDACTADA) ============ -->
+<!-- ============ NUESTRA HISTORIA Y FOTOS ============ -->
 <section class="historia reveal-izquierda" id="historia">
   <div class="wrap">
     <h2 class="serif">NUESTRA HISTORIA</h2>
@@ -779,7 +789,7 @@
   </div>
 </section>
 
-<!-- ============ FECHA Y HORA (NUEVO APARTADO) ============ -->
+<!-- ============ FECHA Y HORA ============ -->
 <section class="reveal-derecha">
   <div class="wrap" style="text-align: center;">
     <h2 class="serif">CUÁNDO Y DÓNDE</h2>
@@ -814,16 +824,23 @@
   <div class="wrap">
     <h2 class="serif">MESA DE REGALOS</h2>
 
+    <!-- Mesa de regalos de Amazon con su logotipo -->
     <div class="tarjeta">
-      <h3>Mesa de regalos en línea</h3>
-      <p>Tu presencia es nuestro mejor regalo, pero si deseas obsequiarnos algo:</p>
-      <a class="btn" href="#" target="_blank" rel="noopener">Ver mesa de regalos</a>
+      <div class="tarjeta-contenido">
+        <div class="tarjeta-info">
+          <h3>Mesa de regalos en línea</h3>
+          <p>Tu presencia es nuestro mejor regalo, pero si deseas obsequiarnos algo:</p>
+          <a class="btn" href="PEGAR_LINK_DE_AMAZON_AQUI" target="_blank" rel="noopener">Ver mesa de regalos</a>
+        </div>
+        <img class="tarjeta-logo" src="imgs/logo-amazon.png" alt="Logo Amazon" onerror="this.style.display='none'">
+      </div>
     </div>
 
+    <!-- Donativo bancario -->
     <div class="tarjeta">
       <h3>Si prefieres hacer un donativo</h3>
-      <div class="tarjeta-banco-contenido">
-        <div class="tarjeta-banco-info">
+      <div class="tarjeta-contenido">
+        <div class="tarjeta-info">
           <p class="dato">Banco: Santander</p>
           <p class="dato">Titular: Juan Antonio Reyes Santana</p>
           <p class="dato">
@@ -831,7 +848,7 @@
             <button class="btn-copiar" onclick="copiarClabe()">Copiar</button>
           </p>
         </div>
-        <img class="tarjeta-banco-logo" src="imgs/logo-santander.png" alt="Logo Banco Santander" onerror="this.style.display='none'">
+        <img class="tarjeta-logo" src="imgs/logo-santander.png" alt="Logo Banco Santander" onerror="this.style.display='none'">
       </div>
     </div>
   </div>
@@ -849,18 +866,17 @@
   }
 </script>
 
-<!-- ============ CÓDIGO DE VESTIMENTA (NUEVO APARTADO) ============ -->
+<!-- ============ CÓDIGO DE VESTIMENTA (IMAGEN SIN RECUADRO) ============ -->
 <section class="reveal-izquierda">
-  <div class="wrap">
+  <div class="wrap" style="text-align: center;">
     <h2 class="serif">CÓDIGO DE VESTIMENTA</h2>
-    <div class="dresscode-tarjeta">
-      <h3>Formal / Rigurosa etiqueta</h3>
-      <p>Reserva los tonos claros y blancos exclusivamente para los novios. Te sugerimos calzado cómodo para jardín.</p>
+    <div class="dresscode-contenedor">
+      <img class="dresscode-imagen" src="imgs/codigo-vestimenta.png" alt="Código de vestimenta" onerror="this.style.display='none'">
     </div>
   </div>
 </section>
 
-<!-- ============ RSVP (CONFIRMACIÓN Y VÍA DE CONFIRMACIÓN) ============ -->
+<!-- ============ RSVP (CONFIRMACIÓN) ============ -->
 <section class="rsvp reveal-derecha" id="rsvp">
   <div class="wrap">
     <h2 class="serif" id="rsvp-titulo">CONFIRMA TU ASISTENCIA</h2>
@@ -871,7 +887,7 @@
   </div>
 </section>
 
-<!-- ============ CUENTA REGRESIVA (MOVIDA ABAJO DE RSVP) ============ -->
+<!-- ============ CUENTA REGRESIVA (POSICIONADA DESPUÉS DE RSVP Y CON FUENTE ORIGINAL) ============ -->
 <section class="reveal-izquierda" style="text-align: center; padding: 72px 0;">
   <div class="wrap">
     <h2 class="serif" style="margin-bottom: 24px;">FALTAN</h2>
