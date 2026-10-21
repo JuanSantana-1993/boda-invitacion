@@ -634,7 +634,7 @@
     margin-right:auto;
   }
 
-  /* -------- cuenta regresiva restaurada a la fuente original (Fraunces) -------- */
+  /* -------- cuenta regresiva con separadores estéticos -------- */
   .conteo-num{
     font-family:'Fraunces', serif;
     font-weight:600;
@@ -654,6 +654,17 @@
     flex-direction:column;
     align-items:center;
     min-width:54px;
+  }
+  .conteo-separador {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: clamp(2.1rem, 5vw, 3.2rem);
+    color: var(--dorado);
+    opacity: 0.5;
+    align-self: center;
+    padding: 0 clamp(8px, 1.5vw, 16px);
+    line-height: 1;
+    margin-top: -10px;
   }
 
   /* -------- cierre con frase final -------- */
@@ -887,14 +898,17 @@
   </div>
 </section>
 
-<!-- ============ CUENTA REGRESIVA (POSICIONADA DESPUÉS DE RSVP Y CON FUENTE ORIGINAL) ============ -->
+<!-- ============ CUENTA REGRESIVA CON SEPARADORES (POSICIONADA DESPUÉS DE RSVP) ============ -->
 <section class="reveal-izquierda" style="text-align: center; padding: 72px 0;">
   <div class="wrap">
     <h2 class="serif" style="margin-bottom: 24px;">FALTAN</h2>
     <div class="conteo" id="conteo" style="display: flex; justify-content: center;">
       <div class="conteo-item"><span class="conteo-num" id="cnt-dias">00</span><span class="conteo-label">Días</span></div>
+      <div class="conteo-separador">·</div>
       <div class="conteo-item"><span class="conteo-num" id="cnt-horas">00</span><span class="conteo-label">Horas</span></div>
+      <div class="conteo-separador">·</div>
       <div class="conteo-item"><span class="conteo-num" id="cnt-min">00</span><span class="conteo-label">Min</span></div>
+      <div class="conteo-separador">·</div>
       <div class="conteo-item"><span class="conteo-num" id="cnt-seg">00</span><span class="conteo-label">Seg</span></div>
     </div>
   </div>
@@ -902,7 +916,7 @@
 
 <!-- ============ FRASE DE CIERRE ============ -->
 <div class="frase-cierre reveal-derecha">
-  <p>"¡Nos dará mucho gusto el poder celebrar esta etapa juntos!"</p>
+  <p>"¡Nos dará mucho gusto celebrar juntos este inicio de una aventura!"</p>
 </div>
 
 <script type="module">
