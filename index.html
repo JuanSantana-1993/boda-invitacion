@@ -405,6 +405,40 @@
     height: 100%;
     border: 0;
     display: block;
+    pointer-events: none;   /* protegido: el dedo no se queda atorado en el mapa al hacer scroll */
+  }
+  .mapa-contenedor.interactivo iframe{pointer-events: auto;}
+  .mapa-cubierta{
+    position: absolute;
+    inset: 0;
+    z-index: 5;             /* encima del mapa, debajo del botón "Cómo llegar" (z-index 10) */
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 12px 0 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .mapa-cubierta span{
+    font-size: 0.78rem;
+    color: var(--texto);
+    background: rgba(248, 244, 238, 0.93);
+    border: 1px solid var(--arena);
+    border-radius: 20px;
+    padding: 6px 14px;
+  }
+  .mapa-contenedor.interactivo .mapa-cubierta{display: none;}
+
+  /* leyendas pequeñas (abanico/listón y paleta de colores) */
+  .leyenda-chica{
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: var(--texto);
+    opacity: 0.75;
+    max-width: 40ch;
+    margin: 20px auto 0;
   }
 
   .btn-mapa-flotante{
@@ -820,8 +854,10 @@
     <p>Te esperamos para celebrar juntos este día tan especial.</p>
 
     <div class="mapa-contenedor">
-      <iframe src="https://maps.google.com/maps?q=18.899464,-98.4176508&hl=es&z=16&output=embed" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-      
+      <iframe src="https://maps.google.com/maps?q=18.899464,-98.4176508&hl=es&z=16&output=embed" title="Mapa: Jardín Quinta Santa Fe, Atlixco, Puebla" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      <!-- Protección: el mapa empieza "dormido" para no atorar el scroll; se mueve al tocarlo -->
+      <button type="button" class="mapa-cubierta" aria-label="Activar el mapa para moverlo"><span>Toca el mapa para moverlo</span></button>
+
       <a class="btn-mapa-flotante" href="https://maps.app.goo.gl/hDU6dDWUqxerV5o89" target="_blank" rel="noopener">
         Cómo llegar
       </a>
@@ -884,6 +920,7 @@
     <div class="dresscode-contenedor">
       <img class="dresscode-imagen" src="imgs/codigo-vestimenta.jpeg" alt="Código de vestimenta" onerror="this.style.display='none'">
     </div>
+    <p class="leyenda-chica">La paleta de colores es solo una sugerencia. Si no cuentan con alguno de estos colores, no importa.</p>
   </div>
 </section>
 
@@ -891,7 +928,7 @@
 <section class="rsvp reveal-derecha" id="rsvp">
   <div class="wrap">
     <h2 class="serif" id="rsvp-titulo">CONFIRMA TU ASISTENCIA</h2>
-    <p style="margin-bottom:28px;">Fecha límite para confirmar: <strong>10 de Diciembre, 2026</strong></p>
+    <p style="margin-bottom:28px;">Fecha límite para confirmar: <strong>30 de Noviembre, 2026</strong></p>
     <div id="rsvp-contenido">
       <p style="opacity:0.7;">Cargando…</p>
     </div>
@@ -911,12 +948,13 @@
       <div class="conteo-separador">·</div>
       <div class="conteo-item"><span class="conteo-num" id="cnt-seg">00</span><span class="conteo-label">Seg</span></div>
     </div>
+    <p class="leyenda-chica">Si gustan, pueden llevar su abanico o listón.</p>
   </div>
 </section>
 
 <!-- ============ FRASE DE CIERRE ============ -->
 <div class="frase-cierre reveal-derecha">
-  <p>"¡Nos alegrará celebrar esta nueva etapa juntos!"</p>
+  <p>"¡Nos alegrará celebrar esta nueva estapa juntos!"</p>
 </div>
 
 <script type="module">
@@ -1270,6 +1308,20 @@
 
     actualizarConteo();
     setInterval(actualizarConteo, 1000);
+  })();
+</script>
+
+<script>
+  // Protección del mapa: empieza "dormido" para no atorar el scroll en el celular.
+  // Al tocarlo se puede mover; al tocar fuera de él, se duerme otra vez.
+  // El botón "Cómo llegar" funciona siempre.
+  (function () {
+    const cont = document.querySelector(".mapa-contenedor");
+    if (!cont) return;
+    cont.querySelector(".mapa-cubierta").addEventListener("click", () => cont.classList.add("interactivo"));
+    document.addEventListener("pointerdown", e => {
+      if (!cont.contains(e.target)) cont.classList.remove("interactivo");
+    });
   })();
 </script>
 
