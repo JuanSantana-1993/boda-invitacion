@@ -372,10 +372,19 @@
     margin-top: 24px;
   }
   .dresscode-imagen {
-    max-width: 280px;
-    width: 100%;
+    /* siempre centrada; solo cambia el ancho, así el contenido de abajo se acomoda solo */
+    display: block;
+    margin-left: 50%;
+    transform: translateX(-50%);
+    width: min(280px, 100%);
     height: auto;
-    display: inline-block;
+    cursor: zoom-in;
+    transition: width 0.5s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .dresscode-imagen.grande {
+    width: min(94vw, 640px);     /* <- tamaño ampliado */
+    cursor: zoom-out;
   }
 
   /* -------- ubicación y mapa con botón integrado -------- */
@@ -954,7 +963,7 @@
 
 <!-- ============ FRASE DE CIERRE ============ -->
 <div class="frase-cierre reveal-derecha">
-  <p>"¡Nos alegrará celebrar esta nueva estapa juntos!"</p>
+  <p>"¡Nos alegrará celebrar esta nueva etapa juntos!"</p>
 </div>
 
 <script type="module">
@@ -1321,6 +1330,30 @@
     cont.querySelector(".mapa-cubierta").addEventListener("click", () => cont.classList.add("interactivo"));
     document.addEventListener("pointerdown", e => {
       if (!cont.contains(e.target)) cont.classList.remove("interactivo");
+    });
+  })();
+</script>
+
+<script>
+  // Código de vestimenta: al tocar la imagen se agranda; al tocarla otra vez regresa a su tamaño.
+  (function () {
+    const img = document.querySelector(".dresscode-imagen");
+    if (!img) return;
+    img.setAttribute("role", "button");
+    img.setAttribute("tabindex", "0");
+    img.setAttribute("aria-expanded", "false");
+    img.setAttribute("title", "Toca para ampliar");
+
+    function alternar() {
+      const grande = img.classList.toggle("grande");
+      img.setAttribute("aria-expanded", String(grande));
+      img.setAttribute("title", grande ? "Toca para reducir" : "Toca para ampliar");
+      // al agrandarse, si queda cortada abajo, se desplaza lo justo para verla completa
+      if (grande) setTimeout(() => img.scrollIntoView({ block: "nearest", behavior: "smooth" }), 550);
+    }
+    img.addEventListener("click", alternar);
+    img.addEventListener("keydown", e => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); alternar(); }
     });
   })();
 </script>
