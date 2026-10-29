@@ -896,35 +896,13 @@
       </div>
     </div>
 
-    <!-- Donativo bancario -->
+    <!-- Donativo en sobre -->
     <div class="tarjeta">
-      <h3>Si prefieres hacer un donativo</h3>
-      <div class="tarjeta-contenido">
-        <div class="tarjeta-info">
-          <p class="dato">Banco: Santander</p>
-          <p class="dato">Titular: Juan Antonio Reyes Santana</p>
-          <p class="dato">
-            Cuenta / CLABE: <span id="texto-clabe">014650260340034420</span>
-            <button class="btn-copiar" onclick="copiarClabe()">Copiar</button>
-          </p>
-        </div>
-        <img class="tarjeta-logo" src="imgs/logo-santander.png" alt="Logo Banco Santander" onerror="this.style.display='none'">
-      </div>
+      <h3>Muestras de cariño</h3>
+      <p>Para nosotros lo más especial es compartir este día contigo; pero si está en tu corazón bendecirnos con algún donativo, el día del evento tendremos sobres disponibles en la recepción.</p>
     </div>
   </div>
 </section>
-
-<!-- Script para copiar la CLABE -->
-<script>
-  function copiarClabe() {
-    const texto = document.getElementById("texto-clabe").innerText;
-    navigator.clipboard.writeText(texto).then(() => {
-      const btn = document.querySelector(".btn-copiar");
-      btn.textContent = "¡Copiado!";
-      setTimeout(() => { btn.textContent = "Copiar"; }, 2000);
-    });
-  }
-</script>
 
 <!-- ============ CÓDIGO DE VESTIMENTA (IMAGEN SIN RECUADRO) ============ -->
 <section class="reveal-izquierda">
