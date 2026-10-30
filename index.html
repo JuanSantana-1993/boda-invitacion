@@ -57,7 +57,7 @@
     color:var(--texto);
   }
 
-  header, section, .frase-cierre, footer{
+  header, section, .cierre-con-ornamentos, footer{
     position:relative;
     z-index:1;
   }
@@ -481,7 +481,7 @@
   }
   .mapa-contenedor.interactivo .mapa-cubierta{display: none;}
 
-  /* leyendas pequeñas (abanico/listón y paleta de colores) */
+  /* leyendas pequeñas (abanico/listón) */
   .leyenda-chica{
     font-size: 0.88rem;
     line-height: 1.5;
@@ -739,21 +739,50 @@
     margin-top: -10px;
   }
 
-  /* -------- cierre con frase final -------- */
+  /* -------- cierre con frase final e ilustraciones SVG (Jarrita y Lámpara de aceite) -------- */
+  .cierre-con-ornamentos{
+    position: relative;
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 56px 16px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
   .frase-cierre{
+    flex: 1;
     text-align: center;
-    padding: 56px 20px 32px 20px;
     font-family: 'Fraunces', serif;
     font-style: italic;
-    font-size: clamp(1.3rem, 3vw, 1.6rem);
+    font-size: clamp(1.2rem, 3vw, 1.6rem);
     color: var(--dorado);
     letter-spacing: 0.02em;
+  }
+  .ilustracion-virgenes{
+    flex: 0 0 auto;
+    width: clamp(64px, 15vw, 115px);
+    height: auto;
+    color: var(--texto);
+    opacity: 0.32;
+    pointer-events: none;
+    align-self: flex-end;
+  }
+  @media (max-width: 520px){
+    .cierre-con-ornamentos{
+      padding: 40px 8px 20px;
+      gap: 4px;
+    }
+    .ilustracion-virgenes{
+      width: clamp(54px, 18vw, 72px);
+      opacity: 0.28;
+    }
   }
 
   /* -------- footer -------- */
   footer{
     text-align:center;
-    padding:48px 0;
+    padding:36px 0 48px;
     font-size:0.85rem;
     opacity:0.6;
   }
@@ -806,7 +835,6 @@
 
     <!-- Grupo donde se dibuja el trazado cartográfico real de los continentes -->
     <g id="continentes-mapa" fill="currentColor" fill-opacity="0.75" stroke="currentColor" stroke-width="1" stroke-linejoin="round">
-      <!-- Respaldo curvo inmediato mientras carga el mapa vectorial de alta precisión -->
       <path d="M75,110 C115,90 175,85 235,95 C275,105 330,130 355,165 C360,185 330,215 305,235 C295,250 282,265 268,262 C255,258 250,275 265,292 C280,308 302,315 315,322 C295,325 270,308 250,285 C235,268 215,255 205,230 C190,195 160,175 120,165 C90,155 65,135 75,110 Z"/>
       <path d="M318,322 C345,318 385,335 412,368 C430,392 422,430 398,468 C375,505 352,542 338,558 C325,545 318,505 320,462 C322,422 298,388 300,352 C302,335 310,325 318,322 Z"/>
       <path d="M395,55 C425,45 468,52 478,78 C482,102 452,122 425,118 C402,112 382,80 395,55 Z"/>
@@ -860,7 +888,7 @@
           let d = "";
           for (let i = 0; i < pts.length; i++) {
             const [lon, lat] = pts[i];
-            if (lat < -60) continue; // Omitir la Antártida para lucir limpio el diseño
+            if (lat < -60) continue;
             const salto = i === 0 || Math.abs(lon - pts[i - 1][0]) > 90;
             const px = ((lon + 180) * (1200 / 360)).toFixed(1);
             const py = ((90 - lat) * (600 / 180)).toFixed(1);
@@ -1076,14 +1104,13 @@
   </div>
 </section>
 
-<!-- ============ CÓDIGO DE VESTIMENTA (IMAGEN SIN RECUADRO) ============ -->
+<!-- ============ CÓDIGO DE VESTIMENTA (IMAGEN SIN RECUADRO Y SIN LEYENDA EXTRA) ============ -->
 <section class="reveal-izquierda">
   <div class="wrap" style="text-align: center;">
     <h2 class="serif">CÓDIGO DE VESTIMENTA</h2>
     <div class="dresscode-contenedor">
       <img class="dresscode-imagen" src="imgs/codigo-vestimenta.jpeg" alt="Código de vestimenta" onerror="this.style.display='none'">
     </div>
-    <p class="leyenda-chica">La paleta de colores es solo una sugerencia. Si no cuentan con alguno de estos colores, no importa.</p>
   </div>
   <div class="divisor-olivo" style="margin-top:56px;" aria-hidden="true">
     <svg viewBox="0 0 190 32"><use href="#icono-ramita-olivo"/></svg>
@@ -1121,12 +1148,51 @@
   </div>
 </section>
 
-<!-- ============ FRASE DE CIERRE ============ -->
-<div class="frase-cierre reveal-derecha">
-  <p>"¡Nos alegrará celebrar esta nueva etapa juntos!"</p>
-  <div class="divisor-olivo" style="margin-top:24px;" aria-hidden="true">
-    <svg viewBox="0 0 190 32"><use href="#icono-ramita-olivo"/></svg>
+<!-- ============ CIERRE CON JARRITA DE ACEITE (IZQUIERDA) Y LÁMPARA DE ACEITE (DERECHA) EN SVG ============ -->
+<div class="cierre-con-ornamentos reveal-derecha">
+  <!-- Izquierda: Jarrita / Vasija de aceite (SVG integrado sin requerir imagen externa) -->
+  <svg class="ilustracion-virgenes" viewBox="0 0 110 135" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+    <!-- Base de la jarrita -->
+    <path d="M36 122 L74 122 L69 114 L41 114 Z" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+    <!-- Cuerpo de la vasija / ánfora de aceite -->
+    <path d="M43 26 L67 26 C64 38 64 46 72 56 C86 72 85 98 69 114 L41 114 C25 98 24 72 38 56 C46 46 46 38 43 26 Z" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    <!-- Boca y pico vertedor -->
+    <path d="M38 26 C40 20 46 18 55 18 C64 18 70 20 74 23 C71 26 67 26 67 26 L43 26 Z" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+    <!-- Asa izquierda -->
+    <path d="M44 31 C24 31 18 54 32 70" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    <!-- Nivel de aceite y gota en el interior (en tono terracota) -->
+    <path d="M31 86 Q43 81 55 86 T79 86" stroke="var(--dorado)" stroke-width="1.4" opacity="0.85"/>
+    <path d="M55 62 C55 62 49 71 49 75 C49 78.5 51.7 81 55 81 C58.3 81 61 78.5 61 75 C61 71 55 62 55 62 Z" fill="var(--dorado)" opacity="0.75"/>
+  </svg>
+
+  <!-- Centro: Frase de cierre y ramita de olivo -->
+  <div class="frase-cierre">
+    <p>"¡Nos alegrará celebrar esta nueva etapa juntos!"</p>
+    <div class="divisor-olivo" style="margin-top:24px;" aria-hidden="true">
+      <svg viewBox="0 0 190 32"><use href="#icono-ramita-olivo"/></svg>
+    </div>
   </div>
+
+  <!-- Derecha: Lámpara de aceite bíblica encendida (SVG integrado sin requerir imagen externa) -->
+  <svg class="ilustracion-virgenes" viewBox="0 0 135 125" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+    <!-- Resplandor suave de la llama -->
+    <circle cx="24" cy="40" r="16" fill="var(--dorado)" opacity="0.16"/>
+    <circle cx="24" cy="40" r="9" fill="var(--dorado)" opacity="0.24"/>
+    <!-- Llama encendida -->
+    <path d="M24 20 C24 20 14 34 16 44 C17.5 50.5 21 53 24 53 C27 53 30.5 50.5 32 44 C34 34 24 20 24 20 Z" fill="var(--dorado)" opacity="0.9"/>
+    <path d="M24 31 C24 31 19.5 39 20.5 44.5 C21.2 48 22.6 49.5 24 49.5 C25.4 49.5 26.8 48 27.5 44.5 C28.5 39 24 31 24 31 Z" fill="var(--crema)" opacity="0.85"/>
+    <!-- Mecha -->
+    <path d="M24 52 L26 60" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    <!-- Cuerpo de la lámpara de aceite antigua (orientada hacia el centro) -->
+    <path d="M20 60 C27 59 36 63 46 61 C58 55 78 55 92 64 C102 71 102 86 90 95 C78 103 54 103 42 95 C32 88 26 75 17 67 C14 64 16 60 20 60 Z" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    <!-- Orificio superior de llenado y detalles -->
+    <ellipse cx="67" cy="61" rx="9" ry="3.2" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.4"/>
+    <path d="M44 76 Q67 84 90 76" stroke="var(--dorado)" stroke-width="1.2" opacity="0.7" fill="none"/>
+    <!-- Base / Pie de la lámpara -->
+    <path d="M52 99 L82 99 L86 106 L48 106 Z" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+    <!-- Asa posterior en espiral -->
+    <path d="M95 66 C114 56 122 76 108 89 C101 94 94 92 91 90" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+  </svg>
 </div>
 
 <script type="module">
