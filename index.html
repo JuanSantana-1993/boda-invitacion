@@ -1289,46 +1289,60 @@
     const audio = document.getElementById("musica-boda");
     let abierto = false;
     let listoParaAbrir = false;
+    let musicaIniciada = false;
 
     // Segundo exacto donde inicia la canción (60 = minuto 1:00)
     const SEGUNDO_INICIO = 60;
 
-    function iniciarMusicaDesdePunto() {
+    function saltarAMinutoSeguro() {
       if (!audio) return;
-      audio.currentTime = SEGUNDO_INICIO;
+      const aplicarSalto = () => {
+        try {
+          if (Math.abs(audio.currentTime - SEGUNDO_INICIO) > 2) {
+            audio.currentTime = SEGUNDO_INICIO;
+          }
+        } catch (err) {}
+      };
+
+      if (audio.readyState >= 1) {
+        aplicarSalto();
+      } else {
+        audio.addEventListener("loadedmetadata", aplicarSalto, { once: true });
+      }
+    }
+
+    function iniciarMusicaAlTocar() {
+      if (!audio) return;
       audio.volume = 0.85;
-      
-      // Forzamos la reproducción asegurando compatibilidad total con Android
-      const promesaAudio = audio.play();
-      if (promesaAudio !== undefined) {
-        promesaAudio.catch(() => {
-          // Si Android bloquea el primer intento, unimos la música al primer toque global en pantalla
-          const activarConToque = () => {
-            audio.play();
-            document.removeEventListener("pointerdown", activarConToque);
-          };
-          document.addEventListener("pointerdown", activarConToque);
-        });
+      saltarAMinutoSeguro();
+
+      const promesa = audio.play();
+      if (promesa !== undefined) {
+        promesa.then(() => {
+          musicaIniciada = true;
+          saltarAMinutoSeguro();
+        }).catch(() => {});
       }
     }
 
     function detenerMusica() {
       if (!audio) return;
       audio.pause();
-      audio.currentTime = SEGUNDO_INICIO;
     }
 
     if (audio) {
       audio.addEventListener("ended", () => {
-        iniciarMusicaDesdePunto();
+        audio.currentTime = SEGUNDO_INICIO;
+        audio.play().catch(() => {});
       });
     }
 
+    // Pausar al salir o minimizar y reanudar al volver
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) {
         detenerMusica();
-      } else if (abierto) {
-        iniciarMusicaDesdePuno ? iniciarMusicaDesdePunto() : null;
+      } else if (abierto || musicaIniciada) {
+        iniciarMusicaAlTocar();
       }
     });
     window.addEventListener("pagehide", detenerMusica);
@@ -1344,14 +1358,15 @@
       }
     });
 
-    function abrirIntro() {
-      if (abierto || !listoParaAbrir) return;
+    function abrirAlTocarPantalla() {
+      // 1. En cuanto pican la pantalla, suena la canción (desbloqueo directo para Android y iPhone)
+      iniciarMusicaAlTocar();
+
+      // 2. Si ya terminó de entrar el avión (o si pican para abrirlo), desplegamos la invitación
+      if (abierto) return;
       abierto = true;
 
-      // Disparador directo para Android y iPhone al deslizar el avión
-      iniciarMusicaDesdePunto();
-
-      avion.classList.remove("flotando");
+      avion.classList.remove("entrando", "flotando");
       avion.classList.add("desplegando");
       textoIntro.classList.remove("visible");
       flechaIntro.classList.remove("visible");
@@ -1364,8 +1379,9 @@
       setTimeout(() => { overlay.style.display = "none"; }, 1450);
     }
 
-    overlay.addEventListener("pointerdown", abrirIntro);
-    overlay.addEventListener("click", abrirIntro);
+    // Usamos touchend y click porque Android Chrome bloquea audio en pointerdown
+    overlay.addEventListener("touchend", abrirAlTocarPantalla, { passive: true });
+    overlay.addEventListener("click", abrirAlTocarPantalla);
   })();
 </script>
 
