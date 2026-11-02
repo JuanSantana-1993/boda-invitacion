@@ -789,8 +789,8 @@
 </head>
 <body class="bloqueado">
 
-<!-- ============ AUDIO LOCAL (ARRANCA EN MINUTO 1 AL ABRIR EL AVIÓN, SIN CONTROLES) ============ -->
-<audio id="musica-boda" src="audio/la-bondad-de-dios-instrumental.mp3" preload="auto"></audio>
+<!-- ============ AUDIO LOCAL (ARRANCA EN EL SEGUNDO 15 AL TOCAR PARA ABRIR EL AVIÓN) ============ -->
+<audio id="musica-boda" src="audio/la-bondad-de-dios-instrumental.mp3" preload="auto" playsinline></audio>
 
 <!-- ============ FONDO ESTÁTICO: MAPAMUNDI CARTOGRÁFICO REAL ============ -->
 <div id="fondo-mapamundi" aria-hidden="true">
@@ -1076,6 +1076,7 @@
 <!-- ============ MESA DE REGALOS / DONATIVOS ============ -->
 <section class="regalos reveal-derecha" id="regalos">
   <div class="wrap">
+    <h2 class="serif">MESA DE REGALOS</h2>
     <p class="intro-regalos">Tu presencia es importante para nosotros, pero si gustas bendecirnos están estas opciones:</p>
 
     <!-- Opción 1: Mesa de regalos de Liverpool -->
@@ -1083,10 +1084,10 @@
       <div class="tarjeta-contenido">
         <div class="tarjeta-info">
           <h3>Mesa de regalos Liverpool</h3>
-          <p class="dato">Número de evento: <strong>60065133</strong></p>
-          <a class="btn" href="https://mesaderegalos.liverpool.com.mx/milistaderegalos/60065133" target="_blank" rel="noopener">Ver mesa de regalos</a>
+          <p class="dato">Número de evento: <strong>PEGAR_NUMERO_DE_EVENTO_AQUI</strong></p>
+          <a class="btn" href="PEGAR_LINK_DE_LIVERPOOL_AQUI" target="_blank" rel="noopener">Ver mesa de regalos</a>
         </div>
-        <img class="tarjeta-logo" src="imgs/logo-liverpool.jpeg" alt="Logo Liverpool" onerror="this.style.display='none'">
+        <img class="tarjeta-logo" src="imgs/logo-liverpool.png" alt="Logo Liverpool" onerror="this.style.display='none'">
       </div>
     </div>
 
@@ -1288,61 +1289,65 @@
     const flechaIntro = document.querySelector(".intro-flecha");
     const audio = document.getElementById("musica-boda");
     let abierto = false;
-    let listoParaAbrir = false;
-    let musicaIniciada = false;
+    let saltoInicialRealizado = false;
 
-    // Segundo exacto donde inicia la canción (60 = minuto 1:00)
+    // Segundo exacto donde inicia la canción (15 = segundo 0:15)
     const SEGUNDO_INICIO = 15;
 
-    function saltarAMinutoSeguro() {
-      if (!audio) return;
-      const aplicarSalto = () => {
-        try {
-          if (Math.abs(audio.currentTime - SEGUNDO_INICIO) > 2) {
-            audio.currentTime = SEGUNDO_INICIO;
-          }
-        } catch (err) {}
-      };
-
-      if (audio.readyState >= 1) {
-        aplicarSalto();
-      } else {
-        audio.addEventListener("loadedmetadata", aplicarSalto, { once: true });
-      }
+    function posicionarEnSegundo() {
+      if (!audio || saltoInicialRealizado) return;
+      try {
+        if (audio.readyState >= 1) {
+          audio.currentTime = SEGUNDO_INICIO;
+          saltoInicialRealizado = true;
+        }
+      } catch (e) {}
     }
 
-    function iniciarMusicaAlTocar() {
+    if (audio) {
+      audio.addEventListener("loadedmetadata", posicionarEnSegundo);
+      audio.addEventListener("canplay", posicionarEnSegundo);
+      // Cuando termina la canción, se repite desde el segundo 15
+      audio.addEventListener("ended", () => {
+        try { audio.currentTime = SEGUNDO_INICIO; } catch (e) {}
+        audio.play().catch(() => {});
+      });
+    }
+
+    function iniciarMusica() {
       if (!audio) return;
       audio.volume = 0.85;
-      saltarAMinutoSeguro();
 
-      const promesa = audio.play();
-      if (promesa !== undefined) {
-        promesa.then(() => {
-          musicaIniciada = true;
-          saltarAMinutoSeguro();
-        }).catch(() => {});
+      // Si aún no está sonando, le damos play() directo en el evento del toque
+      // y en cuanto arranque aplicamos el salto al segundo 15 sin que el navegador lo bloquee
+      if (audio.paused) {
+        const prom = audio.play();
+        if (prom !== undefined) {
+          prom.then(() => {
+            if (!saltoInicialRealizado || audio.currentTime < SEGUNDO_INICIO - 1) {
+              try {
+                audio.currentTime = SEGUNDO_INICIO;
+                saltoInicialRealizado = true;
+              } catch (e) {}
+            }
+          }).catch(() => {});
+        }
       }
     }
 
     function detenerMusica() {
       if (!audio) return;
       audio.pause();
+      saltoInicialRealizado = false;
+      try { audio.currentTime = SEGUNDO_INICIO; } catch (e) {}
     }
 
-    if (audio) {
-      audio.addEventListener("ended", () => {
-        audio.currentTime = SEGUNDO_INICIO;
-        audio.play().catch(() => {});
-      });
-    }
-
-    // Pausar al salir o minimizar y reanudar al volver
+    // Se detiene inmediatamente al cerrar la página, minimizar o bloquear el celular
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) {
         detenerMusica();
-      } else if (abierto || musicaIniciada) {
-        iniciarMusicaAlTocar();
+      } else if (abierto) {
+        iniciarMusica();
       }
     });
     window.addEventListener("pagehide", detenerMusica);
@@ -1354,15 +1359,14 @@
         avion.classList.add("flotando");
         textoIntro.classList.add("visible");
         flechaIntro.classList.add("visible");
-        listoParaAbrir = true;
       }
     });
 
-    function abrirAlTocarPantalla() {
-      // 1. En cuanto pican la pantalla, suena la canción (desbloqueo directo para Android y iPhone)
-      iniciarMusicaAlTocar();
+    function abrirIntro() {
+      // 1. Reproducir la canción al instante en el primer toque
+      iniciarMusica();
 
-      // 2. Si ya terminó de entrar el avión (o si pican para abrirlo), desplegamos la invitación
+      // 2. Desplegar el avión y abrir la invitación
       if (abierto) return;
       abierto = true;
 
@@ -1379,9 +1383,19 @@
       setTimeout(() => { overlay.style.display = "none"; }, 1450);
     }
 
-    // Usamos touchend y click porque Android Chrome bloquea audio en pointerdown
-    overlay.addEventListener("touchend", abrirAlTocarPantalla, { passive: true });
-    overlay.addEventListener("click", abrirAlTocarPantalla);
+    // Escuchamos pointerdown, touchend y click para compatibilidad total en iPhone, Android y PC
+    overlay.addEventListener("pointerdown", abrirIntro);
+    overlay.addEventListener("touchend", abrirIntro, { passive: true });
+    overlay.addEventListener("click", abrirIntro);
+
+    // Respaldo: si por alguna restricción del navegador el primer toque no bastó,
+    // cualquier toque posterior en la página arranca el audio
+    document.addEventListener("touchend", () => {
+      if (abierto && audio && audio.paused) iniciarMusica();
+    }, { passive: true });
+    document.addEventListener("click", () => {
+      if (abierto && audio && audio.paused) iniciarMusica();
+    });
   })();
 </script>
 
