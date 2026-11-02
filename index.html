@@ -1291,13 +1291,25 @@
     let listoParaAbrir = false;
 
     // Segundo exacto donde inicia la canción (60 = minuto 1:00)
-    const SEGUNDO_INICIO = 15;
+    const SEGUNDO_INICIO = 60;
 
     function iniciarMusicaDesdePunto() {
       if (!audio) return;
       audio.currentTime = SEGUNDO_INICIO;
-      audio.volume = 0.75;
-      audio.play().catch(() => {});
+      audio.volume = 0.85;
+      
+      // Forzamos la reproducción asegurando compatibilidad total con Android
+      const promesaAudio = audio.play();
+      if (promesaAudio !== undefined) {
+        promesaAudio.catch(() => {
+          // Si Android bloquea el primer intento, unimos la música al primer toque global en pantalla
+          const activarConToque = () => {
+            audio.play();
+            document.removeEventListener("pointerdown", activarConToque);
+          };
+          document.addEventListener("pointerdown", activarConToque);
+        });
+      }
     }
 
     function detenerMusica() {
@@ -1306,19 +1318,17 @@
       audio.currentTime = SEGUNDO_INICIO;
     }
 
-    // Al terminar la pista, vuelve a arrancar desde el minuto 1
     if (audio) {
       audio.addEventListener("ended", () => {
         iniciarMusicaDesdePunto();
       });
     }
 
-    // Se detiene inmediatamente al cerrar la página, cambiar de pestaña o bloquear el celular
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) {
         detenerMusica();
       } else if (abierto) {
-        iniciarMusicaDesdePunto();
+        iniciarMusicaDesdePuno ? iniciarMusicaDesdePunto() : null;
       }
     });
     window.addEventListener("pagehide", detenerMusica);
@@ -1338,7 +1348,7 @@
       if (abierto || !listoParaAbrir) return;
       abierto = true;
 
-      // Inicia la canción desde el minuto 1 exacto al abrir el avión
+      // Disparador directo para Android y iPhone al deslizar el avión
       iniciarMusicaDesdePunto();
 
       avion.classList.remove("flotando");
