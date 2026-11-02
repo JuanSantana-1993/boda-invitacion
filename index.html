@@ -1076,6 +1076,7 @@
 <!-- ============ MESA DE REGALOS / DONATIVOS ============ -->
 <section class="regalos reveal-derecha" id="regalos">
   <div class="wrap">
+    <h2 class="serif">MESA DE REGALOS</h2>
     <p class="intro-regalos">Tu presencia es importante para nosotros, pero si gustas bendecirnos están estas opciones:</p>
 
     <!-- Opción 1: Mesa de regalos de Liverpool -->
@@ -1090,10 +1091,13 @@
       </div>
     </div>
 
-    <!-- Opción 2: Donativo en sobre -->
+    <!-- Opción 2: Donativo en sobre o transferencia -->
     <div class="tarjeta">
-      <h3>Donativo en sobre</h3>
-      <p>El día del evento tendremos sobres disponibles en la recepción por si deseas hacernos algún donativo en efectivo.</p>
+      <h3>Muestras de cariño y donativos</h3>
+      <p style="margin-bottom: 12px;">El día del evento tendremos sobres disponibles en la recepción, o si gustas hacer transferencia sería a este número:</p>
+      <p class="dato">Banco: <strong>[Nombre del Banco]</strong></p>
+      <p class="dato">Titular: <strong>[Nombre del Titular]</strong></p>
+      <p class="dato">CLABE / Tarjeta: <strong>[Número de cuenta o CLABE]</strong></p>
     </div>
   </div>
   <div class="divisor-olivo" style="margin-top:56px;" aria-hidden="true">
@@ -1290,7 +1294,7 @@
     let abierto = false;
     let saltoInicialRealizado = false;
 
-    // Segundo exacto donde inicia la canción (15 = segundo 0:15)
+    // Segundo exacto donde inicia la canción configurado en 15
     const SEGUNDO_INICIO = 15;
 
     function posicionarEnSegundo() {
@@ -1317,8 +1321,6 @@
       if (!audio) return;
       audio.volume = 0.85;
 
-      // Si aún no está sonando, le damos play() directo en el evento del toque
-      // y en cuanto arranque aplicamos el salto al segundo 15 sin que el navegador lo bloquee
       if (audio.paused) {
         const prom = audio.play();
         if (prom !== undefined) {
