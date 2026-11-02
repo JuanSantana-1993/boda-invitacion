@@ -789,8 +789,8 @@
 </head>
 <body class="bloqueado">
 
-<!-- ============ AUDIO LOCAL OCULTO (SIN CONTROLES PARA DETENER) ============ -->
-<audio id="musica-boda" src="audio/la-bondad-de-dios-instrumental.mp3" loop preload="auto"></audio>
+<!-- ============ AUDIO LOCAL (ARRANCA EN MINUTO 1 AL ABRIR EL AVIÓN, SIN CONTROLES) ============ -->
+<audio id="musica-boda" src="audio/la-bondad-de-dios-instrumental.mp3" preload="auto"></audio>
 
 <!-- ============ FONDO ESTÁTICO: MAPAMUNDI CARTOGRÁFICO REAL ============ -->
 <div id="fondo-mapamundi" aria-hidden="true">
@@ -1291,9 +1291,12 @@
     let abierto = false;
     let listoParaAbrir = false;
 
-    function iniciarMusicaDesdeInicio() {
+    // Segundo exacto donde inicia la canción (60 = minuto 1:00)
+    const SEGUNDO_INICIO = 60;
+
+    function iniciarMusicaDesdePunto() {
       if (!audio) return;
-      audio.currentTime = 0;
+      audio.currentTime = SEGUNDO_INICIO;
       audio.volume = 0.75;
       audio.play().catch(() => {});
     }
@@ -1301,15 +1304,22 @@
     function detenerMusica() {
       if (!audio) return;
       audio.pause();
-      audio.currentTime = 0;
+      audio.currentTime = SEGUNDO_INICIO;
     }
 
-    // Se detiene inmediatamente al cerrar la página, minimizar o bloquear el celular
+    // Al terminar la pista, vuelve a arrancar desde el minuto 1
+    if (audio) {
+      audio.addEventListener("ended", () => {
+        iniciarMusicaDesdePunto();
+      });
+    }
+
+    // Se detiene inmediatamente al cerrar la página, cambiar de pestaña o bloquear el celular
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) {
         detenerMusica();
       } else if (abierto) {
-        iniciarMusicaDesdeInicio();
+        iniciarMusicaDesdePunto();
       }
     });
     window.addEventListener("pagehide", detenerMusica);
@@ -1329,8 +1339,8 @@
       if (abierto || !listoParaAbrir) return;
       abierto = true;
 
-      // Inicia la canción desde el principio exactamente al abrir o jalar el avión
-      iniciarMusicaDesdeInicio();
+      // Inicia la canción desde el minuto 1 exacto al abrir el avión
+      iniciarMusicaDesdePunto();
 
       avion.classList.remove("flotando");
       avion.classList.add("desplegando");
