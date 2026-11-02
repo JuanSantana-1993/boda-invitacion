@@ -62,38 +62,16 @@
     z-index:1;
   }
 
-  /* -------- botón flotante de música -------- */
-  #btn-musica{
+  /* -------- reproductor oculto (sin controles visibles) -------- */
+  #contenedor-audio-oculto{
     position:fixed;
-    bottom:20px;
-    right:20px;
-    z-index:150;
-    width:44px;
-    height:44px;
-    border-radius:50%;
-    background:rgba(248, 244, 238, 0.92);
-    border:1px solid var(--dorado);
-    color:var(--dorado);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    cursor:pointer;
-    box-shadow:0 4px 14px rgba(59, 42, 34, 0.15);
+    width:1px;
+    height:1px;
+    bottom:-10px;
+    left:-10px;
     opacity:0;
     pointer-events:none;
-    transition:opacity 0.4s ease, transform 0.2s ease, background 0.25s ease;
-  }
-  #btn-musica.visible{
-    opacity:1;
-    pointer-events:auto;
-  }
-  #btn-musica:hover{
-    transform:scale(1.06);
-    background:var(--blush);
-  }
-  #btn-musica svg{
-    width:20px;
-    height:20px;
+    z-index:-1;
   }
 
   /* -------- intro: avión de papel -------- */
@@ -823,23 +801,10 @@
 </head>
 <body class="bloqueado">
 
-<!-- ============ MÚSICA DE FONDO: LA BONDAD DE DIOS (INSTRUMENTAL) ============ -->
-<!-- Se reproduce automáticamente al abrir el avión de papel, no al cargar el link -->
-<audio id="musica-boda" src="audio/la-bondad-de-dios-instrumental.mp3" loop preload="auto"></audio>
-
-<button type="button" id="btn-musica" aria-label="Pausar o reproducir música" title="Música: La Bondad de Dios (Instrumental)">
-  <svg id="icono-musica-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M9 18V5l12-2v13"/>
-    <circle cx="6" cy="18" r="3"/>
-    <circle cx="18" cy="16" r="3"/>
-  </svg>
-  <svg id="icono-musica-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
-    <path d="M9 18V5l12-2v13"/>
-    <circle cx="6" cy="18" r="3"/>
-    <circle cx="18" cy="16" r="3"/>
-    <line x1="3" y1="3" x2="21" y2="21"/>
-  </svg>
-</button>
+<!-- ============ REPRODUCTOR OCULTO EN SEGUNDO PLANO (SIN DESCARGAR MP3 Y SIN BOTÓN DE PAUSA) ============ -->
+<div id="contenedor-audio-oculto" aria-hidden="true">
+  <div id="yt-musica"></div>
+</div>
 
 <!-- ============ FONDO ESTÁTICO: MAPAMUNDI CARTOGRÁFICO REAL ============ -->
 <div id="fondo-mapamundi" aria-hidden="true">
@@ -948,31 +913,23 @@
     <g id="icono-ramita-olivo">
       <!-- LADO IZQUIERDO: Lámpara de aceite encendida -->
       <g transform="translate(4, 3)">
-        <!-- Resplandor y llama en la boquilla derecha (hacia el centro) -->
         <circle cx="38" cy="11" r="6" fill="currentColor" opacity="0.18"/>
         <path d="M38 3 C38 3 34 9 35 13 C35.6 15.5 36.8 16.5 38 16.5 C39.2 16.5 40.4 15.5 41 13 C42 9 38 3 38 3 Z" fill="currentColor"/>
         <path d="M38 7.5 C38 7.5 36.3 11 36.7 13 C37 14.2 37.5 14.8 38 14.8 C38.5 14.8 39 14.2 39.3 13 C39.7 11 38 7.5 38 7.5 Z" fill="var(--crema)"/>
-        <!-- Cuerpo de la lámpara -->
         <path d="M40 18 C36 17.5 32 19 28 18 C22 15.5 14 15.5 9 19.5 C5 22.5 5 28.5 10 31.5 C15 34.5 24 34.5 29 31.5 C33 29 36 23.5 40 20.5 C41.5 19.5 41 18 40 18 Z" fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
-        <!-- Orificio superior y detalles -->
         <ellipse cx="19" cy="18" rx="3.8" ry="1.3" fill="currentColor" fill-opacity="0.25" stroke="currentColor" stroke-width="1"/>
-        <!-- Base de la lámpara -->
         <path d="M13 33 L25 33 L27 36 L11 36 Z" fill="currentColor" fill-opacity="0.22" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
-        <!-- Asa izquierda -->
         <path d="M8 20.5 C1 16.5 -1 24.5 4 29.5 C6.5 31.5 9 30.5 10 29.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" fill="none"/>
       </g>
 
       <!-- CENTRO: Ramitas de olivo -->
       <g transform="translate(46, 6)">
-        <!-- Rama izquierda -->
         <path d="M85 16 C 62 18, 38 14, 12 20" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
         <path d="M70 16 C 64 9, 55 8, 52 13 C 58 16, 65 17, 70 16 Z" fill="currentColor"/>
         <path d="M52 16 C 46 22, 37 23, 34 18 C 40 15, 47 15, 52 16 Z" fill="currentColor"/>
         <path d="M36 16 C 30 9, 21 9, 18 14 C 24 17, 31 17, 36 16 Z" fill="currentColor"/>
         <circle cx="62" cy="19" r="2.2" fill="currentColor" opacity="0.8"/>
-        <!-- Centro -->
         <circle cx="95" cy="16" r="2.8" fill="currentColor"/>
-        <!-- Rama derecha -->
         <path d="M105 16 C 128 18, 152 14, 178 20" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
         <path d="M120 16 C 126 9, 135 8, 138 13 C 132 16, 125 17, 120 16 Z" fill="currentColor"/>
         <path d="M138 16 C 144 22, 153 23, 156 18 C 150 15, 143 15, 138 16 Z" fill="currentColor"/>
@@ -982,15 +939,10 @@
 
       <!-- LADO DERECHO: Garrafita / Jarrita de aceite -->
       <g transform="translate(238, 2)">
-        <!-- Base de la garrafita -->
         <path d="M12 37 L26 37 L24 34 L14 34 Z" fill="currentColor" fill-opacity="0.22" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
-        <!-- Cuerpo de la garrafita -->
         <path d="M15 9 L23 9 C22 13 22 15.5 25 19 C30 24.5 29.5 31 24 34 L14 34 C8.5 31 8 24.5 13 19 C16 15.5 16 13 15 9 Z" fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
-        <!-- Cuello y pico vertedor -->
         <path d="M13 9 C14 7 16 6.2 19 6.2 C22 6.2 24 7 25.5 8 C24.5 9 23 9 23 9 L15 9 Z" fill="currentColor" fill-opacity="0.25" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
-        <!-- Asa derecha -->
         <path d="M22.5 10.5 C29.5 10.5 31.5 18 26.5 23.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" fill="none"/>
-        <!-- Gota de aceite al centro -->
         <path d="M19 20 C19 20 16.5 23.5 16.5 25.2 C16.5 26.6 17.6 27.7 19 27.7 C20.4 27.7 21.5 26.6 21.5 25.2 C21.5 23.5 19 20 19 20 Z" fill="currentColor" opacity="0.85"/>
       </g>
     </g>
@@ -1343,38 +1295,90 @@
   Juan Antonio &amp; Anahí · 23.01.2027
 </footer>
 
+<!-- ============ LÓGICA DE INTRO Y MÚSICA AUTOMÁTICA DESDE YOUTUBE (SIN DESCARGAR MP3) ============ -->
 <script>
   (function () {
     const overlay = document.getElementById("intro-overlay");
     const avion = document.getElementById("avion-wrap");
     const textoIntro = document.querySelector(".intro-texto");
     const flechaIntro = document.querySelector(".intro-flecha");
-    const audio = document.getElementById("musica-boda");
-    const btnMusica = document.getElementById("btn-musica");
-    const iconoOn = document.getElementById("icono-musica-on");
-    const iconoOff = document.getElementById("icono-musica-off");
     let abierto = false;
     let listoParaAbrir = false;
 
-    function actualizarIconoMusica() {
-      if (!audio) return;
-      const sonando = !audio.paused;
-      iconoOn.style.display = sonando ? "block" : "none";
-      iconoOff.style.display = sonando ? "none" : "block";
+    // ID del video de YouTube de "La Bondad de Dios - Instrumental"
+    // (Si prefieres otra versión de YouTube, solo cambia este código de 11 letras por el de tu video)
+    const YOUTUBE_VIDEO_ID = "M7FIvfx5J10";
+    let ytPlayer = null;
+    let ytListo = false;
+    let reproducirAlCargar = false;
+
+    // Cargar API oficial de YouTube en segundo plano
+    const tag = document.createElement("script");
+    tag.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(tag);
+
+    window.onYouTubeIframeAPIReady = function () {
+      ytPlayer = new YT.Player("yt-musica", {
+        height: "1",
+        width: "1",
+        videoId: YOUTUBE_VIDEO_ID,
+        playerVars: {
+          autoplay: 0,
+          controls: 0,
+          disablekb: 1,
+          fs: 0,
+          loop: 1,
+          playlist: YOUTUBE_VIDEO_ID,
+          modestbranding: 1,
+          rel: 0,
+          playsinline: 1,
+          start: 0
+        },
+        events: {
+          onReady: function (e) {
+            ytListo = true;
+            e.target.setVolume(75);
+            if (reproducirAlCargar) {
+              e.target.seekTo(0);
+              e.target.playVideo();
+            }
+          },
+          onStateChange: function (e) {
+            if (e.data === YT.PlayerState.ENDED) {
+              ytPlayer.seekTo(0);
+              ytPlayer.playVideo();
+            }
+          }
+        }
+      });
+    };
+
+    function iniciarMusicaDesdeInicio() {
+      if (ytListo && ytPlayer && typeof ytPlayer.playVideo === "function") {
+        ytPlayer.seekTo(0);
+        ytPlayer.playVideo();
+      } else {
+        reproducirAlCargar = true;
+      }
     }
 
-    if (btnMusica && audio) {
-      btnMusica.addEventListener("click", () => {
-        if (audio.paused) {
-          audio.play().catch(() => {});
-        } else {
-          audio.pause();
-        }
-        actualizarIconoMusica();
-      });
-      audio.addEventListener("play", actualizarIconoMusica);
-      audio.addEventListener("pause", actualizarIconoMusica);
+    function detenerMusica() {
+      if (ytListo && ytPlayer && typeof ytPlayer.stopVideo === "function") {
+        ytPlayer.stopVideo();
+      }
     }
+
+    // Detener inmediatamente cuando cierren la página, cambien de app o bloqueen el celular
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        detenerMusica();
+      } else if (abierto) {
+        // Si regresan a la invitación, vuelve a sonar desde el principio
+        iniciarMusicaDesdeInicio();
+      }
+    });
+    window.addEventListener("pagehide", detenerMusica);
+    window.addEventListener("beforeunload", detenerMusica);
 
     avion.addEventListener("animationend", (e) => {
       if (e.animationName === "entrada-vuelo") {
@@ -1390,12 +1394,8 @@
       if (abierto || !listoParaAbrir) return;
       abierto = true;
 
-      // Inicia la canción justo cuando el invitado abre la invitación
-      if (audio) {
-        audio.volume = 0.7;
-        audio.play().catch(() => {});
-        if (btnMusica) btnMusica.classList.add("visible");
-      }
+      // Inicia la canción desde el segundo 0 justo al abrir o jalar el avión
+      iniciarMusicaDesdeInicio();
 
       avion.classList.remove("flotando");
       avion.classList.add("desplegando");
