@@ -62,18 +62,6 @@
     z-index:1;
   }
 
-  /* -------- reproductor oculto (sin controles visibles) -------- */
-  #contenedor-audio-oculto{
-    position:fixed;
-    width:1px;
-    height:1px;
-    bottom:-10px;
-    left:-10px;
-    opacity:0;
-    pointer-events:none;
-    z-index:-1;
-  }
-
   /* -------- intro: avión de papel -------- */
   #intro-overlay{
     position:fixed;
@@ -801,10 +789,8 @@
 </head>
 <body class="bloqueado">
 
-<!-- ============ REPRODUCTOR OCULTO EN SEGUNDO PLANO (SIN DESCARGAR MP3 Y SIN BOTÓN DE PAUSA) ============ -->
-<div id="contenedor-audio-oculto" aria-hidden="true">
-  <div id="yt-musica"></div>
-</div>
+<!-- ============ AUDIO LOCAL OCULTO (SIN CONTROLES PARA DETENER) ============ -->
+<audio id="musica-boda" src="audio/la-bondad-de-dios-instrumental.mp3" loop preload="auto"></audio>
 
 <!-- ============ FONDO ESTÁTICO: MAPAMUNDI CARTOGRÁFICO REAL ============ -->
 <div id="fondo-mapamundi" aria-hidden="true">
@@ -1295,85 +1281,34 @@
   Juan Antonio &amp; Anahí · 23.01.2027
 </footer>
 
-<!-- ============ LÓGICA DE INTRO Y MÚSICA AUTOMÁTICA DESDE YOUTUBE (SIN DESCARGAR MP3) ============ -->
 <script>
   (function () {
     const overlay = document.getElementById("intro-overlay");
     const avion = document.getElementById("avion-wrap");
     const textoIntro = document.querySelector(".intro-texto");
     const flechaIntro = document.querySelector(".intro-flecha");
+    const audio = document.getElementById("musica-boda");
     let abierto = false;
     let listoParaAbrir = false;
 
-    // ID del video de YouTube de "La Bondad de Dios - Instrumental"
-    // (Si prefieres otra versión de YouTube, solo cambia este código de 11 letras por el de tu video)
-    const YOUTUBE_VIDEO_ID = "M7FIvfx5J10";
-    let ytPlayer = null;
-    let ytListo = false;
-    let reproducirAlCargar = false;
-
-    // Cargar API oficial de YouTube en segundo plano
-    const tag = document.createElement("script");
-    tag.src = "https://www.youtube.com/iframe_api";
-    document.head.appendChild(tag);
-
-    window.onYouTubeIframeAPIReady = function () {
-      ytPlayer = new YT.Player("yt-musica", {
-        height: "1",
-        width: "1",
-        videoId: YOUTUBE_VIDEO_ID,
-        playerVars: {
-          autoplay: 0,
-          controls: 0,
-          disablekb: 1,
-          fs: 0,
-          loop: 1,
-          playlist: YOUTUBE_VIDEO_ID,
-          modestbranding: 1,
-          rel: 0,
-          playsinline: 1,
-          start: 0
-        },
-        events: {
-          onReady: function (e) {
-            ytListo = true;
-            e.target.setVolume(75);
-            if (reproducirAlCargar) {
-              e.target.seekTo(0);
-              e.target.playVideo();
-            }
-          },
-          onStateChange: function (e) {
-            if (e.data === YT.PlayerState.ENDED) {
-              ytPlayer.seekTo(0);
-              ytPlayer.playVideo();
-            }
-          }
-        }
-      });
-    };
-
     function iniciarMusicaDesdeInicio() {
-      if (ytListo && ytPlayer && typeof ytPlayer.playVideo === "function") {
-        ytPlayer.seekTo(0);
-        ytPlayer.playVideo();
-      } else {
-        reproducirAlCargar = true;
-      }
+      if (!audio) return;
+      audio.currentTime = 0;
+      audio.volume = 0.75;
+      audio.play().catch(() => {});
     }
 
     function detenerMusica() {
-      if (ytListo && ytPlayer && typeof ytPlayer.stopVideo === "function") {
-        ytPlayer.stopVideo();
-      }
+      if (!audio) return;
+      audio.pause();
+      audio.currentTime = 0;
     }
 
-    // Detener inmediatamente cuando cierren la página, cambien de app o bloqueen el celular
+    // Se detiene inmediatamente al cerrar la página, minimizar o bloquear el celular
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) {
         detenerMusica();
       } else if (abierto) {
-        // Si regresan a la invitación, vuelve a sonar desde el principio
         iniciarMusicaDesdeInicio();
       }
     });
@@ -1394,7 +1329,7 @@
       if (abierto || !listoParaAbrir) return;
       abierto = true;
 
-      // Inicia la canción desde el segundo 0 justo al abrir o jalar el avión
+      // Inicia la canción desde el principio exactamente al abrir o jalar el avión
       iniciarMusicaDesdeInicio();
 
       avion.classList.remove("flotando");
