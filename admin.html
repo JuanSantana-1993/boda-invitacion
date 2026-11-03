@@ -394,6 +394,16 @@
   .estado-cancelado{background:rgba(177,93,74,0.15); color:var(--rojo-cancelado);}
   .estado-pendiente{background:rgba(180,169,155,0.2); color:var(--gris-calido);}
 
+  .badge-anfitrion{
+    display:inline-block;
+    padding:2px 8px;
+    border-radius:12px;
+    font-size:0.74rem;
+    font-weight:500;
+    background:var(--blush);
+    color:var(--texto);
+  }
+
   .editar-btn{
     background:none;
     border:none;
@@ -581,12 +591,11 @@
 
       <div class="filtros">
         <button class="filtro-btn activo" data-filtro="todos">Todos</button>
-        <button class="filtro-btn" data-filtro="por_enviar_juan">Por enviar (Juan)</button>
-        <button class="filtro-btn" data-filtro="por_enviar_anahi">Por enviar (Anahí)</button>
+        <button class="filtro-btn" data-filtro="por_enviar">Por enviar WA</button>
         <button class="filtro-btn" data-filtro="enviadas">Ya enviadas</button>
         <button class="filtro-btn" data-filtro="confirmado">Confirmados</button>
         <button class="filtro-btn" data-filtro="cancelado">Cancelados</button>
-        <button class="filtro-btn" data-filtro="pendiente">Pendientes</button>
+        <button class="filtro-btn" data-filtro="pendiente">Pendientes de responder</button>
         <button class="filtro-btn" data-filtro="espera">Lista de espera</button>
       </div>
 
@@ -595,6 +604,7 @@
           <thead>
             <tr>
               <th>Familia / Contacto</th>
+              <th>Anfitrión</th>
               <th>Adultos</th>
               <th>Niños</th>
               <th class="col-condicional">Confirmados</th>
@@ -813,7 +823,6 @@ Hemos reservado lugares para {pases}. Para conocer todos los detalles, la ubicac
     localStorage.setItem(STORAGE_KEY_MSG, PLANTILLA_DEFAULT);
   });
 
-  // Limpia el teléfono: soporta +972... (Israel) y 10 dígitos (México -> 52...)
   function normalizarTelefonoWhatsApp(raw) {
     if (!raw) return null;
     let str = String(raw).trim();
@@ -951,27 +960,14 @@ Hemos reservado lugares para {pases}. Para conocer todos los detalles, la ubicac
   }
   const txtPersonas = (a, n) => `${a} ${a === 1 ? "adulto" : "adultos"}` + (n > 0 ? ` · ${n} ${n === 1 ? "niño" : "niños"}` : "");
 
-  function obtenerSiguientePorEnviar(filtroHost) {
-    return familias.find(f => {
-      if (f.lista_espera || f.enviada || f.estado === "cancelado") return false;
-      if (!normalizarTelefonoWhatsApp(f.contacto_telefono)) return false;
-      
-      const host = (f.anfitrion || "ambos").toLowerCase();
-      
-      if (filtroHost === "juan") return host === "juan" || host === "ambos";
-      if (filtroHost === "anahi") return host === "anahi" || host === "ambos";
-      return true;
-    });
+  function obtenerSiguientePorEnviar() {
+    return familias.find(f => !f.lista_espera && !f.enviada && f.estado !== "cancelado" && normalizarTelefonoWhatsApp(f.contacto_telefono));
   }
 
   document.getElementById("btn-siguiente-wa").addEventListener("click", () => {
-    let targetHost = null;
-    if (filtroActivo === "por_enviar_juan") targetHost = "juan";
-    if (filtroActivo === "por_enviar_anahi") targetHost = "anahi";
-
-    const sig = obtenerSiguientePorEnviar(targetHost);
+    const sig = obtenerSiguientePorEnviar();
     if (!sig) {
-      alert("¡No hay más familias pendientes con teléfono en este filtro!");
+      alert("¡No hay más familias pendientes con teléfono listas para enviar!");
       return;
     }
     enviarWhatsAppFamilia(sig);
@@ -1001,19 +997,16 @@ Hemos reservado lugares para {pases}. Para conocer todos los detalles, la ubicac
     document.getElementById("num-pendientes").textContent = pendientes;
     document.getElementById("num-espera").textContent = familias.filter(f => f.lista_espera).length;
 
-    // Actualizar botón de cola rápida según filtro
     const btnCola = document.getElementById("btn-siguiente-wa");
-    let targetHost = null;
-    if (filtroActivo === "por_enviar_juan") targetHost = "juan";
-    if (filtroActivo === "por_enviar_anahi") targetHost = "anahi";
-
-    const sig = obtenerSiguientePorEnviar(targetHost);
+    const sig = obtenerSiguientePorEnviar();
     if (sig) {
       btnCola.disabled = false;
-      btnCola.textContent = `Enviar siguiente: ${sig.contacto_nombre || sig.id}`;
+      btnCola.textContent = `Enviar a siguiente pendiente: ${sig.contacto_nombre || sig.id}`;
     } else {
       btnCola.disabled = true;
-      btnCola.textContent = "✓ Sin pendientes en esta lista";
+      btnCola.textContent = faltanEnviarCount > 0
+        ? `Faltan ${faltanEnviarCount} por enviar (agrega sus teléfonos)`
+        : "✓ Todas las invitaciones enviadas";
     }
 
     renderTabla();
@@ -1028,16 +1021,12 @@ Hemos reservado lugares para {pases}. Para conocer todos los detalles, la ubicac
       const estado = f.estado || "pendiente";
       const enEspera = !!f.lista_espera;
       
-      const host = (f.anfitrion || "ambos").toLowerCase();
-      
       let pasaFiltro;
 
       if (filtroActivo === "espera") {
         pasaFiltro = enEspera;
-      } else if (filtroActivo === "por_enviar_juan") {
-        pasaFiltro = !enEspera && !f.enviada && estado !== "cancelado" && (host === "juan" || host === "ambos");
-      } else if (filtroActivo === "por_enviar_anahi") {
-        pasaFiltro = !enEspera && !f.enviada && estado !== "cancelado" && (host === "anahi" || host === "ambos");
+      } else if (filtroActivo === "por_enviar") {
+        pasaFiltro = !enEspera && !f.enviada && estado !== "cancelado";
       } else if (filtroActivo === "enviadas") {
         pasaFiltro = !enEspera && !!f.enviada;
       } else {
@@ -1058,7 +1047,10 @@ Hemos reservado lugares para {pases}. Para conocer todos los detalles, la ubicac
       const estado = f.estado || "pendiente";
       const telNormalizado = normalizarTelefonoWhatsApp(f.contacto_telefono);
       const enviada = !!f.enviada;
+      const host = (f.anfitrion || "ambos").toLowerCase();
       const tr = document.createElement("tr");
+
+      const txtHost = host === "juan" ? "Juan Antonio" : (host === "anahi" ? "Anahí" : "Ambos");
 
       const subTelefono = telNormalizado
         ? `<span style="display:block; font-size:0.78rem; color:var(--gris-calido); margin-top:2px;">+${esc(telNormalizado)}</span>`
@@ -1074,6 +1066,7 @@ Hemos reservado lugares para {pases}. Para conocer todos los detalles, la ubicac
           <strong>${esc(f.contacto_nombre || f.id)}</strong>
           ${subTelefono}
         </td>
+        <td><span class="badge-anfitrion">${txtHost}</span></td>
         <td>${adultosDe(f)}</td>
         <td>${ninosDe(f)}</td>
         <td class="col-condicional">${f.estado === "confirmado" ? (() => { const c = confirmadosDe(f); return txtPersonas(c.a, c.n); })() : "-"}</td>
@@ -1175,10 +1168,7 @@ Hemos reservado lugares para {pases}. Para conocer todos los detalles, la ubicac
     const c = confirmadosDe(f);
     document.getElementById("edit-nombre").value = f.contacto_nombre || "";
     document.getElementById("edit-telefono").value = f.contacto_telefono || "";
-    
-    // Por si en Firebase se guardó con otra capitalización, normalizamos
     document.getElementById("edit-anfitrion").value = (f.anfitrion || "ambos").toLowerCase();
-    
     document.getElementById("edit-adultos").value = adultosDe(f) || 1;
     document.getElementById("edit-ninos").value = ninosDe(f);
     document.getElementById("edit-adultos-conf").value = c.a;
