@@ -14,7 +14,6 @@
     --gris-calido:#B4A99B;
     --texto:#3B2A22;
     --verde-confirmado:#5C7A5A;
-    --verde-wa:#2E7D4F;
     --rojo-cancelado:#B15D4A;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
@@ -89,7 +88,7 @@
     font-size:0.85rem;
   }
 
-  .wrap{max-width:1120px; margin:0 auto; padding:28px;}
+  .wrap{max-width:1080px; margin:0 auto; padding:28px;}
 
   /* -------- conteo regresivo -------- */
   .conteo-panel{
@@ -188,12 +187,12 @@
   }
   .btn-wa-cola{
     width:auto;
-    padding:10px 18px;
-    background:var(--verde-wa);
+    padding:9px 18px;
+    background:var(--terracota);
     color:#fff;
     border:none;
     font-family:inherit;
-    font-size:0.88rem;
+    font-size:0.85rem;
     font-weight:500;
     cursor:pointer;
   }
@@ -207,11 +206,12 @@
     background:none;
     border:1px solid var(--arena);
     color:var(--texto);
-    padding:9px 14px;
+    padding:8px 14px;
     font-family:inherit;
     font-size:0.84rem;
     cursor:pointer;
   }
+  .btn-toggle-plantilla:hover{background:var(--crema);}
   .wa-editor-wrap{
     display:none;
     margin-top:16px;
@@ -370,7 +370,7 @@
   }
   th, td{
     text-align:left;
-    padding:12px 12px;
+    padding:12px 14px;
     border-bottom:1px solid var(--arena);
   }
   th{
@@ -384,26 +384,6 @@
 
   table.vista-espera .col-condicional{display:none;}
 
-  .tel-sub{
-    display:block;
-    font-size:0.76rem;
-    color:var(--gris-calido);
-    margin-top:2px;
-  }
-  .tel-faltante{
-    color:var(--rojo-cancelado);
-  }
-
-  .badge-anfitrion{
-    display:inline-block;
-    padding:2px 8px;
-    border-radius:12px;
-    font-size:0.74rem;
-    font-weight:500;
-    background:var(--blush);
-    color:var(--texto);
-  }
-
   .estado-pill{
     display:inline-block;
     padding:3px 10px;
@@ -414,46 +394,6 @@
   .estado-cancelado{background:rgba(177,93,74,0.15); color:var(--rojo-cancelado);}
   .estado-pendiente{background:rgba(180,169,155,0.2); color:var(--gris-calido);}
 
-  .check-enviada-label{
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    font-size:0.8rem;
-    cursor:pointer;
-    user-select:none;
-  }
-  .check-enviada-label input{
-    cursor:pointer;
-    accent-color:var(--verde-confirmado);
-    width:15px;
-    height:15px;
-  }
-
-  .btn-wa-fila{
-    display:inline-block;
-    padding:5px 10px;
-    background:var(--verde-wa);
-    color:#fff;
-    border:none;
-    border-radius:4px;
-    font-family:inherit;
-    font-size:0.78rem;
-    cursor:pointer;
-    margin-right:6px;
-    margin-bottom:3px;
-  }
-  .btn-wa-fila:hover{opacity:0.9;}
-  .btn-wa-fila.reenviar{
-    background:none;
-    color:var(--verde-wa);
-    border:1px solid var(--verde-wa);
-  }
-  .btn-wa-fila.sin-tel{
-    background:rgba(177,93,74,0.12);
-    color:var(--rojo-cancelado);
-    border:1px dashed var(--rojo-cancelado);
-  }
-
   .editar-btn{
     background:none;
     border:none;
@@ -462,8 +402,10 @@
     font-size:0.8rem;
     text-decoration:underline;
     font-family:inherit;
-    margin-right:6px;
+    margin-right:10px;
+    white-space:nowrap;
   }
+  .editar-btn:hover{opacity:0.8;}
   .eliminar-btn{color:var(--rojo-cancelado);}
 
   #vacio{
@@ -644,7 +586,7 @@
         <button class="filtro-btn" data-filtro="enviadas">Ya enviadas</button>
         <button class="filtro-btn" data-filtro="confirmado">Confirmados</button>
         <button class="filtro-btn" data-filtro="cancelado">Cancelados</button>
-        <button class="filtro-btn" data-filtro="pendiente">Pendientes de responder</button>
+        <button class="filtro-btn" data-filtro="pendiente">Pendientes</button>
         <button class="filtro-btn" data-filtro="espera">Lista de espera</button>
       </div>
 
@@ -653,12 +595,10 @@
           <thead>
             <tr>
               <th>Familia / Contacto</th>
-              <th>Anfitrión</th>
               <th>Adultos</th>
               <th>Niños</th>
               <th class="col-condicional">Confirmados</th>
               <th class="col-condicional">Estado</th>
-              <th class="col-condicional">Enviada</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -736,8 +676,8 @@
       <label for="edit-anfitrion">Invitado por / Anfitrión</label>
       <select id="edit-anfitrion">
         <option value="ambos">Ambos</option>
-        <option value="juan">Juan Antonio (2211657062)</option>
-        <option value="anahi">Anahí (+972509247468)</option>
+        <option value="juan">Juan Antonio</option>
+        <option value="anahi">Anahí</option>
       </select>
     </div>
 
@@ -1015,7 +955,9 @@ Hemos reservado lugares para {pases}. Para conocer todos los detalles, la ubicac
     return familias.find(f => {
       if (f.lista_espera || f.enviada || f.estado === "cancelado") return false;
       if (!normalizarTelefonoWhatsApp(f.contacto_telefono)) return false;
-      const host = f.anfitrion || "ambos";
+      
+      const host = (f.anfitrion || "ambos").toLowerCase();
+      
       if (filtroHost === "juan") return host === "juan" || host === "ambos";
       if (filtroHost === "anahi") return host === "anahi" || host === "ambos";
       return true;
@@ -1085,7 +1027,9 @@ Hemos reservado lugares para {pases}. Para conocer todos los detalles, la ubicac
     let lista = familias.filter(f => {
       const estado = f.estado || "pendiente";
       const enEspera = !!f.lista_espera;
-      const host = f.anfitrion || "ambos";
+      
+      const host = (f.anfitrion || "ambos").toLowerCase();
+      
       let pasaFiltro;
 
       if (filtroActivo === "espera") {
@@ -1114,19 +1058,15 @@ Hemos reservado lugares para {pases}. Para conocer todos los detalles, la ubicac
       const estado = f.estado || "pendiente";
       const telNormalizado = normalizarTelefonoWhatsApp(f.contacto_telefono);
       const enviada = !!f.enviada;
-      const host = f.anfitrion || "ambos";
       const tr = document.createElement("tr");
 
-      const txtHost = host === "juan" ? "Juan Antonio" : (host === "anahi" ? "Anahí" : "Ambos");
-
       const subTelefono = telNormalizado
-        ? `<span class="tel-sub">📱 +${esc(telNormalizado)}</span>`
-        : `<span class="tel-sub tel-faltante">⚠️ Sin teléfono</span>`;
+        ? `<span style="display:block; font-size:0.78rem; color:var(--gris-calido); margin-top:2px;">+${esc(telNormalizado)}</span>`
+        : `<span style="display:block; font-size:0.78rem; color:var(--rojo-cancelado); margin-top:2px;">Sin teléfono</span>`;
 
+      const txtEnviar = enviada ? "Reenviar WA" : "Enviar WA";
       const botonWhatsApp = !f.lista_espera && estado !== "cancelado"
-        ? (telNormalizado
-            ? `<button class="btn-wa-fila ${enviada ? "reenviar" : ""}" data-id="${f.id}">${enviada ? "Reenviar WhatsApp" : "Enviar por WhatsApp"}</button>`
-            : `<button class="btn-wa-fila sin-tel" data-id="${f.id}">+ Agregar tel</button>`)
+        ? `<button class="editar-btn btn-wa-fila" data-id="${f.id}" ${!telNormalizado ? 'style="color:var(--rojo-cancelado);"' : ''}>${telNormalizado ? txtEnviar : "+ Agregar tel"}</button>`
         : "";
 
       tr.innerHTML = `
@@ -1134,17 +1074,10 @@ Hemos reservado lugares para {pases}. Para conocer todos los detalles, la ubicac
           <strong>${esc(f.contacto_nombre || f.id)}</strong>
           ${subTelefono}
         </td>
-        <td><span class="badge-anfitrion">${txtHost}</span></td>
         <td>${adultosDe(f)}</td>
         <td>${ninosDe(f)}</td>
         <td class="col-condicional">${f.estado === "confirmado" ? (() => { const c = confirmadosDe(f); return txtPersonas(c.a, c.n); })() : "-"}</td>
         <td class="col-condicional"><span class="estado-pill estado-${estado}">${estado}</span></td>
-        <td class="col-condicional">
-          <label class="check-enviada-label">
-            <input type="checkbox" class="check-enviada" data-id="${f.id}" ${enviada ? "checked" : ""}>
-            <span>${enviada ? "Enviada" : "Pendiente"}</span>
-          </label>
-        </td>
         <td>
           ${botonWhatsApp}
           <button class="editar-btn" data-id="${f.id}">Editar</button>
@@ -1162,13 +1095,7 @@ Hemos reservado lugares para {pases}. Para conocer todos los detalles, la ubicac
       });
     });
 
-    tbody.querySelectorAll(".check-enviada").forEach(chk => {
-      chk.addEventListener("change", async () => {
-        await updateDoc(doc(db, "familias", chk.dataset.id), { enviada: chk.checked });
-      });
-    });
-
-    tbody.querySelectorAll(".editar-btn:not(.copiar-btn):not(.eliminar-btn)").forEach(btn => {
+    tbody.querySelectorAll(".editar-btn:not(.btn-wa-fila):not(.copiar-btn):not(.eliminar-btn)").forEach(btn => {
       btn.addEventListener("click", () => abrirModalEditar(btn.dataset.id));
     });
     tbody.querySelectorAll(".copiar-btn").forEach(btn => {
@@ -1248,7 +1175,10 @@ Hemos reservado lugares para {pases}. Para conocer todos los detalles, la ubicac
     const c = confirmadosDe(f);
     document.getElementById("edit-nombre").value = f.contacto_nombre || "";
     document.getElementById("edit-telefono").value = f.contacto_telefono || "";
-    document.getElementById("edit-anfitrion").value = f.anfitrion || "ambos";
+    
+    // Por si en Firebase se guardó con otra capitalización, normalizamos
+    document.getElementById("edit-anfitrion").value = (f.anfitrion || "ambos").toLowerCase();
+    
     document.getElementById("edit-adultos").value = adultosDe(f) || 1;
     document.getElementById("edit-ninos").value = ninosDe(f);
     document.getElementById("edit-adultos-conf").value = c.a;
@@ -1443,7 +1373,7 @@ Hemos reservado lugares para {pases}. Para conocer todos los detalles, la ubicac
   async function eliminarGasto(id) {
     const it = itemsPlaneacion.find(x => x.id === id);
     if (!it) return;
-    if (!confirm(`¿Eliminar "${it.nombre}" y todos sus abonos?`)) return;
+    if (!confirm(`¿Eliminar "${it.nombre}" y todos sus abonos? No se puede deshacer.`)) return;
     await deleteDoc(doc(db, "planeacion", id));
   }
 
