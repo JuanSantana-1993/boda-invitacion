@@ -14,6 +14,7 @@
     --gris-calido:#B4A99B;
     --texto:#3B2A22;
     --verde-confirmado:#5C7A5A;
+    --verde-wa:#2E7D4F;
     --rojo-cancelado:#B15D4A;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
@@ -88,7 +89,7 @@
     font-size:0.85rem;
   }
 
-  .wrap{max-width:1000px; margin:0 auto; padding:28px;}
+  .wrap{max-width:1120px; margin:0 auto; padding:28px;}
 
   /* -------- conteo regresivo -------- */
   .conteo-panel{
@@ -147,19 +148,115 @@
     font-weight:600;
   }
 
-  /* -------- importar -------- */
+  /* -------- importar y acciones superiores -------- */
   .importar-box{
     display:flex;
     align-items:center;
-    gap:14px;
-    margin-bottom:24px;
+    gap:12px;
+    margin-bottom:20px;
     flex-wrap:wrap;
   }
-  .importar-box .btn{width:auto; display:inline-block; cursor:pointer; padding:10px 20px;}
+  .importar-box .btn{width:auto; display:inline-block; cursor:pointer; padding:10px 18px;}
   #csv-input{display:none;}
   #importar-status{font-size:0.85rem; color:var(--gris-calido);}
 
-  /* -------- planeación: lo que tenemos, costos y abonos -------- */
+  /* -------- caja de mensaje y cola de WhatsApp -------- */
+  .wa-panel-box{
+    background:#fff;
+    border:1px solid var(--arena);
+    padding:20px 22px;
+    margin-bottom:24px;
+  }
+  .wa-panel-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:14px;
+    flex-wrap:wrap;
+  }
+  .wa-panel-titulo{
+    font-size:1.02rem;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .wa-acciones-cola{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .btn-wa-cola{
+    width:auto;
+    padding:10px 18px;
+    background:var(--verde-wa);
+    color:#fff;
+    border:none;
+    font-family:inherit;
+    font-size:0.88rem;
+    font-weight:500;
+    cursor:pointer;
+  }
+  .btn-wa-cola:disabled{
+    background:var(--arena);
+    color:var(--texto);
+    opacity:0.65;
+    cursor:not-allowed;
+  }
+  .btn-toggle-plantilla{
+    background:none;
+    border:1px solid var(--arena);
+    color:var(--texto);
+    padding:9px 14px;
+    font-family:inherit;
+    font-size:0.84rem;
+    cursor:pointer;
+  }
+  .wa-editor-wrap{
+    display:none;
+    margin-top:16px;
+    padding-top:16px;
+    border-top:1px solid var(--arena);
+  }
+  .wa-editor-wrap.abierto{display:block;}
+  .wa-ayuda{
+    font-size:0.82rem;
+    color:var(--gris-calido);
+    margin-bottom:10px;
+    line-height:1.45;
+  }
+  .wa-ayuda code{
+    background:var(--blush);
+    color:var(--texto);
+    padding:2px 6px;
+    border-radius:4px;
+    font-size:0.8rem;
+  }
+  #wa-mensaje-plantilla{
+    width:100%;
+    min-height:175px;
+    padding:12px 14px;
+    border:1px solid var(--arena);
+    background:var(--crema);
+    font-family:inherit;
+    font-size:0.9rem;
+    line-height:1.5;
+    resize:vertical;
+  }
+  .wa-editor-footer{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:10px;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+  .wa-guardado-msg{
+    font-size:0.8rem;
+    color:var(--verde-confirmado);
+  }
+
+  /* -------- planeación -------- */
   .planeacion-titulo{font-size:1.1rem; margin:8px 0 6px;}
   .planeacion-ayuda{font-size:0.85rem; color:var(--gris-calido); margin-bottom:16px;}
   .resumen.plan .numero{font-size:1.55rem;}
@@ -208,7 +305,7 @@
   /* -------- resumen -------- */
   .resumen{
     display:grid;
-    grid-template-columns:repeat(auto-fit, minmax(130px, 1fr));
+    grid-template-columns:repeat(auto-fit, minmax(135px, 1fr));
     gap:14px;
     margin-bottom:28px;
   }
@@ -228,7 +325,6 @@
     color:var(--gris-calido);
     margin-top:4px;
   }
-
   .tarjeta-resumen .sub{font-size:0.72rem; color:var(--gris-calido); margin-top:5px; line-height:1.3;}
   .campo-fila{display:flex; gap:12px;}
   .campo-fila .campo{flex:1; min-width:0;}
@@ -241,12 +337,12 @@
     flex-wrap:wrap;
   }
   .filtro-btn{
-    padding:8px 16px;
+    padding:8px 14px;
     border:1px solid var(--arena);
     background:#fff;
     color:var(--texto);
     font-family:inherit;
-    font-size:0.85rem;
+    font-size:0.84rem;
     cursor:pointer;
   }
   .filtro-btn.activo{
@@ -274,7 +370,7 @@
   }
   th, td{
     text-align:left;
-    padding:12px 14px;
+    padding:12px 12px;
     border-bottom:1px solid var(--arena);
   }
   th{
@@ -288,6 +384,26 @@
 
   table.vista-espera .col-condicional{display:none;}
 
+  .tel-sub{
+    display:block;
+    font-size:0.76rem;
+    color:var(--gris-calido);
+    margin-top:2px;
+  }
+  .tel-faltante{
+    color:var(--rojo-cancelado);
+  }
+
+  .badge-anfitrion{
+    display:inline-block;
+    padding:2px 8px;
+    border-radius:12px;
+    font-size:0.74rem;
+    font-weight:500;
+    background:var(--blush);
+    color:var(--texto);
+  }
+
   .estado-pill{
     display:inline-block;
     padding:3px 10px;
@@ -298,6 +414,46 @@
   .estado-cancelado{background:rgba(177,93,74,0.15); color:var(--rojo-cancelado);}
   .estado-pendiente{background:rgba(180,169,155,0.2); color:var(--gris-calido);}
 
+  .check-enviada-label{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-size:0.8rem;
+    cursor:pointer;
+    user-select:none;
+  }
+  .check-enviada-label input{
+    cursor:pointer;
+    accent-color:var(--verde-confirmado);
+    width:15px;
+    height:15px;
+  }
+
+  .btn-wa-fila{
+    display:inline-block;
+    padding:5px 10px;
+    background:var(--verde-wa);
+    color:#fff;
+    border:none;
+    border-radius:4px;
+    font-family:inherit;
+    font-size:0.78rem;
+    cursor:pointer;
+    margin-right:6px;
+    margin-bottom:3px;
+  }
+  .btn-wa-fila:hover{opacity:0.9;}
+  .btn-wa-fila.reenviar{
+    background:none;
+    color:var(--verde-wa);
+    border:1px solid var(--verde-wa);
+  }
+  .btn-wa-fila.sin-tel{
+    background:rgba(177,93,74,0.12);
+    color:var(--rojo-cancelado);
+    border:1px dashed var(--rojo-cancelado);
+  }
+
   .editar-btn{
     background:none;
     border:none;
@@ -306,6 +462,7 @@
     font-size:0.8rem;
     text-decoration:underline;
     font-family:inherit;
+    margin-right:6px;
   }
   .eliminar-btn{color:var(--rojo-cancelado);}
 
@@ -359,9 +516,10 @@
     display:flex;
     align-items:center;
     gap:8px;
+    margin-top:8px;
   }
-  .modal-box .campo-checkbox input{width:auto;}
-  .modal-box .campo-checkbox label{margin:0;}
+  .modal-box .campo-checkbox input{width:16px; height:16px; accent-color:var(--terracota);}
+  .modal-box .campo-checkbox label{margin:0; color:var(--texto); font-size:0.88rem; cursor:pointer;}
   .modal-botones{
     display:flex;
     gap:10px;
@@ -422,11 +580,41 @@
       </div>
       <div id="resultados-importacion"></div>
 
+      <!-- ============ CAJA DE ENVÍO POR WHATSAPP Y PLANTILLA EDITABLE ============ -->
+      <div class="wa-panel-box">
+        <div class="wa-panel-header">
+          <div class="wa-panel-titulo">
+            <span class="serif">Envío de invitaciones por WhatsApp</span>
+          </div>
+          <div class="wa-acciones-cola">
+            <button type="button" class="btn-wa-cola" id="btn-siguiente-wa">Enviar a siguiente familia pendiente</button>
+            <button type="button" class="btn-toggle-plantilla" id="btn-toggle-plantilla">Editar mensaje modelo</button>
+          </div>
+        </div>
+
+        <div class="wa-editor-wrap" id="wa-editor-wrap">
+          <p class="wa-ayuda">
+            Escribe el mensaje que se abrirá en WhatsApp. Puedes usar estas etiquetas y se reemplazarán solas con los datos de cada familia:
+            <code>{nombre}</code> <code>{link}</code> <code>{pases}</code> <code>{adultos}</code> <code>{ninos}</code>
+          </p>
+          <textarea id="wa-mensaje-plantilla"></textarea>
+          <div class="wa-editor-footer">
+            <span class="wa-guardado-msg" id="wa-guardado-msg">Se guarda automáticamente al escribir.</span>
+            <button type="button" class="editar-btn" id="btn-restaurar-plantilla">Restaurar mensaje original</button>
+          </div>
+        </div>
+      </div>
+
       <div class="resumen">
         <div class="tarjeta-resumen">
           <div class="numero" id="num-esperados">0</div>
           <div class="etiqueta">Personas esperadas</div>
           <div class="sub" id="sub-esperados"></div>
+        </div>
+        <div class="tarjeta-resumen">
+          <div class="numero" id="num-enviadas">0</div>
+          <div class="etiqueta">Invitaciones enviadas</div>
+          <div class="sub" id="sub-enviadas"></div>
         </div>
         <div class="tarjeta-resumen">
           <div class="numero" id="num-confirmados">0</div>
@@ -447,29 +635,36 @@
         </div>
       </div>
 
-      <input type="text" id="buscador" placeholder="Buscar familia o contacto...">
+      <input type="text" id="buscador" placeholder="Buscar familia, contacto o teléfono...">
 
       <div class="filtros">
         <button class="filtro-btn activo" data-filtro="todos">Todos</button>
+        <button class="filtro-btn" data-filtro="por_enviar_juan">Por enviar (Juan)</button>
+        <button class="filtro-btn" data-filtro="por_enviar_anahi">Por enviar (Anahí)</button>
+        <button class="filtro-btn" data-filtro="enviadas">Ya enviadas</button>
         <button class="filtro-btn" data-filtro="confirmado">Confirmados</button>
         <button class="filtro-btn" data-filtro="cancelado">Cancelados</button>
-        <button class="filtro-btn" data-filtro="pendiente">Pendientes</button>
+        <button class="filtro-btn" data-filtro="pendiente">Pendientes de responder</button>
         <button class="filtro-btn" data-filtro="espera">Lista de espera</button>
       </div>
 
-      <table>
-        <thead>
-          <tr>
-            <th>Familia / Contacto</th>
-            <th>Adultos</th>
-            <th>Niños</th>
-            <th class="col-condicional">Confirmados</th>
-            <th class="col-condicional">Estado</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="tabla-body"></tbody>
-      </table>
+      <div class="tabla-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Familia / Contacto</th>
+              <th>Anfitrión</th>
+              <th>Adultos</th>
+              <th>Niños</th>
+              <th class="col-condicional">Confirmados</th>
+              <th class="col-condicional">Estado</th>
+              <th class="col-condicional">Enviada</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-body"></tbody>
+        </table>
+      </div>
 
       <p id="vacio" style="display:none;">No hay invitados cargados todavía.</p>
     </div>
@@ -533,8 +728,17 @@
     </div>
 
     <div class="campo">
-      <label for="edit-telefono">Teléfono</label>
-      <input type="text" id="edit-telefono" placeholder="Ej. 2221234567">
+      <label for="edit-telefono">Teléfono (10 dígitos México o +972... Israel)</label>
+      <input type="text" id="edit-telefono" placeholder="Ej. 2211657062 o +972509247468">
+    </div>
+
+    <div class="campo">
+      <label for="edit-anfitrion">Invitado por / Anfitrión</label>
+      <select id="edit-anfitrion">
+        <option value="ambos">Ambos</option>
+        <option value="juan">Juan Antonio (2211657062)</option>
+        <option value="anahi">Anahí (+972509247468)</option>
+      </select>
     </div>
 
     <div class="campo-fila">
@@ -562,6 +766,11 @@
         <label for="edit-ninos-conf">Niños confirmados</label>
         <input type="number" id="edit-ninos-conf" min="0">
       </div>
+    </div>
+
+    <div class="campo campo-checkbox" id="campo-enviada-wrap">
+      <input type="checkbox" id="edit-enviada">
+      <label for="edit-enviada">Invitación ya enviada por WhatsApp</label>
     </div>
 
     <div class="modal-botones">
@@ -629,6 +838,102 @@
   const panel = document.getElementById("panel");
   const loginError = document.getElementById("login-error");
 
+  // ---------- plantilla de mensaje para WhatsApp ----------
+  const PLANTILLA_DEFAULT = `¡Hola, {nombre}! 🎉✨
+
+*“El tiempo de la canción ha llegado...”* 🕊️🎵 (Cantar de los Cantares 2:12).
+
+¡Nos casamos! Tenemos el corazón rebosante de alegría y queremos compartir esta gran noticia con las personas que más amamos. ¡Nos encantaría que nos acompañen a celebrar nuestro día especial! 🤍
+
+Hemos reservado lugares para {pases}. Para conocer todos los detalles, la ubicación exacta y confirmar su asistencia, por favor abran el siguiente enlace:
+
+🔗 {link}
+
+¡Nos dará muchísima felicidad celebrar esta nueva etapa con ustedes! Con todo nuestro cariño, Anahí y Juan Antonio 🥂✨`;
+
+  const STORAGE_KEY_MSG = "boda_wa_plantilla_v1";
+  const txtPlantilla = document.getElementById("wa-mensaje-plantilla");
+  txtPlantilla.value = localStorage.getItem(STORAGE_KEY_MSG) || PLANTILLA_DEFAULT;
+
+  txtPlantilla.addEventListener("input", () => {
+    localStorage.setItem(STORAGE_KEY_MSG, txtPlantilla.value);
+    const aviso = document.getElementById("wa-guardado-msg");
+    aviso.textContent = "✓ Cambios guardados automáticamente";
+  });
+
+  document.getElementById("btn-toggle-plantilla").addEventListener("click", () => {
+    const wrap = document.getElementById("wa-editor-wrap");
+    const abierto = wrap.classList.toggle("abierto");
+    document.getElementById("btn-toggle-plantilla").textContent = abierto ? "Ocultar mensaje modelo" : "Editar mensaje modelo";
+  });
+
+  document.getElementById("btn-restaurar-plantilla").addEventListener("click", () => {
+    if (!confirm("¿Restaurar el mensaje original de invitación?")) return;
+    txtPlantilla.value = PLANTILLA_DEFAULT;
+    localStorage.setItem(STORAGE_KEY_MSG, PLANTILLA_DEFAULT);
+  });
+
+  // Limpia el teléfono: soporta +972... (Israel) y 10 dígitos (México -> 52...)
+  function normalizarTelefonoWhatsApp(raw) {
+    if (!raw) return null;
+    let str = String(raw).trim();
+    if (str.startsWith("+")) {
+      return str.replace(/\D+/g, "");
+    }
+    const digitos = str.replace(/\D+/g, "");
+    if (!digitos) return null;
+    if (digitos.length === 10) return "52" + digitos;
+    if (digitos.length >= 11 && digitos.length <= 15) return digitos;
+    return null;
+  }
+
+  function linkInvitacionDe(id) {
+    return `${location.origin}${location.pathname.replace("admin.html", "index.html")}?fam=${encodeURIComponent(id)}`;
+  }
+
+  function textoPasesDe(f) {
+    const a = adultosDe(f);
+    const n = ninosDe(f);
+    const partes = [];
+    if (a > 0) partes.push(`${a} ${a === 1 ? "adulto" : "adultos"}`);
+    if (n > 0) partes.push(`${n} ${n === 1 ? "niño" : "niños"}`);
+    return partes.join(" y ");
+  }
+
+  function armarMensajeParaFamilia(f) {
+    const base = txtPlantilla.value || PLANTILLA_DEFAULT;
+    const link = linkInvitacionDe(f.id);
+    const a = adultosDe(f);
+    const n = ninosDe(f);
+    return base
+      .replace(/\{nombre\}/gi, f.contacto_nombre || f.id)
+      .replace(/\{link\}/gi, link)
+      .replace(/\{pases\}/gi, textoPasesDe(f))
+      .replace(/\{adultos\}/gi, String(a))
+      .replace(/\{ninos\}/gi, String(n))
+      .replace(/\{niños\}/gi, String(n));
+  }
+
+  async function enviarWhatsAppFamilia(f) {
+    const tel = normalizarTelefonoWhatsApp(f.contacto_telefono);
+    if (!tel) {
+      alert(`La familia "${f.contacto_nombre || f.id}" no tiene un teléfono válido registrado. Captúralo a continuación.`);
+      abrirModalEditar(f.id);
+      setTimeout(() => document.getElementById("edit-telefono").focus(), 100);
+      return;
+    }
+
+    const mensaje = armarMensajeParaFamilia(f);
+    const url = `https://wa.me/${tel}?text=${encodeURIComponent(mensaje)}`;
+    window.open(url, "_blank", "noopener");
+
+    if (!f.enviada) {
+      try {
+        await updateDoc(doc(db, "familias", f.id), { enviada: true });
+      } catch (e) {}
+    }
+  }
+
   // ---------- conteo regresivo ----------
   (function () {
     const objetivo = new Date(2027, 0, 23, 12, 0, 0).getTime();
@@ -691,26 +996,46 @@
     });
   }
 
-  // ---- Adultos y niños ----
-  // (los registros viejos solo traían "personas_esperadas": se leen como adultos, sin niños)
   const adultosDe = f => (Number.isFinite(f.adultos) ? f.adultos : (f.personas_esperadas || 0));
   const ninosDe = f => (Number.isFinite(f.ninos) ? f.ninos : 0);
   const totalDe = f => adultosDe(f) + ninosDe(f);
 
-  // Cuántos adultos y niños confirmaron esa familia (0 si no está confirmada)
   function confirmadosDe(f) {
     if (f.estado !== "confirmado") return { a: 0, n: 0 };
     if (Number.isFinite(f.adultos_confirmados) || Number.isFinite(f.ninos_confirmados)) {
       return { a: f.adultos_confirmados || 0, n: f.ninos_confirmados || 0 };
     }
-    const total = f.personas_confirmadas ?? totalDe(f);            // registro viejo: solo traía el total
+    const total = f.personas_confirmadas ?? totalDe(f);
     if (total >= totalDe(f)) return { a: adultosDe(f), n: ninosDe(f) };
     return { a: Math.min(total, adultosDe(f)), n: 0 };
   }
   const txtPersonas = (a, n) => `${a} ${a === 1 ? "adulto" : "adultos"}` + (n > 0 ? ` · ${n} ${n === 1 ? "niño" : "niños"}` : "");
 
+  function obtenerSiguientePorEnviar(filtroHost) {
+    return familias.find(f => {
+      if (f.lista_espera || f.enviada || f.estado === "cancelado") return false;
+      if (!normalizarTelefonoWhatsApp(f.contacto_telefono)) return false;
+      const host = f.anfitrion || "ambos";
+      if (filtroHost === "juan") return host === "juan" || host === "ambos";
+      if (filtroHost === "anahi") return host === "anahi" || host === "ambos";
+      return true;
+    });
+  }
+
+  document.getElementById("btn-siguiente-wa").addEventListener("click", () => {
+    let targetHost = null;
+    if (filtroActivo === "por_enviar_juan") targetHost = "juan";
+    if (filtroActivo === "por_enviar_anahi") targetHost = "anahi";
+
+    const sig = obtenerSiguientePorEnviar(targetHost);
+    if (!sig) {
+      alert("¡No hay más familias pendientes con teléfono en este filtro!");
+      return;
+    }
+    enviarWhatsAppFamilia(sig);
+  });
+
   function renderTodo() {
-    // resumen — la lista de espera no cuenta como invitados confirmados todavía
     const activos = familias.filter(f => !f.lista_espera);
     const espA = activos.reduce((s, f) => s + adultosDe(f), 0);
     const espN = activos.reduce((s, f) => s + ninosDe(f), 0);
@@ -721,13 +1046,33 @@
     const cancelados = activos.filter(f => f.estado === "cancelado").length;
     const pendientes = activos.filter(f => !f.estado || f.estado === "pendiente").length;
 
+    const enviadasCount = activos.filter(f => !!f.enviada).length;
+    const faltanEnviarCount = activos.filter(f => !f.enviada && f.estado !== "cancelado").length;
+
     document.getElementById("num-esperados").textContent = esperados;
     document.getElementById("sub-esperados").textContent = `${espA} adultos · ${espN} niños`;
+    document.getElementById("num-enviadas").textContent = `${enviadasCount} / ${activos.length}`;
+    document.getElementById("sub-enviadas").textContent = faltanEnviarCount ? `Faltan ${faltanEnviarCount}` : "¡Todas enviadas!";
     document.getElementById("num-confirmados").textContent = confirmados;
     document.getElementById("sub-confirmados").textContent = `${confA} adultos · ${confN} niños`;
     document.getElementById("num-cancelados").textContent = cancelados;
     document.getElementById("num-pendientes").textContent = pendientes;
     document.getElementById("num-espera").textContent = familias.filter(f => f.lista_espera).length;
+
+    // Actualizar botón de cola rápida según filtro
+    const btnCola = document.getElementById("btn-siguiente-wa");
+    let targetHost = null;
+    if (filtroActivo === "por_enviar_juan") targetHost = "juan";
+    if (filtroActivo === "por_enviar_anahi") targetHost = "anahi";
+
+    const sig = obtenerSiguientePorEnviar(targetHost);
+    if (sig) {
+      btnCola.disabled = false;
+      btnCola.textContent = `Enviar siguiente: ${sig.contacto_nombre || sig.id}`;
+    } else {
+      btnCola.disabled = true;
+      btnCola.textContent = "✓ Sin pendientes en esta lista";
+    }
 
     renderTabla();
   }
@@ -740,14 +1085,23 @@
     let lista = familias.filter(f => {
       const estado = f.estado || "pendiente";
       const enEspera = !!f.lista_espera;
+      const host = f.anfitrion || "ambos";
       let pasaFiltro;
+
       if (filtroActivo === "espera") {
         pasaFiltro = enEspera;
+      } else if (filtroActivo === "por_enviar_juan") {
+        pasaFiltro = !enEspera && !f.enviada && estado !== "cancelado" && (host === "juan" || host === "ambos");
+      } else if (filtroActivo === "por_enviar_anahi") {
+        pasaFiltro = !enEspera && !f.enviada && estado !== "cancelado" && (host === "anahi" || host === "ambos");
+      } else if (filtroActivo === "enviadas") {
+        pasaFiltro = !enEspera && !!f.enviada;
       } else {
-        // los filtros normales nunca mezclan a la lista de espera
         pasaFiltro = !enEspera && (filtroActivo === "todos" || estado === filtroActivo);
       }
-      const pasaBusqueda = (f.contacto_nombre || f.id).toLowerCase().includes(texto);
+      const pasaBusqueda =
+        (f.contacto_nombre || f.id).toLowerCase().includes(texto) ||
+        String(f.contacto_telefono || "").toLowerCase().includes(texto);
       return pasaFiltro && pasaBusqueda;
     });
 
@@ -758,33 +1112,69 @@
 
     lista.forEach(f => {
       const estado = f.estado || "pendiente";
+      const telNormalizado = normalizarTelefonoWhatsApp(f.contacto_telefono);
+      const enviada = !!f.enviada;
+      const host = f.anfitrion || "ambos";
       const tr = document.createElement("tr");
+
+      const txtHost = host === "juan" ? "Juan Antonio" : (host === "anahi" ? "Anahí" : "Ambos");
+
+      const subTelefono = telNormalizado
+        ? `<span class="tel-sub">📱 +${esc(telNormalizado)}</span>`
+        : `<span class="tel-sub tel-faltante">⚠️ Sin teléfono</span>`;
+
+      const botonWhatsApp = !f.lista_espera && estado !== "cancelado"
+        ? (telNormalizado
+            ? `<button class="btn-wa-fila ${enviada ? "reenviar" : ""}" data-id="${f.id}">${enviada ? "Reenviar WhatsApp" : "Enviar por WhatsApp"}</button>`
+            : `<button class="btn-wa-fila sin-tel" data-id="${f.id}">+ Agregar tel</button>`)
+        : "";
+
       tr.innerHTML = `
-        <td>${f.contacto_nombre || f.id}</td>
+        <td>
+          <strong>${esc(f.contacto_nombre || f.id)}</strong>
+          ${subTelefono}
+        </td>
+        <td><span class="badge-anfitrion">${txtHost}</span></td>
         <td>${adultosDe(f)}</td>
         <td>${ninosDe(f)}</td>
         <td class="col-condicional">${f.estado === "confirmado" ? (() => { const c = confirmadosDe(f); return txtPersonas(c.a, c.n); })() : "-"}</td>
         <td class="col-condicional"><span class="estado-pill estado-${estado}">${estado}</span></td>
+        <td class="col-condicional">
+          <label class="check-enviada-label">
+            <input type="checkbox" class="check-enviada" data-id="${f.id}" ${enviada ? "checked" : ""}>
+            <span>${enviada ? "Enviada" : "Pendiente"}</span>
+          </label>
+        </td>
         <td>
-          ${estado === "cancelado" ? `
-            <button class="editar-btn" data-id="${f.id}">Editar</button>
-          ` : `
-            <button class="editar-btn" data-id="${f.id}">Editar</button>
-            ${!f.lista_espera ? `<button class="editar-btn copiar-btn" data-id="${f.id}">Copiar link</button>` : ""}
-            <button class="editar-btn eliminar-btn" data-id="${f.id}">Eliminar</button>
-          `}
+          ${botonWhatsApp}
+          <button class="editar-btn" data-id="${f.id}">Editar</button>
+          ${!f.lista_espera && estado !== "cancelado" ? `<button class="editar-btn copiar-btn" data-id="${f.id}">Copiar link</button>` : ""}
+          ${estado !== "cancelado" ? `<button class="editar-btn eliminar-btn" data-id="${f.id}">Eliminar</button>` : ""}
         </td>
       `;
       tbody.appendChild(tr);
     });
 
-    document.querySelectorAll(".editar-btn:not(.copiar-btn):not(.eliminar-btn)").forEach(btn => {
+    tbody.querySelectorAll(".btn-wa-fila").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const fam = familias.find(x => x.id === btn.dataset.id);
+        if (fam) enviarWhatsAppFamilia(fam);
+      });
+    });
+
+    tbody.querySelectorAll(".check-enviada").forEach(chk => {
+      chk.addEventListener("change", async () => {
+        await updateDoc(doc(db, "familias", chk.dataset.id), { enviada: chk.checked });
+      });
+    });
+
+    tbody.querySelectorAll(".editar-btn:not(.copiar-btn):not(.eliminar-btn)").forEach(btn => {
       btn.addEventListener("click", () => abrirModalEditar(btn.dataset.id));
     });
-    document.querySelectorAll(".copiar-btn").forEach(btn => {
+    tbody.querySelectorAll(".copiar-btn").forEach(btn => {
       btn.addEventListener("click", () => copiarLink(btn));
     });
-    document.querySelectorAll(".eliminar-btn").forEach(btn => {
+    tbody.querySelectorAll(".eliminar-btn").forEach(btn => {
       btn.addEventListener("click", () => eliminarFamilia(btn.dataset.id));
     });
   }
@@ -792,17 +1182,14 @@
   async function eliminarFamilia(id) {
     const familia = familias.find(f => f.id === id);
     if (!familia) return;
-    const ok = confirm(`¿Eliminar por completo a ${familia.contacto_nombre || id}? Esto borra su lugar de la lista y no se puede deshacer.`);
+    const ok = confirm(`¿Eliminar por completo a ${familia.contacto_nombre || id}?`);
     if (!ok) return;
     await deleteDoc(doc(db, "familias", id));
   }
 
-  // El link se arma solo, a partir de dónde vive este mismo admin.html —
-  // así funciona igual en Live Server (localhost) que en GitHub Pages,
-  // sin tener que escribir tu URL a mano en ningún lado.
   function copiarLink(btn) {
     const id = btn.dataset.id;
-    const link = `${location.origin}${location.pathname.replace("admin.html", "index.html")}?fam=${encodeURIComponent(id)}`;
+    const link = linkInvitacionDe(id);
     navigator.clipboard.writeText(link).then(() => {
       const textoOriginal = btn.textContent;
       btn.textContent = "¡Copiado!";
@@ -813,8 +1200,6 @@
   let idEnEdicion = null;
   let modoNuevo = false;
 
-  // "En lista de espera" es una opción más del Estado: al elegirla la familia
-  // sale de la lista principal; al elegir otra, regresa a la lista principal.
   const OPCIONES_EDITAR = [
     ["pendiente", "Pendiente"],
     ["confirmado", "Confirmado"],
@@ -833,7 +1218,6 @@
     actualizarCampoConfirmados();
   }
 
-  // Los campos de "confirmados" solo tienen sentido cuando el estado es Confirmado
   function actualizarCampoConfirmados() {
     const conf = document.getElementById("edit-estado").value === "confirmado";
     document.getElementById("campo-confirmados").style.display = (conf && !modoNuevo) ? "flex" : "none";
@@ -841,7 +1225,6 @@
 
   document.getElementById("edit-estado").addEventListener("change", () => {
     actualizarCampoConfirmados();
-    // al pasar a Confirmado, propone que vengan todos los asignados
     if (document.getElementById("edit-estado").value === "confirmado") {
       const ac = document.getElementById("edit-adultos-conf");
       const nc = document.getElementById("edit-ninos-conf");
@@ -865,10 +1248,12 @@
     const c = confirmadosDe(f);
     document.getElementById("edit-nombre").value = f.contacto_nombre || "";
     document.getElementById("edit-telefono").value = f.contacto_telefono || "";
+    document.getElementById("edit-anfitrion").value = f.anfitrion || "ambos";
     document.getElementById("edit-adultos").value = adultosDe(f) || 1;
     document.getElementById("edit-ninos").value = ninosDe(f);
     document.getElementById("edit-adultos-conf").value = c.a;
     document.getElementById("edit-ninos-conf").value = c.n;
+    document.getElementById("edit-enviada").checked = !!f.enviada;
     llenarEstados(OPCIONES_EDITAR, f.lista_espera ? "espera" : (f.estado || "pendiente"));
 
     document.getElementById("modal-overlay").classList.add("activo");
@@ -884,10 +1269,12 @@
 
     document.getElementById("edit-nombre").value = "";
     document.getElementById("edit-telefono").value = "";
+    document.getElementById("edit-anfitrion").value = "ambos";
     document.getElementById("edit-adultos").value = 1;
     document.getElementById("edit-ninos").value = 0;
     document.getElementById("edit-adultos-conf").value = 0;
     document.getElementById("edit-ninos-conf").value = 0;
+    document.getElementById("edit-enviada").checked = false;
     llenarEstados(OPCIONES_NUEVO, "pendiente");
 
     document.getElementById("modal-overlay").classList.add("activo");
@@ -916,28 +1303,30 @@
     const nombre = document.getElementById("edit-nombre").value.trim();
     if (!nombre) { alert("El nombre del contacto no puede quedar vacío."); return; }
 
-    const adultos = entero("edit-adultos", 1);     // el titular cuenta como adulto
+    const adultos = entero("edit-adultos", 1);
     const ninos = entero("edit-ninos", 0);
     const telefono = document.getElementById("edit-telefono").value.trim();
+    const anfitrion = document.getElementById("edit-anfitrion").value;
     const eleccion = document.getElementById("edit-estado").value;
     const enEspera = eleccion === "espera";
+    const enviada = document.getElementById("edit-enviada").checked;
 
     if (modoNuevo) {
-      // Alta manual: mismo generador de id que el CSV, para que no se
-      // dupliquen entre sí si algún día coinciden en nombre.
       const idsExistentes = new Set(familias.map(f => f.id));
       const idNuevo = slugify(nombre, idsExistentes);
 
       await setDoc(doc(db, "familias", idNuevo), {
         contacto_nombre: nombre,
         contacto_telefono: telefono,
+        anfitrion,
         adultos,
         ninos,
-        personas_esperadas: adultos + ninos,       // total (lo usan las reglas de seguridad)
+        personas_esperadas: adultos + ninos,
         personas_confirmadas: 0,
         adultos_confirmados: 0,
         ninos_confirmados: 0,
         estado: "pendiente",
+        enviada,
         nombres: [],
         alergias: "",
         mensaje: "",
@@ -949,17 +1338,19 @@
       if (eleccion === "confirmado") {
         ac = entero("edit-adultos-conf", 0, adultos);
         nc = entero("edit-ninos-conf", 0, ninos);
-        if (ac + nc === 0) { ac = adultos; nc = ninos; }   // confirmado sin números = vienen todos
+        if (ac + nc === 0) { ac = adultos; nc = ninos; }
       }
 
       await updateDoc(doc(db, "familias", idEnEdicion), {
         contacto_nombre: nombre,
         contacto_telefono: telefono,
+        anfitrion,
         adultos,
         ninos,
         personas_esperadas: adultos + ninos,
         estado: enEspera ? "pendiente" : eleccion,
         lista_espera: enEspera,
+        enviada,
         personas_confirmadas: ac + nc,
         adultos_confirmados: ac,
         ninos_confirmados: nc,
@@ -1052,11 +1443,10 @@
   async function eliminarGasto(id) {
     const it = itemsPlaneacion.find(x => x.id === id);
     if (!it) return;
-    if (!confirm(`¿Eliminar "${it.nombre}" y todos sus abonos? No se puede deshacer.`)) return;
+    if (!confirm(`¿Eliminar "${it.nombre}" y todos sus abonos?`)) return;
     await deleteDoc(doc(db, "planeacion", id));
   }
 
-  // ---- modal: editar concepto/costo o registrar un abono ----
   let gastoEnModal = null;
   let gastoModo = "editar";
 
@@ -1139,15 +1529,13 @@
       document.querySelectorAll(".filtro-btn").forEach(b => b.classList.remove("activo"));
       btn.classList.add("activo");
       filtroActivo = btn.dataset.filtro;
-      renderTabla();
+      renderTodo();
     });
   });
 
   document.getElementById("buscador").addEventListener("input", renderTabla);
 
   // ---------- importar CSV desde el navegador ----------
-
-  // Misma lógica que importar.js: mismo nombre → mismo id, sin acentos ni espacios.
   function slugify(nombre, idsUsados) {
     let base = nombre
       .toLowerCase()
@@ -1164,10 +1552,6 @@
     return id;
   }
 
-  // Lector de CSV: respeta campos vacíos (por ejemplo, un teléfono sin llenar),
-  // comillas con comas adentro, y detecta si el separador es , o ; (Excel en
-  // español a veces exporta con ;). Los encabezados se leen sin acentos ni
-  // mayúsculas: "Niños" y "ninos" son lo mismo.
   function parseCSV(texto) {
     texto = texto.replace(/^\uFEFF/, "");
     const primera = texto.split(/\r?\n/, 1)[0] || "";
@@ -1213,7 +1597,6 @@
     const texto = await archivo.text();
     const filas = parseCSV(texto);
 
-    // ids que ya existen en el sistema, para no duplicar a nadie
     const idsExistentes = new Set(familias.map(f => f.id));
     let omitidos = 0;
     const invalidos = [];
@@ -1223,9 +1606,8 @@
       const nombre = (fila.contacto_nombre || "").trim();
       let adultos = parseInt(fila.adultos ?? fila.adulto, 10);
       let ninos = parseInt(fila.ninos ?? fila.nino, 10);
-      // compatibilidad con el formato viejo (una sola columna personas_esperadas)
       if (isNaN(adultos) && fila.personas_esperadas) { adultos = parseInt(fila.personas_esperadas, 10); ninos = 0; }
-      if (isNaN(ninos)) ninos = 0;                       // niños vacío = 0
+      if (isNaN(ninos)) ninos = 0;
       if (!nombre || isNaN(adultos) || adultos < 1 || ninos < 0) { invalidos.push(nombre || "(sin nombre)"); continue; }
 
       const idTentativo = nombre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
@@ -1238,46 +1620,45 @@
 
       const enEspera = ["si", "sí", "true", "1"].includes((fila.lista_espera ?? fila.lista_de_espera ?? "").toLowerCase());
 
+      let anf = (fila.anfitrion || fila.invitado_por || "").toLowerCase().trim();
+      if (!["juan", "anahi"].includes(anf)) anf = "ambos";
+
       idsExistentes.add(idTentativo);
       await setDoc(doc(db, "familias", idTentativo), {
         contacto_nombre: nombre,
         contacto_telefono: (fila.contacto_telefono || "").trim(),
+        anfitrion: anf,
         adultos,
         ninos,
-        personas_esperadas: adultos + ninos,         // total (lo usan las reglas de seguridad)
+        personas_esperadas: adultos + ninos,
         personas_confirmadas: 0,
         adultos_confirmados: 0,
         ninos_confirmados: 0,
         estado: "pendiente",
+        enviada: false,
         nombres: [],
         alergias: "",
         mensaje: "",
         lista_espera: enEspera,
       });
 
-      // Solo generamos link para quien SÍ está invitado desde ya.
-      // A los de lista de espera no se les da link hasta que se les mueva
-      // a la lista principal (ahí ya les aparece el botón "Copiar link").
       if (!enEspera) {
-        const link = `${location.origin}${location.pathname.replace("admin.html", "index.html")}?fam=${encodeURIComponent(idTentativo)}`;
+        const link = linkInvitacionDe(idTentativo);
         nuevos.push({ contacto_nombre: nombre, adultos, ninos, link });
       }
     }
 
     status.textContent = `Listo: ${nuevos.length} nuevos, ${omitidos} ya existían (omitidos)` +
-      (invalidos.length ? `, ${invalidos.length} filas inválidas (revisa adultos y niños): ${invalidos.slice(0, 5).join(", ")}${invalidos.length > 5 ? "…" : ""}` : "") + ".";
+      (invalidos.length ? `, ${invalidos.length} filas inválidas: ${invalidos.slice(0, 5).join(", ")}${invalidos.length > 5 ? "…" : ""}` : "") + ".";
     e.target.value = "";
     mostrarResultadosImportacion(nuevos);
   });
 
-  // Botón siempre disponible (no solo justo después de importar): toma
-  // a todos los que siguen pendientes de responder y aún no se les ha
-  // mandado — por eso excluye lista de espera, confirmados y cancelados.
   document.getElementById("descargar-pendientes-btn").addEventListener("click", () => {
     const pendientes = familias.filter(f => (!f.estado || f.estado === "pendiente") && !f.lista_espera);
 
     if (pendientes.length === 0) {
-      alert("No hay invitados pendientes para descargar en este momento.");
+      alert("No hay invitados pendientes para descargar.");
       return;
     }
 
@@ -1285,7 +1666,7 @@
       contacto_nombre: f.contacto_nombre || f.id,
       adultos: adultosDe(f),
       ninos: ninosDe(f),
-      link: `${location.origin}${location.pathname.replace("admin.html", "index.html")}?fam=${encodeURIComponent(f.id)}`
+      link: linkInvitacionDe(f.id)
     }));
 
     const encabezado = "contacto_nombre,adultos,ninos,link\n";
@@ -1303,10 +1684,6 @@
     const contenedor = document.getElementById("resultados-importacion");
     if (nuevos.length === 0) { contenedor.innerHTML = ""; return; }
 
-    // La tabla de abajo ya se llena sola en tiempo real con las familias
-    // nuevas (incluyendo las de lista de espera, sin link todavía).
-    // Aquí solo dejamos un acceso rápido para descargar de un jalón los
-    // links de las que sí quedaron invitadas desde ya.
     contenedor.innerHTML = `
       <button class="editar-btn" id="descargar-links-btn">Descargar CSV con los links nuevos (${nuevos.length})</button>
     `;
