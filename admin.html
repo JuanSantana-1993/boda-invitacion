@@ -88,7 +88,7 @@
     font-size:0.85rem;
   }
 
-  .wrap{max-width:1080px; margin:0 auto; padding:28px;}
+  .wrap{max-width:1150px; margin:0 auto; padding:28px;}
 
   /* -------- conteo regresivo -------- */
   .conteo-panel{
@@ -386,21 +386,35 @@
 
   .estado-pill{
     display:inline-block;
-    padding:3px 10px;
+    padding:4px 10px;
     border-radius:20px;
-    font-size:0.75rem;
+    font-size:0.72rem;
+    font-weight:500;
+    white-space:nowrap;
   }
-  .estado-confirmado{background:rgba(92,122,90,0.15); color:var(--verde-confirmado);}
-  .estado-cancelado{background:rgba(177,93,74,0.15); color:var(--rojo-cancelado);}
-  .estado-pendiente{background:rgba(180,169,155,0.2); color:var(--gris-calido);}
+  
+  /* Semáforo solicitado por la planeadora */
+  .estado-confirmado-ambos{ background:rgba(92,122,90,0.18); color:#3E583C; } /* Verde */
+  .estado-confirmado-whats{ background:rgba(60,110,165,0.15); color:#2B527E; } /* Azul */
+  .estado-confirmado-web{ background:rgba(120,75,140,0.15); color:#653A7A; }   /* Morado */
+  .estado-lo-pensara{ background:rgba(215,155,30,0.18); color:#8C6207; }      /* Amarillo */
+  .estado-sin-respuesta{ background:rgba(215,115,45,0.18); color:#A34D13; }   /* Naranja */
+  .estado-cancelado{ background:rgba(177,93,74,0.15); color:var(--rojo-cancelado); } /* Rojo */
+  .estado-pendiente{ background:rgba(180,169,155,0.2); color:var(--gris-calido); } /* Gris (B-List) */
 
   .badge-anfitrion{
     display:inline-block;
-    padding:2px 8px;
+    padding:3px 8px;
     border-radius:12px;
-    font-size:0.74rem;
+    font-size:0.72rem;
     font-weight:500;
     background:var(--blush);
+    color:var(--texto);
+  }
+
+  td.col-notas{
+    max-width:140px;
+    font-size:0.8rem;
     color:var(--texto);
   }
 
@@ -418,13 +432,31 @@
   .editar-btn:hover{opacity:0.8;}
   .eliminar-btn{color:var(--rojo-cancelado);}
 
+  .btn-ver-notas {
+    background: none;
+    border: 1px solid var(--terracota);
+    color: var(--terracota);
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-family: inherit;
+    cursor: pointer;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+  }
+  
+  .btn-ver-notas:hover {
+    background: rgba(193, 129, 91, 0.1);
+  }
+
   #vacio{
     text-align:center;
     padding:60px 20px;
     color:var(--gris-calido);
   }
 
-  /* -------- modal de edición -------- */
+  /* -------- modales -------- */
   .modal-overlay{
     display:none;
     position:fixed;
@@ -472,6 +504,19 @@
   }
   .modal-box .campo-checkbox input{width:16px; height:16px; accent-color:var(--terracota);}
   .modal-box .campo-checkbox label{margin:0; color:var(--texto); font-size:0.88rem; cursor:pointer;}
+  
+  #texto-vista-notas {
+    background: var(--crema);
+    padding: 16px;
+    border: 1px solid var(--arena);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--texto);
+    margin-bottom: 24px;
+    white-space: pre-wrap;
+    min-height: 80px;
+  }
+
   .modal-botones{
     display:flex;
     gap:10px;
@@ -583,20 +628,21 @@
         </div>
         <div class="tarjeta-resumen">
           <div class="numero" id="num-espera">0</div>
-          <div class="etiqueta">En lista de espera</div>
+          <div class="etiqueta">En lista de reserva (B-List)</div>
         </div>
       </div>
 
-      <input type="text" id="buscador" placeholder="Buscar familia, contacto o teléfono...">
+      <input type="text" id="buscador" placeholder="Buscar familia, contacto, teléfono o nota...">
 
       <div class="filtros">
         <button class="filtro-btn activo" data-filtro="todos">Todos</button>
         <button class="filtro-btn" data-filtro="por_enviar">Por enviar WA</button>
         <button class="filtro-btn" data-filtro="enviadas">Ya enviadas</button>
         <button class="filtro-btn" data-filtro="confirmado">Confirmados</button>
+        <button class="filtro-btn" data-filtro="lo_pensara">En espera</button>
+        <button class="filtro-btn" data-filtro="sin_respuesta">Sin respuesta</button>
         <button class="filtro-btn" data-filtro="cancelado">Cancelados</button>
-        <button class="filtro-btn" data-filtro="pendiente">Pendientes de responder</button>
-        <button class="filtro-btn" data-filtro="espera">Lista de espera</button>
+        <button class="filtro-btn" data-filtro="lista_espera_b">Lista de reserva (B-List)</button>
       </div>
 
       <div class="tabla-scroll">
@@ -609,6 +655,7 @@
               <th>Niños</th>
               <th class="col-condicional">Confirmados</th>
               <th class="col-condicional">Estado</th>
+              <th>Notas</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -667,6 +714,18 @@
   </div>
 </div>
 
+<!-- ============ MODAL VER NOTAS ============ -->
+<div class="modal-overlay" id="modal-ver-notas">
+  <div class="modal-box">
+    <h3 class="serif" id="titulo-vista-notas">Notas de la familia</h3>
+    <div id="texto-vista-notas"></div>
+    <div class="modal-botones">
+      <button class="btn btn-cancelar" id="cerrar-vista-notas">Cerrar</button>
+      <button class="btn btn-principal" id="editar-desde-notas" style="background:var(--terracota); color:#fff; border:none;">Editar invitado</button>
+    </div>
+  </div>
+</div>
+
 <!-- ============ MODAL DE EDICIÓN ============ -->
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal-box">
@@ -705,6 +764,11 @@
     <div class="campo" id="campo-estado">
       <label for="edit-estado" id="label-estado">Estado</label>
       <select id="edit-estado"></select>
+    </div>
+
+    <div class="campo">
+      <label for="edit-notas">Notas / Comentarios personalizados</label>
+      <textarea id="edit-notas" placeholder="Ej. Solicitud de pase extra, canceló pase de un familiar..."></textarea>
     </div>
 
     <div class="campo-fila" id="campo-confirmados">
@@ -789,17 +853,7 @@
   const loginError = document.getElementById("login-error");
 
   // ---------- plantilla de mensaje para WhatsApp ----------
-  const PLANTILLA_DEFAULT = `¡Hola, {nombre}! 🎉✨
-
-*“El tiempo de la canción ha llegado...”* 🕊️🎵 (Cantar de los Cantares 2:12).
-
-¡Nos casamos! Tenemos el corazón rebosante de alegría y queremos compartir esta gran noticia con las personas que más amamos. ¡Nos encantaría que nos acompañen a celebrar nuestro día especial! 🤍
-
-Hemos reservado lugares para {pases}. Para conocer todos los detalles, la ubicación exacta y confirmar su asistencia, por favor abran el siguiente enlace:
-
-🔗 {link}
-
-¡Nos dará muchísima felicidad celebrar esta nueva etapa con ustedes! Con todo nuestro cariño, Anahí y Juan Antonio 🥂✨`;
+  const PLANTILLA_DEFAULT = `¡Hola, {nombre}! 🎉✨\n\n*“El tiempo de la canción ha llegado...”* 🕊️🎵 (Cantar de los Cantares 2:12).\n\n¡Nos casamos! Tenemos el corazón rebosante de alegría y queremos compartir esta gran noticia con las personas que más amamos. ¡Nos encantaría que nos acompañen a celebrar nuestro día especial! 🤍\n\nHemos reservado lugares para {pases}. Para conocer todos los detalles, la ubicación exacta y confirmar su asistencia, por favor abran el siguiente enlace:\n\n🔗 {link}\n\n¡Nos dará muchísima felicidad celebrar esta nueva etapa con ustedes! Con todo nuestro cariño, Anahí y Juan Antonio 🥂✨`;
 
   const STORAGE_KEY_MSG = "boda_wa_plantilla_v1";
   const txtPlantilla = document.getElementById("wa-mensaje-plantilla");
@@ -949,8 +1003,11 @@ Hemos reservado lugares para {pases}. Para conocer todos los detalles, la ubicac
   const ninosDe = f => (Number.isFinite(f.ninos) ? f.ninos : 0);
   const totalDe = f => adultosDe(f) + ninosDe(f);
 
+  const esEstadoConfirmado = est => est && est.startsWith("confirmado");
+
   function confirmadosDe(f) {
-    if (f.estado !== "confirmado") return { a: 0, n: 0 };
+    const est = (f.estado || "").toLowerCase();
+    if (!esEstadoConfirmado(est)) return { a: 0, n: 0 };
     if (Number.isFinite(f.adultos_confirmados) || Number.isFinite(f.ninos_confirmados)) {
       return { a: f.adultos_confirmados || 0, n: f.ninos_confirmados || 0 };
     }
@@ -958,10 +1015,36 @@ Hemos reservado lugares para {pases}. Para conocer todos los detalles, la ubicac
     if (total >= totalDe(f)) return { a: adultosDe(f), n: ninosDe(f) };
     return { a: Math.min(total, adultosDe(f)), n: 0 };
   }
+  
   const txtPersonas = (a, n) => `${a} ${a === 1 ? "adulto" : "adultos"}` + (n > 0 ? ` · ${n} ${n === 1 ? "niño" : "niños"}` : "");
 
+  function obtenerDetalleEstado(f) {
+    if (f.lista_espera) {
+      return { clave: "lista_espera_b", clase: "estado-pendiente", texto: "Lista de reserva" };
+    }
+    
+    let est = (f.estado || "sin_respuesta").toLowerCase();
+    
+    // Auto-ajustes para datos legacy o guardados automáticamente por la página web
+    if (est === "pendiente") est = "sin_respuesta";
+    if (est === "confirmado") est = "confirmado_web"; 
+
+    switch (est) {
+      case "confirmado_ambos": return { clave: "confirmado_ambos", clase: "estado-confirmado-ambos", texto: "Confirmado (Ambos)" };
+      case "confirmado_whats": return { clave: "confirmado_whats", clase: "estado-confirmado-whats", texto: "Confirmado (WA)" };
+      case "confirmado_web": return { clave: "confirmado_web", clase: "estado-confirmado-web", texto: "Confirmado (Web)" };
+      case "lo_pensara": return { clave: "lo_pensara", clase: "estado-lo-pensara", texto: "En espera" };
+      case "sin_respuesta": return { clave: "sin_respuesta", clase: "estado-sin-respuesta", texto: "Sin respuesta" };
+      case "cancelado": return { clave: "cancelado", clase: "estado-cancelado", texto: "Canceló" };
+      default: return { clave: "sin_respuesta", clase: "estado-sin-respuesta", texto: "Sin respuesta" };
+    }
+  }
+
   function obtenerSiguientePorEnviar() {
-    return familias.find(f => !f.lista_espera && !f.enviada && f.estado !== "cancelado" && normalizarTelefonoWhatsApp(f.contacto_telefono));
+    return familias.find(f => {
+      const detEst = obtenerDetalleEstado(f);
+      return !f.lista_espera && !f.enviada && detEst.clave !== "cancelado" && normalizarTelefonoWhatsApp(f.contacto_telefono);
+    });
   }
 
   document.getElementById("btn-siguiente-wa").addEventListener("click", () => {
@@ -974,18 +1057,21 @@ Hemos reservado lugares para {pases}. Para conocer todos los detalles, la ubicac
   });
 
   function renderTodo() {
-    const activos = familias.filter(f => !f.lista_espera);
+    const activos = familias.filter(f => !f.lista_espera); 
     const espA = activos.reduce((s, f) => s + adultosDe(f), 0);
     const espN = activos.reduce((s, f) => s + ninosDe(f), 0);
     let confA = 0, confN = 0;
+    
     activos.forEach(f => { const c = confirmadosDe(f); confA += c.a; confN += c.n; });
     const esperados = espA + espN;
     const confirmados = confA + confN;
-    const cancelados = activos.filter(f => f.estado === "cancelado").length;
-    const pendientes = activos.filter(f => !f.estado || f.estado === "pendiente").length;
+
+    const cancelados = activos.filter(f => obtenerDetalleEstado(f).clave === "cancelado").length;
+    
+    const pendientes = activos.filter(f => ["sin_respuesta", "lo_pensara"].includes(obtenerDetalleEstado(f).clave)).length;
 
     const enviadasCount = activos.filter(f => !!f.enviada).length;
-    const faltanEnviarCount = activos.filter(f => !f.enviada && f.estado !== "cancelado").length;
+    const faltanEnviarCount = activos.filter(f => !f.enviada && obtenerDetalleEstado(f).clave !== "cancelado").length;
 
     document.getElementById("num-esperados").textContent = esperados;
     document.getElementById("sub-esperados").textContent = `${espA} adultos · ${espN} niños`;
@@ -1018,33 +1104,44 @@ Hemos reservado lugares para {pases}. Para conocer todos los detalles, la ubicac
     const vacio = document.getElementById("vacio");
 
     let lista = familias.filter(f => {
-      const estado = f.estado || "pendiente";
+      const detEst = obtenerDetalleEstado(f);
       const enEspera = !!f.lista_espera;
       
       let pasaFiltro;
 
-      if (filtroActivo === "espera") {
+      if (filtroActivo === "lista_espera_b") {
         pasaFiltro = enEspera;
       } else if (filtroActivo === "por_enviar") {
-        pasaFiltro = !enEspera && !f.enviada && estado !== "cancelado";
+        pasaFiltro = !enEspera && !f.enviada && detEst.clave !== "cancelado";
       } else if (filtroActivo === "enviadas") {
         pasaFiltro = !enEspera && !!f.enviada;
+      } else if (filtroActivo === "confirmado") {
+        pasaFiltro = !enEspera && esEstadoConfirmado(detEst.clave);
+      } else if (filtroActivo === "lo_pensara") {
+        pasaFiltro = !enEspera && detEst.clave === "lo_pensara";
+      } else if (filtroActivo === "sin_respuesta") {
+        pasaFiltro = !enEspera && detEst.clave === "sin_respuesta";
+      } else if (filtroActivo === "cancelado") {
+        pasaFiltro = detEst.clave === "cancelado";
       } else {
-        pasaFiltro = !enEspera && (filtroActivo === "todos" || estado === filtroActivo);
+        pasaFiltro = !enEspera && (filtroActivo === "todos" || detEst.clave === filtroActivo);
       }
+
       const pasaBusqueda =
         (f.contacto_nombre || f.id).toLowerCase().includes(texto) ||
-        String(f.contacto_telefono || "").toLowerCase().includes(texto);
+        String(f.contacto_telefono || "").toLowerCase().includes(texto) ||
+        String(f.notas || "").toLowerCase().includes(texto);
+
       return pasaFiltro && pasaBusqueda;
     });
 
     tbody.innerHTML = "";
     vacio.style.display = lista.length ? "none" : "block";
 
-    document.querySelector("table").classList.toggle("vista-espera", filtroActivo === "espera");
+    document.querySelector("table").classList.toggle("vista-espera", filtroActivo === "lista_espera_b");
 
     lista.forEach(f => {
-      const estado = f.estado || "pendiente";
+      const detEst = obtenerDetalleEstado(f);
       const telNormalizado = normalizarTelefonoWhatsApp(f.contacto_telefono);
       const enviada = !!f.enviada;
       const host = (f.anfitrion || "ambos").toLowerCase();
@@ -1057,9 +1154,13 @@ Hemos reservado lugares para {pases}. Para conocer todos los detalles, la ubicac
         : `<span style="display:block; font-size:0.78rem; color:var(--rojo-cancelado); margin-top:2px;">Sin teléfono</span>`;
 
       const txtEnviar = enviada ? "Reenviar WA" : "Enviar WA";
-      const botonWhatsApp = !f.lista_espera && estado !== "cancelado"
+      const botonWhatsApp = !f.lista_espera && detEst.clave !== "cancelado"
         ? `<button class="editar-btn btn-wa-fila" data-id="${f.id}" ${!telNormalizado ? 'style="color:var(--rojo-cancelado);"' : ''}>${telNormalizado ? txtEnviar : "+ Agregar tel"}</button>`
         : "";
+
+      const botonNotas = (f.notas && f.notas.trim() !== "") 
+        ? `<button class="btn-ver-notas ver-notas-btn" data-id="${f.id}">Ver notas</button>`
+        : `<span style="color:var(--gris-calido);">-</span>`;
 
       tr.innerHTML = `
         <td>
@@ -1069,13 +1170,14 @@ Hemos reservado lugares para {pases}. Para conocer todos los detalles, la ubicac
         <td><span class="badge-anfitrion">${txtHost}</span></td>
         <td>${adultosDe(f)}</td>
         <td>${ninosDe(f)}</td>
-        <td class="col-condicional">${f.estado === "confirmado" ? (() => { const c = confirmadosDe(f); return txtPersonas(c.a, c.n); })() : "-"}</td>
-        <td class="col-condicional"><span class="estado-pill estado-${estado}">${estado}</span></td>
+        <td class="col-condicional">${esEstadoConfirmado(detEst.clave) ? (() => { const c = confirmadosDe(f); return txtPersonas(c.a, c.n); })() : "-"}</td>
+        <td class="col-condicional"><span class="estado-pill ${detEst.clase}">${detEst.texto}</span></td>
+        <td class="col-notas">${botonNotas}</td>
         <td>
           ${botonWhatsApp}
           <button class="editar-btn" data-id="${f.id}">Editar</button>
-          ${!f.lista_espera && estado !== "cancelado" ? `<button class="editar-btn copiar-btn" data-id="${f.id}">Copiar link</button>` : ""}
-          ${estado !== "cancelado" ? `<button class="editar-btn eliminar-btn" data-id="${f.id}">Eliminar</button>` : ""}
+          ${!f.lista_espera && detEst.clave !== "cancelado" ? `<button class="editar-btn copiar-btn" data-id="${f.id}">Copiar link</button>` : ""}
+          ${detEst.clave !== "cancelado" ? `<button class="editar-btn eliminar-btn" data-id="${f.id}">Eliminar</button>` : ""}
         </td>
       `;
       tbody.appendChild(tr);
@@ -1091,6 +1193,11 @@ Hemos reservado lugares para {pases}. Para conocer todos los detalles, la ubicac
     tbody.querySelectorAll(".editar-btn:not(.btn-wa-fila):not(.copiar-btn):not(.eliminar-btn)").forEach(btn => {
       btn.addEventListener("click", () => abrirModalEditar(btn.dataset.id));
     });
+
+    tbody.querySelectorAll(".ver-notas-btn").forEach(btn => {
+      btn.addEventListener("click", () => abrirModalVerNotas(btn.dataset.id));
+    });
+
     tbody.querySelectorAll(".copiar-btn").forEach(btn => {
       btn.addEventListener("click", () => copiarLink(btn));
     });
@@ -1112,7 +1219,7 @@ Hemos reservado lugares para {pases}. Para conocer todos los detalles, la ubicac
     const link = linkInvitacionDe(id);
     navigator.clipboard.writeText(link).then(() => {
       const textoOriginal = btn.textContent;
-      btn.textContent = "¡Copiado!";
+      btn.textContent = "Copiado";
       setTimeout(() => { btn.textContent = textoOriginal; }, 1500);
     });
   }
@@ -1121,14 +1228,17 @@ Hemos reservado lugares para {pases}. Para conocer todos los detalles, la ubicac
   let modoNuevo = false;
 
   const OPCIONES_EDITAR = [
-    ["pendiente", "Pendiente"],
-    ["confirmado", "Confirmado"],
-    ["cancelado", "Cancelado"],
-    ["espera", "En lista de espera"],
+    ["sin_respuesta", "Sin respuesta"],
+    ["lo_pensara", "En espera"],
+    ["confirmado_whats", "Confirmado por WhatsApp"],
+    ["confirmado_web", "Confirmado por Invitación Web"],
+    ["confirmado_ambos", "Confirmado por Ambos"],
+    ["cancelado", "Canceló"],
+    ["lista_espera_b", "Mover a Lista de Reserva (B-List)"],
   ];
   const OPCIONES_NUEVO = [
-    ["pendiente", "Lista principal"],
-    ["espera", "Lista de espera"],
+    ["sin_respuesta", "Lista Principal"],
+    ["lista_espera_b", "Lista de Reserva (B-List)"],
   ];
 
   function llenarEstados(opciones, valor) {
@@ -1139,13 +1249,14 @@ Hemos reservado lugares para {pases}. Para conocer todos los detalles, la ubicac
   }
 
   function actualizarCampoConfirmados() {
-    const conf = document.getElementById("edit-estado").value === "confirmado";
+    const est = document.getElementById("edit-estado").value;
+    const conf = esEstadoConfirmado(est);
     document.getElementById("campo-confirmados").style.display = (conf && !modoNuevo) ? "flex" : "none";
   }
 
   document.getElementById("edit-estado").addEventListener("change", () => {
     actualizarCampoConfirmados();
-    if (document.getElementById("edit-estado").value === "confirmado") {
+    if (esEstadoConfirmado(document.getElementById("edit-estado").value)) {
       const ac = document.getElementById("edit-adultos-conf");
       const nc = document.getElementById("edit-ninos-conf");
       if (!(parseInt(ac.value) > 0) && !(parseInt(nc.value) > 0)) {
@@ -1154,6 +1265,38 @@ Hemos reservado lugares para {pases}. Para conocer todos los detalles, la ubicac
       }
     }
   });
+
+  // Modal para ver notas rápidamente
+  let familiaEnVistaDeNotas = null;
+
+  function abrirModalVerNotas(id) {
+    const f = familias.find(x => x.id === id);
+    if (!f) return;
+    familiaEnVistaDeNotas = id;
+    
+    document.getElementById("titulo-vista-notas").textContent = `Notas de: ${f.contacto_nombre || f.id}`;
+    document.getElementById("texto-vista-notas").textContent = f.notas || "(Sin notas)";
+    document.getElementById("modal-ver-notas").classList.add("activo");
+  }
+
+  function cerrarModalVerNotas() {
+    document.getElementById("modal-ver-notas").classList.remove("activo");
+    familiaEnVistaDeNotas = null;
+  }
+
+  document.getElementById("cerrar-vista-notas").addEventListener("click", cerrarModalVerNotas);
+  document.getElementById("modal-ver-notas").addEventListener("click", (e) => {
+    if (e.target.id === "modal-ver-notas") cerrarModalVerNotas();
+  });
+
+  document.getElementById("editar-desde-notas").addEventListener("click", () => {
+    if (familiaEnVistaDeNotas) {
+      const id = familiaEnVistaDeNotas;
+      cerrarModalVerNotas();
+      abrirModalEditar(id);
+    }
+  });
+
 
   function abrirModalEditar(id) {
     const f = familias.find(x => x.id === id);
@@ -1174,7 +1317,10 @@ Hemos reservado lugares para {pases}. Para conocer todos los detalles, la ubicac
     document.getElementById("edit-adultos-conf").value = c.a;
     document.getElementById("edit-ninos-conf").value = c.n;
     document.getElementById("edit-enviada").checked = !!f.enviada;
-    llenarEstados(OPCIONES_EDITAR, f.lista_espera ? "espera" : (f.estado || "pendiente"));
+    document.getElementById("edit-notas").value = f.notas || "";
+
+    const detEst = obtenerDetalleEstado(f);
+    llenarEstados(OPCIONES_EDITAR, detEst.clave);
 
     document.getElementById("modal-overlay").classList.add("activo");
   }
@@ -1195,7 +1341,8 @@ Hemos reservado lugares para {pases}. Para conocer todos los detalles, la ubicac
     document.getElementById("edit-adultos-conf").value = 0;
     document.getElementById("edit-ninos-conf").value = 0;
     document.getElementById("edit-enviada").checked = false;
-    llenarEstados(OPCIONES_NUEVO, "pendiente");
+    document.getElementById("edit-notas").value = "";
+    llenarEstados(OPCIONES_NUEVO, "sin_respuesta");
 
     document.getElementById("modal-overlay").classList.add("activo");
   }
@@ -1228,8 +1375,10 @@ Hemos reservado lugares para {pases}. Para conocer todos los detalles, la ubicac
     const telefono = document.getElementById("edit-telefono").value.trim();
     const anfitrion = document.getElementById("edit-anfitrion").value;
     const eleccion = document.getElementById("edit-estado").value;
-    const enEspera = eleccion === "espera";
+    const notas = document.getElementById("edit-notas").value.trim();
     const enviada = document.getElementById("edit-enviada").checked;
+    
+    const esBList = eleccion === "lista_espera_b";
 
     if (modoNuevo) {
       const idsExistentes = new Set(familias.map(f => f.id));
@@ -1245,17 +1394,18 @@ Hemos reservado lugares para {pases}. Para conocer todos los detalles, la ubicac
         personas_confirmadas: 0,
         adultos_confirmados: 0,
         ninos_confirmados: 0,
-        estado: "pendiente",
+        estado: esBList ? "sin_respuesta" : eleccion,
         enviada,
         nombres: [],
         alergias: "",
         mensaje: "",
-        lista_espera: enEspera,
+        notas,
+        lista_espera: esBList,
       });
     } else {
       if (!idEnEdicion) return;
       let ac = 0, nc = 0;
-      if (eleccion === "confirmado") {
+      if (esEstadoConfirmado(eleccion) && !esBList) {
         ac = entero("edit-adultos-conf", 0, adultos);
         nc = entero("edit-ninos-conf", 0, ninos);
         if (ac + nc === 0) { ac = adultos; nc = ninos; }
@@ -1268,9 +1418,10 @@ Hemos reservado lugares para {pases}. Para conocer todos los detalles, la ubicac
         adultos,
         ninos,
         personas_esperadas: adultos + ninos,
-        estado: enEspera ? "pendiente" : eleccion,
-        lista_espera: enEspera,
+        estado: esBList ? "sin_respuesta" : eleccion,
+        lista_espera: esBList,
         enviada,
+        notas,
         personas_confirmadas: ac + nc,
         adultos_confirmados: ac,
         ninos_confirmados: nc,
@@ -1318,10 +1469,10 @@ Hemos reservado lugares para {pases}. Para conocer todos los detalles, la ubicac
       const falta = Math.max(costo - pag, 0);
       const n = (i.pagos || []).length;
       const liquidado = costo > 0 && pag >= costo;
-      let pill = ["estado-pendiente", "Sin pagos"];
-      if (liquidado) pill = ["estado-confirmado", "Liquidado"];
-      else if (pag > 0) pill = ["estado-parcial", "Con abonos"];
-      else if (costo === 0) pill = ["estado-pendiente", "Sin costo"];
+      let pill = ["estado-sin-respuesta", "Sin pagos"];
+      if (liquidado) pill = ["estado-confirmado-ambos", "Liquidado"];
+      else if (pag > 0) pill = ["estado-espera", "Con abonos"];
+      else if (costo === 0) pill = ["estado-sin-respuesta", "Sin costo"];
 
       return `
         <tr>
@@ -1554,11 +1705,12 @@ Hemos reservado lugares para {pases}. Para conocer todos los detalles, la ubicac
         personas_confirmadas: 0,
         adultos_confirmados: 0,
         ninos_confirmados: 0,
-        estado: "pendiente",
+        estado: "sin_respuesta",
         enviada: false,
         nombres: [],
         alergias: "",
         mensaje: "",
+        notas: (fila.notas || "").trim(),
         lista_espera: enEspera,
       });
 
@@ -1575,7 +1727,7 @@ Hemos reservado lugares para {pases}. Para conocer todos los detalles, la ubicac
   });
 
   document.getElementById("descargar-pendientes-btn").addEventListener("click", () => {
-    const pendientes = familias.filter(f => (!f.estado || f.estado === "pendiente") && !f.lista_espera);
+    const pendientes = familias.filter(f => (!f.estado || f.estado === "sin_respuesta" || f.estado === "pendiente") && !f.lista_espera);
 
     if (pendientes.length === 0) {
       alert("No hay invitados pendientes para descargar.");
