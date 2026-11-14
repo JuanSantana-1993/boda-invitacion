@@ -88,7 +88,7 @@
     font-size:0.85rem;
   }
 
-  .wrap{max-width:1150px; margin:0 auto; padding:28px;}
+  .wrap{max-width:1180px; margin:0 auto; padding:28px;}
 
   /* -------- conteo regresivo -------- */
   .conteo-panel{
@@ -129,6 +129,7 @@
     gap:8px;
     margin-bottom:24px;
     border-bottom:1px solid var(--arena);
+    overflow-x:auto;
   }
   .tab-btn{
     padding:12px 18px;
@@ -140,6 +141,7 @@
     cursor:pointer;
     border-bottom:2px solid transparent;
     margin-bottom:-1px;
+    white-space:nowrap;
   }
   .tab-btn.activo{
     color:var(--terracota);
@@ -392,7 +394,7 @@
     font-weight:500;
     white-space:nowrap;
   }
-  
+
   /* Semáforo solicitado por la planeadora */
   .estado-confirmado-ambos{ background:rgba(92,122,90,0.18); color:#3E583C; } /* Verde */
   .estado-confirmado-whats{ background:rgba(60,110,165,0.15); color:#2B527E; } /* Azul */
@@ -410,6 +412,17 @@
     font-weight:500;
     background:var(--blush);
     color:var(--texto);
+  }
+
+  .badge-mesa{
+    display:inline-block;
+    padding:3px 9px;
+    border-radius:12px;
+    font-size:0.74rem;
+    font-weight:500;
+    background:rgba(193,129,91,0.14);
+    color:var(--terracota);
+    white-space:nowrap;
   }
 
   td.col-notas{
@@ -445,7 +458,7 @@
     white-space: nowrap;
     transition: all 0.2s ease;
   }
-  
+
   .btn-ver-notas:hover {
     background: rgba(193, 129, 91, 0.1);
   }
@@ -455,6 +468,328 @@
     padding:60px 20px;
     color:var(--gris-calido);
   }
+
+  /* -------- acomodo de mesas -------- */
+  .mesas-topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:14px;
+    margin-bottom:22px;
+    flex-wrap:wrap;
+  }
+  .mesas-topbar h2{
+    font-size:1.35rem;
+    font-weight:600;
+  }
+  .mesas-topbar-acciones{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .btn-nueva-mesa{
+    width:auto;
+    padding:10px 18px;
+    background:var(--terracota);
+    color:#fff;
+    border:none;
+    border-radius:6px;
+    font-family:inherit;
+    font-size:0.88rem;
+    font-weight:500;
+    cursor:pointer;
+  }
+  .btn-nueva-mesa:hover{opacity:0.92;}
+  .btn-secundario-mesa{
+    width:auto;
+    padding:9px 14px;
+    background:#fff;
+    color:var(--texto);
+    border:1px solid var(--arena);
+    border-radius:6px;
+    font-family:inherit;
+    font-size:0.84rem;
+    cursor:pointer;
+  }
+  .btn-secundario-mesa:hover{background:var(--blush);}
+
+  .mesas-layout{
+    display:grid;
+    grid-template-columns:270px 1fr;
+    gap:20px;
+    align-items:start;
+  }
+  @media (max-width:860px){
+    .mesas-layout{grid-template-columns:1fr;}
+  }
+
+  .panel-sin-asignar{
+    background:#fff;
+    border:1px solid var(--arena);
+    border-radius:10px;
+    padding:18px;
+    position:sticky;
+    top:20px;
+  }
+  @media (max-width:860px){
+    .panel-sin-asignar{position:static;}
+  }
+  .panel-sin-asignar h3{
+    font-size:1.05rem;
+    margin-bottom:4px;
+  }
+  .sin-asignar-meta{
+    font-size:0.78rem;
+    color:var(--gris-calido);
+    margin-bottom:12px;
+  }
+  #buscar-sin-mesa{
+    width:100%;
+    padding:8px 11px;
+    border:1px solid var(--arena);
+    border-radius:6px;
+    background:var(--crema);
+    font-family:inherit;
+    font-size:0.84rem;
+    margin-bottom:12px;
+  }
+  .lista-sin-asignar{
+    list-style:none;
+    max-height:540px;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+  .item-sin-asignar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:8px;
+    padding:9px 11px;
+    background:var(--crema);
+    border:1px solid transparent;
+    border-radius:6px;
+    font-size:0.86rem;
+    cursor:grab;
+    transition:border-color 0.15s ease, background 0.15s ease;
+  }
+  .item-sin-asignar:hover{
+    border-color:var(--terracota);
+    background:#fff;
+  }
+  .item-sin-asignar:active{cursor:grabbing;}
+  .item-sin-asignar .fam-nombre{
+    font-weight:500;
+    color:var(--texto);
+  }
+  .item-sin-asignar .fam-lugares{
+    font-size:0.78rem;
+    color:var(--gris-calido);
+    white-space:nowrap;
+  }
+
+  .grid-mesas{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(265px, 1fr));
+    gap:16px;
+  }
+  .tarjeta-mesa{
+    background:#fff;
+    border:1px solid var(--arena);
+    border-radius:10px;
+    padding:18px;
+    display:flex;
+    flex-direction:column;
+    transition:border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .tarjeta-mesa.drag-over{
+    border:2px dashed var(--terracota);
+    background:rgba(241,224,214,0.35);
+  }
+  .mesa-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:8px;
+    margin-bottom:6px;
+  }
+  .mesa-titulo-wrap{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    flex:1;
+    min-width:0;
+    flex-wrap:wrap;
+  }
+  .mesa-titulo{
+    font-family:'Fraunces', serif;
+    font-size:1.05rem;
+    font-weight:600;
+    color:var(--texto);
+    word-break:break-word;
+  }
+  .btn-icono-mesa{
+    background:none;
+    border:none;
+    color:var(--gris-calido);
+    cursor:pointer;
+    font-size:0.88rem;
+    padding:2px 4px;
+    line-height:1;
+  }
+  .btn-icono-mesa:hover{color:var(--terracota);}
+  .btn-icono-mesa.eliminar:hover{color:var(--rojo-cancelado);}
+
+  .mesa-edit-inline{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    width:100%;
+    flex-wrap:wrap;
+  }
+  .mesa-edit-inline span.prefijo{
+    font-family:'Fraunces', serif;
+    font-size:0.95rem;
+    font-weight:600;
+    white-space:nowrap;
+  }
+  .mesa-edit-inline input[type="text"]{
+    flex:1;
+    min-width:100px;
+    padding:5px 8px;
+    border:1px solid var(--terracota);
+    border-radius:5px;
+    background:var(--crema);
+    font-family:inherit;
+    font-size:0.86rem;
+  }
+  .mesa-edit-inline input[type="number"]{
+    width:54px;
+    padding:5px 6px;
+    border:1px solid var(--arena);
+    border-radius:5px;
+    background:var(--crema);
+    font-family:inherit;
+    font-size:0.82rem;
+  }
+  .btn-guardar-inline{
+    padding:5px 10px;
+    border:1px solid var(--arena);
+    border-radius:5px;
+    background:var(--crema);
+    color:var(--texto);
+    font-family:inherit;
+    font-size:0.78rem;
+    font-weight:500;
+    cursor:pointer;
+  }
+  .btn-guardar-inline:hover{
+    background:var(--terracota);
+    color:#fff;
+    border-color:var(--terracota);
+  }
+
+  .mesa-conteo{
+    font-size:0.8rem;
+    color:var(--gris-calido);
+    margin-bottom:6px;
+  }
+  .mesa-conteo.llena{
+    color:var(--verde-confirmado);
+    font-weight:500;
+  }
+  .mesa-conteo.excedida{
+    color:var(--rojo-cancelado);
+    font-weight:600;
+  }
+  .mesa-barra{
+    width:100%;
+    height:5px;
+    background:var(--crema);
+    border-radius:4px;
+    overflow:hidden;
+    margin-bottom:14px;
+  }
+  .mesa-barra-progreso{
+    height:100%;
+    background:var(--terracota);
+    border-radius:4px;
+    transition:width 0.25s ease, background 0.25s ease;
+  }
+  .mesa-barra-progreso.llena{background:var(--verde-confirmado);}
+  .mesa-barra-progreso.excedida{background:var(--rojo-cancelado);}
+
+  .mesa-invitados-lista{
+    list-style:none;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    flex:1;
+    margin-bottom:12px;
+  }
+  .mesa-invitado-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:8px;
+    font-size:0.85rem;
+    padding:4px 0;
+    border-bottom:1px solid rgba(216,196,174,0.35);
+  }
+  .mesa-invitado-item:last-child{border-bottom:none;}
+  .btn-quitar-de-mesa{
+    background:none;
+    border:none;
+    color:var(--gris-calido);
+    cursor:pointer;
+    font-size:0.82rem;
+    padding:2px 4px;
+  }
+  .btn-quitar-de-mesa:hover{color:var(--rojo-cancelado);}
+
+  .mesa-vacia-msg{
+    text-align:center;
+    font-size:0.8rem;
+    color:var(--gris-calido);
+    padding:18px 8px;
+    line-height:1.45;
+  }
+
+  .btn-anadir-a-mesa{
+    align-self:flex-start;
+    background:none;
+    border:none;
+    color:var(--texto);
+    font-family:inherit;
+    font-size:0.83rem;
+    font-weight:500;
+    cursor:pointer;
+    padding:4px 0;
+    margin-top:auto;
+  }
+  .btn-anadir-a-mesa:hover{color:var(--terracota);}
+
+  .lista-modal-asignar{
+    list-style:none;
+    max-height:280px;
+    overflow-y:auto;
+    border:1px solid var(--arena);
+    background:var(--crema);
+    margin-top:10px;
+  }
+  .lista-modal-asignar li{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px 12px;
+    border-bottom:1px solid var(--arena);
+    font-size:0.88rem;
+    cursor:pointer;
+  }
+  .lista-modal-asignar li:last-child{border-bottom:none;}
+  .lista-modal-asignar li:hover{background:#fff;}
 
   /* -------- modales -------- */
   .modal-overlay{
@@ -504,7 +839,7 @@
   }
   .modal-box .campo-checkbox input{width:16px; height:16px; accent-color:var(--terracota);}
   .modal-box .campo-checkbox label{margin:0; color:var(--texto); font-size:0.88rem; cursor:pointer;}
-  
+
   #texto-vista-notas {
     background: var(--crema);
     padding: 16px;
@@ -563,6 +898,7 @@
     <div class="tabs-panel">
       <button class="tab-btn activo" data-tab="invitados">Invitados</button>
       <button class="tab-btn" data-tab="planeacion">Planeación de la boda</button>
+      <button class="tab-btn" data-tab="mesas">Acomodo de Mesas</button>
     </div>
 
     <!-- ============ TAB: INVITADOS ============ -->
@@ -655,6 +991,7 @@
               <th>Niños</th>
               <th class="col-condicional">Confirmados</th>
               <th class="col-condicional">Estado</th>
+              <th class="col-condicional">Mesa</th>
               <th>Notas</th>
               <th>Acciones</th>
             </tr>
@@ -711,6 +1048,46 @@
       </div>
       <p id="gastos-vacio" style="display:none; text-align:center; padding:40px 20px; color:var(--gris-calido);">Todavía no hay nada agregado.</p>
     </div>
+
+    <!-- ============ TAB: ACOMODO DE MESAS ============ -->
+    <div id="tab-mesas" style="display:none;">
+      <div class="mesas-topbar">
+        <h2 class="serif">Acomodo de Mesas</h2>
+        <div class="mesas-topbar-acciones">
+          <button type="button" class="btn-secundario-mesa" id="btn-crear-mesas-base" style="display:none;">Crear 10 mesas base</button>
+          <button type="button" class="btn-nueva-mesa" id="btn-nueva-mesa">+ Nueva Mesa</button>
+        </div>
+      </div>
+
+      <div class="mesas-layout">
+        <!-- Columna izquierda: invitados confirmados sin mesa -->
+        <aside class="panel-sin-asignar">
+          <h3 class="serif">Invitados por asignar</h3>
+          <p class="sin-asignar-meta" id="sin-asignar-meta">0 confirmados sin mesa</p>
+          <input type="text" id="buscar-sin-mesa" placeholder="Buscar invitados sin mesa...">
+          <ul class="lista-sin-asignar" id="lista-sin-asignar"></ul>
+        </aside>
+
+        <!-- Cuadrícula derecha: tarjetas de mesas -->
+        <div class="grid-mesas" id="grid-mesas"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============ MODAL AÑADIR INVITADO A MESA ============ -->
+<div class="modal-overlay" id="modal-asignar-mesa">
+  <div class="modal-box">
+    <h3 class="serif" id="titulo-asignar-mesa">Añadir a mesa</h3>
+    <p id="subtitulo-asignar-mesa" style="font-size:0.84rem; color:var(--gris-calido); margin-top:-12px; margin-bottom:14px;"></p>
+    <div class="campo" style="margin-bottom:8px;">
+      <input type="text" id="filtro-modal-asignar" placeholder="Buscar familia confirmada...">
+    </div>
+    <ul class="lista-modal-asignar" id="lista-modal-asignar"></ul>
+    <div class="modal-botones">
+      <button class="btn btn-cancelar" id="cerrar-asignar-mesa">Cerrar</button>
+    </div>
   </div>
 </div>
 
@@ -764,6 +1141,13 @@
     <div class="campo" id="campo-estado">
       <label for="edit-estado" id="label-estado">Estado</label>
       <select id="edit-estado"></select>
+    </div>
+
+    <div class="campo" id="campo-mesa-modal">
+      <label for="edit-mesa">Mesa asignada</label>
+      <select id="edit-mesa">
+        <option value="">Sin mesa asignada</option>
+      </select>
     </div>
 
     <div class="campo">
@@ -968,6 +1352,7 @@
       panel.style.display = "block";
       escucharFamilias();
       escucharPlaneacion();
+      escucharMesas();
     } else {
       loginScreen.style.display = "flex";
       panel.style.display = "none";
@@ -979,16 +1364,20 @@
     btn.addEventListener("click", () => {
       document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("activo"));
       btn.classList.add("activo");
-      const esInvitados = btn.dataset.tab === "invitados";
-      document.getElementById("tab-invitados").style.display = esInvitados ? "block" : "none";
-      document.getElementById("tab-planeacion").style.display = esInvitados ? "none" : "block";
+      const tab = btn.dataset.tab;
+      document.getElementById("tab-invitados").style.display = tab === "invitados" ? "block" : "none";
+      document.getElementById("tab-planeacion").style.display = tab === "planeacion" ? "block" : "none";
+      document.getElementById("tab-mesas").style.display = tab === "mesas" ? "block" : "none";
+      if (tab === "mesas") renderMesas();
     });
   });
 
   // ---------- datos en tiempo real ----------
   let familias = [];
+  let mesas = [];
   let filtroActivo = "todos";
   let yaEscuchando = false;
+  let yaEscuchandoMesas = false;
 
   function escucharFamilias() {
     if (yaEscuchando) return;
@@ -996,8 +1385,30 @@
     onSnapshot(collection(db, "familias"), (snapshot) => {
       familias = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
       renderTodo();
+      renderMesas();
     });
   }
+
+  function escucharMesas() {
+    if (yaEscuchandoMesas) return;
+    yaEscuchandoMesas = true;
+    onSnapshot(collection(db, "mesas"), (snapshot) => {
+      mesas = snapshot.docs.map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => (Number(a.numero) || 0) - (Number(b.numero) || 0));
+      renderTodo();
+      renderMesas();
+    });
+  }
+
+  const etiquetaMesaDe = (mesaId) => {
+    if (!mesaId) return "";
+    const m = mesas.find(x => x.id === mesaId);
+    if (!m) return "";
+    const num = m.numero || "";
+    const nom = (m.nombre || "").trim();
+    const defaultNom = `Mesa ${num}`;
+    return (nom && nom !== defaultNom) ? `Mesa ${num} — ${nom}` : defaultNom;
+  };
 
   const adultosDe = f => (Number.isFinite(f.adultos) ? f.adultos : (f.personas_esperadas || 0));
   const ninosDe = f => (Number.isFinite(f.ninos) ? f.ninos : 0);
@@ -1015,19 +1426,24 @@
     if (total >= totalDe(f)) return { a: adultosDe(f), n: ninosDe(f) };
     return { a: Math.min(total, adultosDe(f)), n: 0 };
   }
-  
+
+  const lugaresConfirmadosTotalDe = f => {
+    const c = confirmadosDe(f);
+    return c.a + c.n;
+  };
+
   const txtPersonas = (a, n) => `${a} ${a === 1 ? "adulto" : "adultos"}` + (n > 0 ? ` · ${n} ${n === 1 ? "niño" : "niños"}` : "");
 
   function obtenerDetalleEstado(f) {
     if (f.lista_espera) {
       return { clave: "lista_espera_b", clase: "estado-pendiente", texto: "Lista de reserva" };
     }
-    
+
     let est = (f.estado || "sin_respuesta").toLowerCase();
-    
+
     // Auto-ajustes para datos legacy o guardados automáticamente por la página web
     if (est === "pendiente") est = "sin_respuesta";
-    if (est === "confirmado") est = "confirmado_web"; 
+    if (est === "confirmado") est = "confirmado_web";
 
     switch (est) {
       case "confirmado_ambos": return { clave: "confirmado_ambos", clase: "estado-confirmado-ambos", texto: "Confirmado (Ambos)" };
@@ -1057,17 +1473,17 @@
   });
 
   function renderTodo() {
-    const activos = familias.filter(f => !f.lista_espera); 
+    const activos = familias.filter(f => !f.lista_espera);
     const espA = activos.reduce((s, f) => s + adultosDe(f), 0);
     const espN = activos.reduce((s, f) => s + ninosDe(f), 0);
     let confA = 0, confN = 0;
-    
+
     activos.forEach(f => { const c = confirmadosDe(f); confA += c.a; confN += c.n; });
     const esperados = espA + espN;
     const confirmados = confA + confN;
 
     const cancelados = activos.filter(f => obtenerDetalleEstado(f).clave === "cancelado").length;
-    
+
     const pendientes = activos.filter(f => ["sin_respuesta", "lo_pensara"].includes(obtenerDetalleEstado(f).clave)).length;
 
     const enviadasCount = activos.filter(f => !!f.enviada).length;
@@ -1106,7 +1522,7 @@
     let lista = familias.filter(f => {
       const detEst = obtenerDetalleEstado(f);
       const enEspera = !!f.lista_espera;
-      
+
       let pasaFiltro;
 
       if (filtroActivo === "lista_espera_b") {
@@ -1127,10 +1543,12 @@
         pasaFiltro = !enEspera && (filtroActivo === "todos" || detEst.clave === filtroActivo);
       }
 
+      const mesaTxt = etiquetaMesaDe(f.mesa_id).toLowerCase();
       const pasaBusqueda =
         (f.contacto_nombre || f.id).toLowerCase().includes(texto) ||
         String(f.contacto_telefono || "").toLowerCase().includes(texto) ||
-        String(f.notas || "").toLowerCase().includes(texto);
+        String(f.notas || "").toLowerCase().includes(texto) ||
+        mesaTxt.includes(texto);
 
       return pasaFiltro && pasaBusqueda;
     });
@@ -1158,7 +1576,12 @@
         ? `<button class="editar-btn btn-wa-fila" data-id="${f.id}" ${!telNormalizado ? 'style="color:var(--rojo-cancelado);"' : ''}>${telNormalizado ? txtEnviar : "+ Agregar tel"}</button>`
         : "";
 
-      const botonNotas = (f.notas && f.notas.trim() !== "") 
+      const mesaAsignadaTxt = esEstadoConfirmado(detEst.clave) && f.mesa_id ? etiquetaMesaDe(f.mesa_id) : "";
+      const celdaMesa = mesaAsignadaTxt
+        ? `<span class="badge-mesa">${esc(mesaAsignadaTxt)}</span>`
+        : `<span style="color:var(--gris-calido);">-</span>`;
+
+      const botonNotas = (f.notas && f.notas.trim() !== "")
         ? `<button class="btn-ver-notas ver-notas-btn" data-id="${f.id}">Ver notas</button>`
         : `<span style="color:var(--gris-calido);">-</span>`;
 
@@ -1172,6 +1595,7 @@
         <td>${ninosDe(f)}</td>
         <td class="col-condicional">${esEstadoConfirmado(detEst.clave) ? (() => { const c = confirmadosDe(f); return txtPersonas(c.a, c.n); })() : "-"}</td>
         <td class="col-condicional"><span class="estado-pill ${detEst.clase}">${detEst.texto}</span></td>
+        <td class="col-condicional">${celdaMesa}</td>
         <td class="col-notas">${botonNotas}</td>
         <td>
           ${botonWhatsApp}
@@ -1241,6 +1665,15 @@
     ["lista_espera_b", "Lista de Reserva (B-List)"],
   ];
 
+  function llenarOpcionesMesasModal(valorSeleccionado) {
+    const sel = document.getElementById("edit-mesa");
+    const opciones = [`<option value="">Sin mesa asignada</option>`].concat(
+      mesas.map(m => `<option value="${esc(m.id)}">${esc(etiquetaMesaDe(m.id))}</option>`)
+    );
+    sel.innerHTML = opciones.join("");
+    sel.value = valorSeleccionado || "";
+  }
+
   function llenarEstados(opciones, valor) {
     const sel = document.getElementById("edit-estado");
     sel.innerHTML = opciones.map(([v, t]) => `<option value="${v}">${t}</option>`).join("");
@@ -1252,6 +1685,7 @@
     const est = document.getElementById("edit-estado").value;
     const conf = esEstadoConfirmado(est);
     document.getElementById("campo-confirmados").style.display = (conf && !modoNuevo) ? "flex" : "none";
+    document.getElementById("campo-mesa-modal").style.display = (conf && !modoNuevo) ? "block" : "none";
   }
 
   document.getElementById("edit-estado").addEventListener("change", () => {
@@ -1273,7 +1707,7 @@
     const f = familias.find(x => x.id === id);
     if (!f) return;
     familiaEnVistaDeNotas = id;
-    
+
     document.getElementById("titulo-vista-notas").textContent = `Notas de: ${f.contacto_nombre || f.id}`;
     document.getElementById("texto-vista-notas").textContent = f.notas || "(Sin notas)";
     document.getElementById("modal-ver-notas").classList.add("activo");
@@ -1319,6 +1753,8 @@
     document.getElementById("edit-enviada").checked = !!f.enviada;
     document.getElementById("edit-notas").value = f.notas || "";
 
+    llenarOpcionesMesasModal(f.mesa_id || "");
+
     const detEst = obtenerDetalleEstado(f);
     llenarEstados(OPCIONES_EDITAR, detEst.clave);
 
@@ -1342,6 +1778,7 @@
     document.getElementById("edit-ninos-conf").value = 0;
     document.getElementById("edit-enviada").checked = false;
     document.getElementById("edit-notas").value = "";
+    llenarOpcionesMesasModal("");
     llenarEstados(OPCIONES_NUEVO, "sin_respuesta");
 
     document.getElementById("modal-overlay").classList.add("activo");
@@ -1377,7 +1814,7 @@
     const eleccion = document.getElementById("edit-estado").value;
     const notas = document.getElementById("edit-notas").value.trim();
     const enviada = document.getElementById("edit-enviada").checked;
-    
+
     const esBList = eleccion === "lista_espera_b";
 
     if (modoNuevo) {
@@ -1400,15 +1837,19 @@
         alergias: "",
         mensaje: "",
         notas,
+        mesa_id: "",
         lista_espera: esBList,
       });
     } else {
       if (!idEnEdicion) return;
       let ac = 0, nc = 0;
+      let mesaId = document.getElementById("edit-mesa").value || "";
       if (esEstadoConfirmado(eleccion) && !esBList) {
         ac = entero("edit-adultos-conf", 0, adultos);
         nc = entero("edit-ninos-conf", 0, ninos);
         if (ac + nc === 0) { ac = adultos; nc = ninos; }
+      } else {
+        mesaId = "";
       }
 
       await updateDoc(doc(db, "familias", idEnEdicion), {
@@ -1422,6 +1863,7 @@
         lista_espera: esBList,
         enviada,
         notas,
+        mesa_id: mesaId,
         personas_confirmadas: ac + nc,
         adultos_confirmados: ac,
         ninos_confirmados: nc,
@@ -1429,6 +1871,301 @@
     }
 
     cerrarModal();
+  });
+
+  // ---------- acomodo de mesas ----------
+  let mesaEnEdicionInline = null;
+  let mesaParaModalAsignar = null;
+
+  function familiasConfirmadasActivas() {
+    return familias.filter(f => !f.lista_espera && esEstadoConfirmado(obtenerDetalleEstado(f).clave));
+  }
+
+  async function crearNuevaMesa(numeroForzado, nombreForzado) {
+    const maxNum = mesas.reduce((m, item) => Math.max(m, Number(item.numero) || 0), 0);
+    const numero = numeroForzado ?? (maxNum + 1);
+    const nombre = nombreForzado ?? `Mesa ${numero}`;
+    await addDoc(collection(db, "mesas"), {
+      numero,
+      nombre,
+      capacidad: 10,
+      creado: Date.now() + numero
+    });
+  }
+
+  document.getElementById("btn-nueva-mesa").addEventListener("click", () => crearNuevaMesa());
+
+  document.getElementById("btn-crear-mesas-base").addEventListener("click", async () => {
+    const btn = document.getElementById("btn-crear-mesas-base");
+    btn.disabled = true;
+    btn.textContent = "Creando mesas...";
+    try {
+      for (let i = 1; i <= 10; i++) {
+        await crearNuevaMesa(i, `Mesa ${i}`);
+      }
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Crear 10 mesas base";
+    }
+  });
+
+  async function asignarFamiliaAMesa(familiaId, mesaId) {
+    if (!familiaId) return;
+    await updateDoc(doc(db, "familias", familiaId), { mesa_id: mesaId || "" });
+  }
+
+  async function eliminarMesa(mesaId) {
+    const m = mesas.find(x => x.id === mesaId);
+    if (!m) return;
+    const asignados = familiasConfirmadasActivas().filter(f => f.mesa_id === mesaId);
+    const aviso = asignados.length
+      ? `¿Eliminar "${etiquetaMesaDe(mesaId)}"? Las ${asignados.length} familias asignadas regresarán a la lista de "Invitados por asignar".`
+      : `¿Eliminar "${etiquetaMesaDe(mesaId)}"?`;
+    if (!confirm(aviso)) return;
+
+    for (const fam of asignados) {
+      await updateDoc(doc(db, "familias", fam.id), { mesa_id: "" });
+    }
+    await deleteDoc(doc(db, "mesas", mesaId));
+  }
+
+  function renderMesas() {
+    const confirmadas = familiasConfirmadasActivas();
+    const idsMesasValidas = new Set(mesas.map(m => m.id));
+
+    // Invitados confirmados sin mesa (o cuya mesa ya no existe)
+    const sinAsignar = confirmadas.filter(f => !f.mesa_id || !idsMesasValidas.has(f.mesa_id));
+    const totalPersonasSinAsignar = sinAsignar.reduce((s, f) => s + lugaresConfirmadosTotalDe(f), 0);
+
+    document.getElementById("sin-asignar-meta").textContent =
+      `${sinAsignar.length} ${sinAsignar.length === 1 ? "familia" : "familias"} · ${totalPersonasSinAsignar} ${totalPersonasSinAsignar === 1 ? "lugar" : "lugares"}`;
+
+    const filtroTxt = (document.getElementById("buscar-sin-mesa").value || "").toLowerCase();
+    const listaSinAsignarUl = document.getElementById("lista-sin-asignar");
+    const filtradosSinAsignar = sinAsignar.filter(f =>
+      (f.contacto_nombre || f.id).toLowerCase().includes(filtroTxt)
+    );
+
+    if (!filtradosSinAsignar.length) {
+      listaSinAsignarUl.innerHTML = `<li style="font-size:0.82rem; color:var(--gris-calido); text-align:center; padding:18px 8px;">${
+        sinAsignar.length ? "Sin coincidencias." : "✓ Todos los invitados confirmados ya tienen mesa."
+      }</li>`;
+    } else {
+      listaSinAsignarUl.innerHTML = filtradosSinAsignar.map(f => {
+        const cant = lugaresConfirmadosTotalDe(f);
+        return `
+          <li class="item-sin-asignar" draggable="true" data-fam-id="${esc(f.id)}" title="Arrastra a una mesa">
+            <span class="fam-nombre">${esc(f.contacto_nombre || f.id)}</span>
+            <span class="fam-lugares">(${cant})</span>
+          </li>`;
+      }).join("");
+
+      listaSinAsignarUl.querySelectorAll(".item-sin-asignar").forEach(li => {
+        li.addEventListener("dragstart", (e) => {
+          e.dataTransfer.setData("text/plain", li.dataset.famId);
+          e.dataTransfer.effectAllowed = "move";
+        });
+      });
+    }
+
+    // Mostrar botón rápido de 10 mesas si aún no crean ninguna
+    document.getElementById("btn-crear-mesas-base").style.display = mesas.length === 0 ? "inline-block" : "none";
+
+    const grid = document.getElementById("grid-mesas");
+    if (!mesas.length) {
+      grid.innerHTML = `
+        <div style="grid-column:1/-1; background:#fff; border:1px solid var(--arena); border-radius:10px; padding:44px 24px; text-align:center; color:var(--gris-calido);">
+          <p style="margin-bottom:10px;">Aún no has creado mesas para tu recepción.</p>
+          <p style="font-size:0.84rem;">Haz clic en <strong>+ Nueva Mesa</strong> o en <strong>Crear 10 mesas base</strong> para empezar a asignar lugares.</p>
+        </div>`;
+      return;
+    }
+
+    grid.innerHTML = mesas.map(m => {
+      const cap = Number(m.capacidad) || 10;
+      const asignados = confirmadas.filter(f => f.mesa_id === m.id);
+      const ocupados = asignados.reduce((s, f) => s + lugaresConfirmadosTotalDe(f), 0);
+      const pct = Math.min(100, Math.round((ocupados / Math.max(cap, 1)) * 100));
+
+      let claseEstado = "";
+      let textoConteo = `${ocupados} de ${cap} lugares`;
+      if (ocupados === cap && cap > 0) {
+        claseEstado = "llena";
+        textoConteo = `${ocupados} de ${cap} lugares (Llena)`;
+      } else if (ocupados > cap) {
+        claseEstado = "excedida";
+        textoConteo = `${ocupados} de ${cap} lugares (Excedida por ${ocupados - cap})`;
+      }
+
+      const editandoEsta = mesaEnEdicionInline === m.id;
+      const valorInputNombre = (m.nombre && m.nombre !== `Mesa ${m.numero}`) ? m.nombre : "";
+      const headerHtml = editandoEsta
+        ? `
+          <div class="mesa-edit-inline">
+            <span class="prefijo">Mesa ${esc(m.numero)} —</span>
+            <input type="text" class="input-nombre-mesa" data-id="${esc(m.id)}" value="${esc(valorInputNombre)}" placeholder="Ej. Novios">
+            <input type="number" class="input-cap-mesa" data-id="${esc(m.id)}" value="${cap}" min="1" max="30" title="Capacidad de lugares">
+            <button type="button" class="btn-guardar-inline" data-id="${esc(m.id)}">Guardar</button>
+          </div>`
+        : `
+          <div class="mesa-titulo-wrap">
+            <span class="mesa-titulo">${esc(etiquetaMesaDe(m.id))}</span>
+            <button type="button" class="btn-icono-mesa btn-editar-mesa" data-id="${esc(m.id)}" title="Editar nombre y capacidad">✎</button>
+          </div>
+          <button type="button" class="btn-icono-mesa eliminar btn-eliminar-mesa" data-id="${esc(m.id)}" title="Eliminar mesa">🗑</button>`;
+
+      const listaHtml = asignados.length
+        ? `<ul class="mesa-invitados-lista">${asignados.map(f => {
+            const cant = lugaresConfirmadosTotalDe(f);
+            return `
+              <li class="mesa-invitado-item">
+                <span>${esc(f.contacto_nombre || f.id)} <span style="color:var(--gris-calido); font-size:0.78rem;">(${cant})</span></span>
+                <button type="button" class="btn-quitar-de-mesa" data-fam-id="${esc(f.id)}" title="Quitar de esta mesa">🗑</button>
+              </li>`;
+          }).join("")}</ul>`
+        : `<p class="mesa-vacia-msg">Mesa vacía.<br>Arrastra invitados aquí o haz clic en Añadir</p>`;
+
+      return `
+        <div class="tarjeta-mesa" data-mesa-id="${esc(m.id)}">
+          <div class="mesa-header">${headerHtml}</div>
+          <div class="mesa-conteo ${claseEstado}">${textoConteo}</div>
+          <div class="mesa-barra">
+            <div class="mesa-barra-progreso ${claseEstado}" style="width:${pct}%"></div>
+          </div>
+          ${listaHtml}
+          <button type="button" class="btn-anadir-a-mesa" data-mesa-id="${esc(m.id)}">+ Añadir</button>
+        </div>`;
+    }).join("");
+
+    // Eventos de edición inline
+    grid.querySelectorAll(".btn-editar-mesa").forEach(btn => {
+      btn.addEventListener("click", () => {
+        mesaEnEdicionInline = btn.dataset.id;
+        renderMesas();
+        const inp = grid.querySelector(`.input-nombre-mesa[data-id="${btn.dataset.id}"]`);
+        if (inp) { inp.focus(); inp.select(); }
+      });
+    });
+
+    grid.querySelectorAll(".btn-guardar-inline").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        const id = btn.dataset.id;
+        const inpNom = grid.querySelector(`.input-nombre-mesa[data-id="${id}"]`);
+        const inpCap = grid.querySelector(`.input-cap-mesa[data-id="${id}"]`);
+        const mesaObj = mesas.find(x => x.id === id);
+        const nuevoNombre = (inpNom ? inpNom.value.trim() : "") || `Mesa ${mesaObj ? mesaObj.numero : ""}`;
+        const nuevaCap = Math.max(1, parseInt(inpCap ? inpCap.value : "10", 10) || 10);
+        mesaEnEdicionInline = null;
+        await updateDoc(doc(db, "mesas", id), { nombre: nuevoNombre, capacidad: nuevaCap });
+      });
+    });
+
+    grid.querySelectorAll(".input-nombre-mesa").forEach(inp => {
+      inp.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          const btn = grid.querySelector(`.btn-guardar-inline[data-id="${inp.dataset.id}"]`);
+          if (btn) btn.click();
+        } else if (e.key === "Escape") {
+          mesaEnEdicionInline = null;
+          renderMesas();
+        }
+      });
+    });
+
+    grid.querySelectorAll(".btn-eliminar-mesa").forEach(btn => {
+      btn.addEventListener("click", () => eliminarMesa(btn.dataset.id));
+    });
+
+    grid.querySelectorAll(".btn-quitar-de-mesa").forEach(btn => {
+      btn.addEventListener("click", () => asignarFamiliaAMesa(btn.dataset.famId, ""));
+    });
+
+    grid.querySelectorAll(".btn-anadir-a-mesa").forEach(btn => {
+      btn.addEventListener("click", () => abrirModalAsignarMesa(btn.dataset.mesaId));
+    });
+
+    // Drop zone en cada tarjeta de mesa
+    grid.querySelectorAll(".tarjeta-mesa").forEach(card => {
+      card.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        card.classList.add("drag-over");
+      });
+      card.addEventListener("dragleave", () => {
+        card.classList.remove("drag-over");
+      });
+      card.addEventListener("drop", (e) => {
+        e.preventDefault();
+        card.classList.remove("drag-over");
+        const famId = e.dataTransfer.getData("text/plain");
+        if (famId) asignarFamiliaAMesa(famId, card.dataset.mesaId);
+      });
+    });
+  }
+
+  document.getElementById("buscar-sin-mesa").addEventListener("input", renderMesas);
+
+  function abrirModalAsignarMesa(mesaId) {
+    const m = mesas.find(x => x.id === mesaId);
+    if (!m) return;
+    mesaParaModalAsignar = mesaId;
+    document.getElementById("titulo-asignar-mesa").textContent = `Añadir a ${etiquetaMesaDe(mesaId)}`;
+    document.getElementById("filtro-modal-asignar").value = "";
+    renderListaModalAsignar();
+    document.getElementById("modal-asignar-mesa").classList.add("activo");
+    setTimeout(() => document.getElementById("filtro-modal-asignar").focus(), 60);
+  }
+
+  function renderListaModalAsignar() {
+    if (!mesaParaModalAsignar) return;
+    const m = mesas.find(x => x.id === mesaParaModalAsignar);
+    const cap = m ? (Number(m.capacidad) || 10) : 10;
+    const confirmadas = familiasConfirmadasActivas();
+    const ocupados = confirmadas.filter(f => f.mesa_id === mesaParaModalAsignar)
+      .reduce((s, f) => s + lugaresConfirmadosTotalDe(f), 0);
+
+    document.getElementById("subtitulo-asignar-mesa").textContent =
+      `Ocupación actual: ${ocupados} de ${cap} lugares`;
+
+    const idsMesasValidas = new Set(mesas.map(x => x.id));
+    const disponibles = confirmadas.filter(f => !f.mesa_id || !idsMesasValidas.has(f.mesa_id));
+    const q = (document.getElementById("filtro-modal-asignar").value || "").toLowerCase();
+    const filtrados = disponibles.filter(f => (f.contacto_nombre || f.id).toLowerCase().includes(q));
+
+    const ul = document.getElementById("lista-modal-asignar");
+    if (!filtrados.length) {
+      ul.innerHTML = `<li style="color:var(--gris-calido); justify-content:center; cursor:default;">${
+        disponibles.length ? "Sin coincidencias." : "No hay invitados confirmados sin mesa."
+      }</li>`;
+      return;
+    }
+
+    ul.innerHTML = filtrados.map(f => {
+      const cant = lugaresConfirmadosTotalDe(f);
+      return `
+        <li data-fam-id="${esc(f.id)}">
+          <span><strong>${esc(f.contacto_nombre || f.id)}</strong></span>
+          <span style="color:var(--terracota); font-size:0.82rem;">+ Asignar (${cant} ${cant === 1 ? "lugar" : "lugares"})</span>
+        </li>`;
+    }).join("");
+
+    ul.querySelectorAll("li[data-fam-id]").forEach(li => {
+      li.addEventListener("click", async () => {
+        await asignarFamiliaAMesa(li.dataset.famId, mesaParaModalAsignar);
+        renderListaModalAsignar();
+      });
+    });
+  }
+
+  document.getElementById("filtro-modal-asignar").addEventListener("input", renderListaModalAsignar);
+  document.getElementById("cerrar-asignar-mesa").addEventListener("click", () => {
+    document.getElementById("modal-asignar-mesa").classList.remove("activo");
+    mesaParaModalAsignar = null;
+  });
+  document.getElementById("modal-asignar-mesa").addEventListener("click", (e) => {
+    if (e.target.id === "modal-asignar-mesa") {
+      document.getElementById("modal-asignar-mesa").classList.remove("activo");
+      mesaParaModalAsignar = null;
+    }
   });
 
   // ---------- planeación: lo que tenemos, costos y abonos ----------
@@ -1471,7 +2208,7 @@
       const liquidado = costo > 0 && pag >= costo;
       let pill = ["estado-sin-respuesta", "Sin pagos"];
       if (liquidado) pill = ["estado-confirmado-ambos", "Liquidado"];
-      else if (pag > 0) pill = ["estado-espera", "Con abonos"];
+      else if (pag > 0) pill = ["estado-parcial", "Con abonos"];
       else if (costo === 0) pill = ["estado-sin-respuesta", "Sin costo"];
 
       return `
@@ -1711,6 +2448,7 @@
         alergias: "",
         mensaje: "",
         notas: (fila.notas || "").trim(),
+        mesa_id: "",
         lista_espera: enEspera,
       });
 
