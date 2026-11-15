@@ -167,12 +167,12 @@
   }
   .itin-grid{
     display:grid;
-    grid-template-columns:1.05fr 0.95fr;
+    grid-template-columns:1.08fr 0.92fr;
     gap:22px;
     align-items:start;
     margin-bottom:36px;
   }
-  @media (max-width:920px){
+  @media (max-width:960px){
     .itin-grid{
       grid-template-columns:1fr;
     }
@@ -195,12 +195,19 @@
   }
   .itin-form-grid{
     display:grid;
-    grid-template-columns:125px 1fr 1fr auto;
+    grid-template-columns:105px 1fr;
     gap:8px;
     margin-bottom:16px;
   }
+  .itin-form-fila2{
+    grid-column:1 / -1;
+    display:grid;
+    grid-template-columns:1fr 165px auto;
+    gap:8px;
+  }
   @media (max-width:640px){
-    .itin-form-grid{
+    .itin-form-grid,
+    .itin-form-fila2{
       grid-template-columns:1fr;
     }
   }
@@ -217,6 +224,94 @@
     font-size:0.86rem;
     color:var(--texto);
   }
+
+  /* Selector visual de símbolos */
+  .simbolo-picker{
+    position:relative;
+    width:100%;
+  }
+  .simbolo-picker-btn{
+    width:100%;
+    height:100%;
+    min-height:37px;
+    padding:7px 10px;
+    border:1px solid var(--arena);
+    border-radius:6px;
+    background:var(--crema);
+    color:var(--texto);
+    font-family:inherit;
+    font-size:0.84rem;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:6px;
+    cursor:pointer;
+    text-align:left;
+  }
+  .simbolo-picker-btn:hover{
+    border-color:var(--terracota);
+  }
+  .simbolo-picker-actual{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    min-width:0;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .simbolo-picker-actual svg,
+  .simbolo-opcion svg,
+  .itin-simbolo-badge svg{
+    width:17px;
+    height:17px;
+    flex-shrink:0;
+    color:var(--terracota);
+  }
+  .simbolo-picker-menu{
+    display:none;
+    position:absolute;
+    top:calc(100% + 4px);
+    right:0;
+    width:270px;
+    max-height:260px;
+    overflow-y:auto;
+    background:#fff;
+    border:1px solid var(--arena);
+    border-radius:8px;
+    box-shadow:0 8px 24px rgba(59,42,34,0.14);
+    padding:6px;
+    z-index:60;
+    grid-template-columns:1fr 1fr;
+    gap:4px;
+  }
+  .simbolo-picker.abierto .simbolo-picker-menu{
+    display:grid;
+  }
+  .simbolo-opcion{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    padding:7px 8px;
+    border:1px solid transparent;
+    border-radius:6px;
+    background:none;
+    color:var(--texto);
+    font-family:inherit;
+    font-size:0.8rem;
+    cursor:pointer;
+    text-align:left;
+  }
+  .simbolo-opcion:hover{
+    background:var(--crema);
+    border-color:var(--arena);
+  }
+  .simbolo-opcion.seleccionado{
+    background:var(--blush);
+    border-color:var(--terracota);
+    font-weight:500;
+  }
+
   .itin-lista{
     list-style:none;
     display:flex;
@@ -235,11 +330,22 @@
   }
   .itin-item-info{
     display:flex;
-    align-items:baseline;
-    gap:12px;
+    align-items:center;
+    gap:10px;
     flex:1;
     min-width:0;
     flex-wrap:wrap;
+  }
+  .itin-simbolo-badge{
+    width:28px;
+    height:28px;
+    border-radius:50%;
+    background:#fff;
+    border:1px solid var(--arena);
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
   }
   .itin-hora-badge{
     font-weight:600;
@@ -255,6 +361,14 @@
   .itin-det-txt{
     font-size:0.8rem;
     color:var(--gris-calido);
+  }
+  .itin-lado-pill{
+    font-size:0.7rem;
+    padding:2px 7px;
+    border-radius:999px;
+    background:rgba(193,129,91,0.12);
+    color:var(--terracota);
+    white-space:nowrap;
   }
   .itin-item-acciones{
     display:flex;
@@ -336,7 +450,7 @@
   }
   #canvas-itinerario{
     max-width:100%;
-    max-height:520px;
+    max-height:540px;
     width:auto;
     height:auto;
     border-radius:6px;
@@ -1317,13 +1431,16 @@
         <!-- Columna izquierda: captura y orden del itinerario -->
         <div class="itin-card">
           <h3 class="serif">Momentos del evento</h3>
-          <p class="itin-sub">Agrega cada actividad y ordénala con las flechas. Los cambios se reflejan en tiempo real en la imagen.</p>
+          <p class="itin-sub">Agrega cada actividad, elige su símbolo y ordénala con las flechas. En la imagen se acomodan alternando derecha e izquierda.</p>
 
           <form id="form-itinerario" class="itin-form-grid">
             <input type="text" id="itin-hora" placeholder="Hora (ej. 1:00 PM)" required>
             <input type="text" id="itin-actividad" placeholder="Actividad (ej. Ceremonia)" required>
-            <input type="text" id="itin-detalle" placeholder="Lugar o detalle (opcional)">
-            <button type="submit" class="btn" style="width:auto; padding:9px 16px; border-radius:6px;">+ Agregar</button>
+            <div class="itin-form-fila2">
+              <input type="text" id="itin-detalle" placeholder="Lugar o detalle (opcional)">
+              <div id="picker-simbolo-nuevo"></div>
+              <button type="submit" class="btn" style="width:auto; padding:9px 16px; border-radius:6px;">+ Agregar</button>
+            </div>
           </form>
 
           <ul class="itin-lista" id="lista-itinerario"></ul>
@@ -1335,7 +1452,7 @@
           <p class="itin-sub">Sube una foto o plantilla de fondo, ajusta la posición y descarga la imagen lista para WhatsApp.</p>
 
           <label class="upload-foto-label" for="input-foto-itinerario">
-            <span>📷 Subir imagen de fondo (JPG / PNG)</span>
+            <span>Subir imagen de fondo (JPG / PNG)</span>
             <span id="nombre-foto-itin" style="font-size:0.78rem; color:var(--gris-calido);"></span>
           </label>
           <input type="file" id="input-foto-itinerario" accept="image/*" style="display:none;">
@@ -1348,6 +1465,14 @@
             <div class="estudio-campo">
               <label for="canvas-subtitulo">Subtítulo / Fecha</label>
               <input type="text" id="canvas-subtitulo" value="Juan Antonio &amp; Anahí • 23 de enero de 2027">
+            </div>
+            <div class="estudio-campo">
+              <label for="canvas-diseno">Distribución del itinerario</label>
+              <select id="canvas-diseno">
+                <option value="alternado-der">Alternado (1° derecha, 2° izquierda)</option>
+                <option value="alternado-izq">Alternado (1° izquierda, 2° derecha)</option>
+                <option value="lista">Lista clásica (todo a la derecha)</option>
+              </select>
             </div>
             <div class="estudio-campo">
               <label for="canvas-estilo">Estilo de recuadro y texto</label>
@@ -1366,8 +1491,8 @@
               <label for="canvas-pos-y">Posición vertical (<span id="val-pos-y">50</span>%)</label>
               <input type="range" id="canvas-pos-y" min="8" max="88" value="50">
             </div>
-            <div class="estudio-campo">
-              <label for="canvas-escala">Tamaño de letra (<span id="val-escala">100</span>%)</label>
+            <div class="estudio-campo" style="grid-column:1 / -1;">
+              <label for="canvas-escala">Tamaño de letra y símbolos (<span id="val-escala">100</span>%)</label>
               <input type="range" id="canvas-escala" min="65" max="140" value="100">
             </div>
           </div>
@@ -1377,7 +1502,7 @@
           </div>
 
           <div class="estudio-botones">
-            <button type="button" class="btn" id="btn-descargar-itinerario">⬇ Descargar imagen (PNG)</button>
+            <button type="button" class="btn" id="btn-descargar-itinerario">Descargar imagen (PNG)</button>
             <button type="button" class="btn btn-cancelar" id="btn-quitar-foto-itin" style="display:none;">Quitar foto de fondo</button>
           </div>
         </div>
@@ -1800,7 +1925,6 @@
 
     let est = (f.estado || "sin_respuesta").toLowerCase();
 
-    // Auto-ajustes para datos legacy o guardados automáticamente por la página web
     if (est === "pendiente") est = "sin_respuesta";
     if (est === "confirmado") est = "confirmado_web";
 
@@ -1842,7 +1966,6 @@
     const confirmados = confA + confN;
 
     const cancelados = activos.filter(f => obtenerDetalleEstado(f).clave === "cancelado").length;
-
     const pendientes = activos.filter(f => ["sin_respuesta", "lo_pensara"].includes(obtenerDetalleEstado(f).clave)).length;
 
     const enviadasCount = activos.filter(f => !!f.enviada).length;
@@ -2090,7 +2213,6 @@
     }
   });
 
-
   function abrirModalEditar(id) {
     const f = familias.find(x => x.id === id);
     if (!f) return;
@@ -2292,7 +2414,6 @@
     const confirmadas = familiasConfirmadasActivas();
     const idsMesasValidas = new Set(mesas.map(m => m.id));
 
-    // Invitados confirmados sin mesa (o cuya mesa ya no existe)
     const sinAsignar = confirmadas.filter(f => !f.mesa_id || !idsMesasValidas.has(f.mesa_id));
     const totalPersonasSinAsignar = sinAsignar.reduce((s, f) => s + lugaresConfirmadosTotalDe(f), 0);
 
@@ -2327,7 +2448,6 @@
       });
     }
 
-    // Mostrar botón rápido de 10 mesas si aún no crean ninguna
     document.getElementById("btn-crear-mesas-base").style.display = mesas.length === 0 ? "inline-block" : "none";
 
     const grid = document.getElementById("grid-mesas");
@@ -2396,7 +2516,6 @@
         </div>`;
     }).join("");
 
-    // Eventos de edición inline
     grid.querySelectorAll(".btn-editar-mesa").forEach(btn => {
       btn.addEventListener("click", () => {
         mesaEnEdicionInline = btn.dataset.id;
@@ -2443,7 +2562,6 @@
       btn.addEventListener("click", () => abrirModalAsignarMesa(btn.dataset.mesaId));
     });
 
-    // Drop zone en cada tarjeta de mesa
     grid.querySelectorAll(".tarjeta-mesa").forEach(card => {
       card.addEventListener("dragover", (e) => {
         e.preventDefault();
@@ -2871,6 +2989,496 @@
   }
 
   // =====================================================================
+  // ---------- CATÁLOGO DE SÍMBOLOS VECTORIALES PARA EL ITINERARIO ----------
+  // =====================================================================
+  const SIMBOLOS_ITINERARIO = [
+    {
+      id: "",
+      nombre: "Sin símbolo",
+      keywords: [],
+      svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>`
+    },
+    {
+      id: "recepcion",
+      nombre: "Recepción",
+      keywords: ["recepcion", "bienvenida", "llegada", "arco", "entrada"],
+      svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20V11a7 7 0 0 1 14 0v9"/><path d="M3 20h18"/><path d="M12 4v2.5"/><path d="M9.5 6.5c1 .8 1.8.8 2.5 0 .7.8 1.5.8 2.5 0"/></svg>`
+    },
+    {
+      id: "iglesia",
+      nombre: "Ceremonia",
+      keywords: ["ceremonia", "templo", "iglesia", "misa", "culto", "religiosa"],
+      svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="M10.5 3.5h3"/><path d="M5 21V11l7-5 7 5v10"/><path d="M10 21v-5a2 2 0 0 1 4 0v5"/><path d="M3 21h18"/></svg>`
+    },
+    {
+      id: "anillos",
+      nombre: "Anillos",
+      keywords: ["anillos", "votos", "civil", "compromiso", "alianzas"],
+      svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9.2" cy="14" r="5"/><circle cx="14.8" cy="14" r="5"/><path d="M14.8 9l-1.5-2.2 1.5-1.8 1.5 1.8z"/></svg>`
+    },
+    {
+      id: "biblia",
+      nombre: "Biblia / Bendición",
+      keywords: ["biblia", "lectura", "bendicion", "oracion", "palabra"],
+      svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5C9.8 5 6.5 5 4 6.2v12.3c2.5-1.2 5.8-1.2 8 .3 2.2-1.5 5.5-1.5 8-.3V6.2C17.5 5 14.2 5 12 6.5z"/><path d="M12 6.5v12.3"/><path d="M16 9.5v3.5"/><path d="M14.7 10.8h2.6"/></svg>`
+    },
+    {
+      id: "velas",
+      nombre: "Velación / Luz",
+      keywords: ["velacion", "vela", "velas", "luz", "lampara", "aceite"],
+      svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c1.6 2 2.2 3.2 2.2 4.3a2.2 2.2 0 0 1-4.4 0C9.8 6.2 10.4 5 12 3z"/><rect x="9.5" y="10.5" width="5" height="9.5" rx="1"/><path d="M7 20h10"/></svg>`
+    },
+    {
+      id: "lazo",
+      nombre: "Lazo",
+      keywords: ["lazo", "union"],
+      svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12c-2.2-3.2-6.5-3.2-6.5 0s4.3 3.2 6.5 0c2.2-3.2 6.5-3.2 6.5 0s-4.3 3.2-6.5 0z"/><path d="M10.5 14l-1.5 5"/><path d="M13.5 14l1.5 5"/></svg>`
+    },
+    {
+      id: "arras",
+      nombre: "Arras",
+      keywords: ["arras", "monedas"],
+      svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9.5" cy="10" r="2.7"/><circle cx="14.5" cy="10" r="2.7"/><circle cx="12" cy="7.5" r="2.7"/><path d="M5 14.5h14l-1.8 4H6.8z"/></svg>`
+    },
+    {
+      id: "ramo",
+      nombre: "Ramo / Flores",
+      keywords: ["ramo", "flores", "floral", "entrega"],
+      svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8.5" r="2.3"/><circle cx="15" cy="8.5" r="2.3"/><circle cx="12" cy="6.5" r="2.3"/><path d="M8.5 11l3.5 9 3.5-9"/><path d="M9.5 15.5h5"/></svg>`
+    },
+    {
+      id: "banquete",
+      nombre: "Banquete",
+      keywords: ["banquete", "comida", "cena", "cazuelitas", "buffet", "almuerzo"],
+      svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4v6a2.5 2.5 0 0 0 5 0V4"/><path d="M9.5 4v16"/><path d="M16.5 4v16"/><path d="M16.5 4c2 1.8 2.5 4.5 2.5 7h-2.5"/></svg>`
+    },
+    {
+      id: "brindis",
+      nombre: "Brindis",
+      keywords: ["brindis", "palabras", "discurso", "salud"],
+      svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 5h4l-.6 5a2 2 0 0 1-2.8 0L7.5 5z"/><path d="M9.5 11.8V19"/><path d="M7.5 19h4"/><path d="M13 5h4l-.6 5a2 2 0 0 1-2.8 0L13 5z"/><path d="M15 11.8V19"/><path d="M13 19h4"/></svg>`
+    },
+    {
+      id: "pastel",
+      nombre: "Pastel",
+      keywords: ["pastel", "postre", "torta", "dulces"],
+      svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16"/><rect x="5.5" y="14" width="13" height="6" rx="1"/><rect x="8" y="9" width="8" height="5" rx="1"/><path d="M12 5.5v3.5"/><circle cx="12" cy="4.5" r="1"/></svg>`
+    },
+    {
+      id: "cafe",
+      nombre: "Café / Sobremesa",
+      keywords: ["cafe", "sobremesa", "te", "merienda"],
+      svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 10h11v4.5a4.5 4.5 0 0 1-4.5 4.5h-2A4.5 4.5 0 0 1 5 14.5V10z"/><path d="M16 11.5h2a2 2 0 0 1 0 4h-2"/><path d="M3.5 19h14"/><path d="M8.5 5.5c0 1 .8 1.3.8 2.2"/><path d="M12 5.5c0 1 .8 1.3.8 2.2"/></svg>`
+    },
+    {
+      id: "fotos",
+      nombre: "Fotos",
+      keywords: ["foto", "fotos", "sesion", "camara", "recuerdo"],
+      svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="7.5" width="17" height="11.5" rx="2"/><path d="M8.5 7.5l1.3-2.5h4.4l1.3 2.5"/><circle cx="12" cy="13.2" r="3"/></svg>`
+    },
+    {
+      id: "musica",
+      nombre: "Música",
+      keywords: ["musica", "alabanza", "canto", "instrumental", "coro"],
+      svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17.5V6.5l9-2v11"/><circle cx="7" cy="17.5" r="2.2"/><circle cx="16" cy="15.5" r="2.2"/></svg>`
+    },
+    {
+      id: "olivo",
+      nombre: "Rama de olivo",
+      keywords: ["olivo", "paz", "jardin"],
+      svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19C9 14 13 9 19 5"/><path d="M10 14c-2.5-.5-4-2-4-4 2 0 3.5 1.5 4 4z"/><path d="M14 10c-2.5-.5-4-2-4-4 2 0 3.5 1.5 4 4z"/><path d="M12 13c.5 2.5 2 4 4 4 0-2-1.5-3.5-4-4z"/></svg>`
+    },
+    {
+      id: "paloma",
+      nombre: "Paloma",
+      keywords: ["paloma", "espiritu"],
+      svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13c3.5-1 6-3 7.5-7 1 3 3 4.5 7.5 4-2 2.5-3.5 4-4 7-3-.5-5.5 0-8 2 0-2.5-.8-4.5-3-6z"/></svg>`
+    },
+    {
+      id: "auto",
+      nombre: "Despedida",
+      keywords: ["despedida", "salida", "cierre", "novios", "auto"],
+      svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l2-5h10l2 5"/><rect x="3.5" y="13" width="17" height="4.5" rx="1.2"/><circle cx="7.5" cy="17.8" r="1.7"/><circle cx="16.5" cy="17.8" r="1.7"/></svg>`
+    },
+    {
+      id: "corazon",
+      nombre: "Especial",
+      keywords: ["especial", "amor", "corazon", "sorpresa"],
+      svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19.5s-7-4.5-7-9.8A4.2 4.2 0 0 1 12 7a4.2 4.2 0 0 1 7 2.7c0 5.3-7 9.8-7 9.8z"/></svg>`
+    }
+  ];
+
+  function obtenerSimboloObj(id) {
+    return SIMBOLOS_ITINERARIO.find(s => s.id === (id || "")) || SIMBOLOS_ITINERARIO[0];
+  }
+
+  function renderSelectorSimboloHTML(inputId, valorActual) {
+    const actual = obtenerSimboloObj(valorActual);
+    const opcionesHtml = SIMBOLOS_ITINERARIO.map(s => `
+      <button type="button" class="simbolo-opcion ${s.id === actual.id ? "seleccionado" : ""}" data-val="${esc(s.id)}">
+        ${s.svg}
+        <span>${esc(s.nombre)}</span>
+      </button>
+    `).join("");
+
+    return `
+      <div class="simbolo-picker" data-picker-for="${esc(inputId)}">
+        <input type="hidden" id="${esc(inputId)}" value="${esc(actual.id)}">
+        <button type="button" class="simbolo-picker-btn" title="Elegir símbolo">
+          <span class="simbolo-picker-actual">${actual.svg}<span>${esc(actual.nombre)}</span></span>
+          <span style="font-size:0.7rem; opacity:0.65;">▾</span>
+        </button>
+        <div class="simbolo-picker-menu">${opcionesHtml}</div>
+      </div>
+    `;
+  }
+
+  function setValorPickerSimbolo(inputId, nuevoVal) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    const picker = input.closest(".simbolo-picker");
+    const obj = obtenerSimboloObj(nuevoVal);
+    input.value = obj.id;
+    if (picker) {
+      const actualSpan = picker.querySelector(".simbolo-picker-actual");
+      if (actualSpan) actualSpan.innerHTML = `${obj.svg}<span>${esc(obj.nombre)}</span>`;
+      picker.querySelectorAll(".simbolo-opcion").forEach(op => {
+        op.classList.toggle("seleccionado", op.dataset.val === obj.id);
+      });
+    }
+  }
+
+  let simboloSeleccionadoManualmente = false;
+  document.getElementById("picker-simbolo-nuevo").innerHTML = renderSelectorSimboloHTML("itin-simbolo", "");
+
+  document.addEventListener("click", (e) => {
+    const btnToggle = e.target.closest(".simbolo-picker-btn");
+    if (btnToggle) {
+      e.stopPropagation();
+      const picker = btnToggle.closest(".simbolo-picker");
+      const estabaAbierto = picker.classList.contains("abierto");
+      document.querySelectorAll(".simbolo-picker.abierto").forEach(p => p.classList.remove("abierto"));
+      if (!estabaAbierto) picker.classList.add("abierto");
+      return;
+    }
+
+    const btnOpcion = e.target.closest(".simbolo-opcion");
+    if (btnOpcion) {
+      e.stopPropagation();
+      const picker = btnOpcion.closest(".simbolo-picker");
+      const inputId = picker.dataset.pickerFor;
+      setValorPickerSimbolo(inputId, btnOpcion.dataset.val);
+      picker.classList.remove("abierto");
+      if (inputId === "itin-simbolo") {
+        simboloSeleccionadoManualmente = true;
+      }
+      return;
+    }
+
+    if (!e.target.closest(".simbolo-picker")) {
+      document.querySelectorAll(".simbolo-picker.abierto").forEach(p => p.classList.remove("abierto"));
+    }
+  });
+
+  // Sugerencia automática de símbolo según el texto de la actividad
+  document.getElementById("itin-actividad").addEventListener("input", (e) => {
+    if (simboloSeleccionadoManualmente) return;
+    const txt = e.target.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    if (!txt.trim()) {
+      setValorPickerSimbolo("itin-simbolo", "");
+      return;
+    }
+    const match = SIMBOLOS_ITINERARIO.find(s => s.id && s.keywords.some(kw => txt.includes(kw)));
+    setValorPickerSimbolo("itin-simbolo", match ? match.id : "");
+  });
+
+  function dibujarSimboloCanvas(ctx, simboloId, cx, cy, size, color) {
+    if (!simboloId) return;
+    const s = size * 0.5;
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.lineWidth = Math.max(1.8, size * 0.068);
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.beginPath();
+
+    switch (simboloId) {
+      case "recepcion":
+        ctx.arc(0, -s * 0.05, s * 0.58, Math.PI, 0);
+        ctx.moveTo(-s * 0.58, -s * 0.05);
+        ctx.lineTo(-s * 0.58, s * 0.72);
+        ctx.moveTo(s * 0.58, -s * 0.05);
+        ctx.lineTo(s * 0.58, s * 0.72);
+        ctx.moveTo(-s * 0.78, s * 0.72);
+        ctx.lineTo(s * 0.78, s * 0.72);
+        ctx.moveTo(0, -s * 0.85);
+        ctx.lineTo(0, -s * 0.63);
+        ctx.stroke();
+        break;
+
+      case "iglesia":
+        ctx.moveTo(0, -s * 0.85);
+        ctx.lineTo(0, -s * 0.48);
+        ctx.moveTo(-s * 0.16, -s * 0.68);
+        ctx.lineTo(s * 0.16, -s * 0.68);
+        ctx.moveTo(-s * 0.62, -s * 0.05);
+        ctx.lineTo(0, -s * 0.48);
+        ctx.lineTo(s * 0.62, -s * 0.05);
+        ctx.moveTo(-s * 0.52, -s * 0.12);
+        ctx.lineTo(-s * 0.52, s * 0.75);
+        ctx.moveTo(s * 0.52, -s * 0.12);
+        ctx.lineTo(s * 0.52, s * 0.75);
+        ctx.moveTo(-s * 0.72, s * 0.75);
+        ctx.lineTo(s * 0.72, s * 0.75);
+        ctx.moveTo(-s * 0.18, s * 0.75);
+        ctx.lineTo(-s * 0.18, s * 0.34);
+        ctx.arc(0, s * 0.34, s * 0.18, Math.PI, 0);
+        ctx.lineTo(s * 0.18, s * 0.75);
+        ctx.stroke();
+        break;
+
+      case "anillos":
+        ctx.arc(-s * 0.24, s * 0.18, s * 0.42, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(s * 0.24, s * 0.18, s * 0.42, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(s * 0.24, -s * 0.25);
+        ctx.lineTo(s * 0.08, -s * 0.46);
+        ctx.lineTo(s * 0.24, -s * 0.64);
+        ctx.lineTo(s * 0.40, -s * 0.46);
+        ctx.closePath();
+        ctx.stroke();
+        break;
+
+      case "biblia":
+        ctx.moveTo(0, -s * 0.42);
+        ctx.quadraticCurveTo(-s * 0.38, -s * 0.58, -s * 0.72, -s * 0.45);
+        ctx.lineTo(-s * 0.72, s * 0.55);
+        ctx.quadraticCurveTo(-s * 0.38, s * 0.42, 0, s * 0.58);
+        ctx.quadraticCurveTo(s * 0.38, s * 0.42, s * 0.72, s * 0.55);
+        ctx.lineTo(s * 0.72, -s * 0.45);
+        ctx.quadraticCurveTo(s * 0.38, -s * 0.58, 0, -s * 0.42);
+        ctx.lineTo(0, s * 0.58);
+        ctx.moveTo(s * 0.36, -s * 0.18);
+        ctx.lineTo(s * 0.36, s * 0.18);
+        ctx.moveTo(s * 0.22, -s * 0.04);
+        ctx.lineTo(s * 0.50, -s * 0.04);
+        ctx.stroke();
+        break;
+
+      case "velas":
+        ctx.moveTo(0, -s * 0.82);
+        ctx.quadraticCurveTo(s * 0.22, -s * 0.55, 0, -s * 0.36);
+        ctx.quadraticCurveTo(-s * 0.22, -s * 0.55, 0, -s * 0.82);
+        ctx.stroke();
+        ctx.strokeRect(-s * 0.24, -s * 0.16, s * 0.48, s * 0.88);
+        ctx.beginPath();
+        ctx.moveTo(-s * 0.46, s * 0.72);
+        ctx.lineTo(s * 0.46, s * 0.72);
+        ctx.stroke();
+        break;
+
+      case "lazo":
+        ctx.moveTo(0, -s * 0.05);
+        ctx.bezierCurveTo(-s * 0.25, -s * 0.48, -s * 0.75, -s * 0.48, -s * 0.75, -s * 0.05);
+        ctx.bezierCurveTo(-s * 0.75, s * 0.38, -s * 0.25, s * 0.38, 0, -s * 0.05);
+        ctx.bezierCurveTo(s * 0.25, -s * 0.48, s * 0.75, -s * 0.48, s * 0.75, -s * 0.05);
+        ctx.bezierCurveTo(s * 0.75, s * 0.38, s * 0.25, s * 0.38, 0, -s * 0.05);
+        ctx.moveTo(-s * 0.12, s * 0.14);
+        ctx.lineTo(-s * 0.28, s * 0.68);
+        ctx.moveTo(s * 0.12, s * 0.14);
+        ctx.lineTo(s * 0.28, s * 0.68);
+        ctx.stroke();
+        break;
+
+      case "arras":
+        ctx.arc(-s * 0.24, -s * 0.16, s * 0.24, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(s * 0.24, -s * 0.16, s * 0.24, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(0, -s * 0.42, s * 0.24, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(-s * 0.66, s * 0.26);
+        ctx.lineTo(s * 0.66, s * 0.26);
+        ctx.lineTo(s * 0.48, s * 0.68);
+        ctx.lineTo(-s * 0.48, s * 0.68);
+        ctx.closePath();
+        ctx.stroke();
+        break;
+
+      case "ramo":
+        ctx.arc(-s * 0.28, -s * 0.32, s * 0.22, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(s * 0.28, -s * 0.32, s * 0.22, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(0, -s * 0.52, s * 0.22, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(-s * 0.34, -s * 0.08);
+        ctx.lineTo(0, s * 0.75);
+        ctx.lineTo(s * 0.34, -s * 0.08);
+        ctx.moveTo(-s * 0.24, s * 0.32);
+        ctx.lineTo(s * 0.24, s * 0.32);
+        ctx.stroke();
+        break;
+
+      case "banquete":
+        ctx.moveTo(-s * 0.44, -s * 0.72);
+        ctx.lineTo(-s * 0.44, -s * 0.18);
+        ctx.arc(-s * 0.24, -s * 0.18, s * 0.20, Math.PI, 0, true);
+        ctx.lineTo(-s * 0.04, -s * 0.72);
+        ctx.moveTo(-s * 0.24, -s * 0.72);
+        ctx.lineTo(-s * 0.24, s * 0.72);
+        ctx.moveTo(s * 0.24, -s * 0.72);
+        ctx.lineTo(s * 0.24, s * 0.72);
+        ctx.moveTo(s * 0.24, -s * 0.72);
+        ctx.quadraticCurveTo(s * 0.52, -s * 0.45, s * 0.48, -s * 0.06);
+        ctx.lineTo(s * 0.24, -s * 0.06);
+        ctx.stroke();
+        break;
+
+      case "brindis":
+        ctx.moveTo(-s * 0.48, -s * 0.62);
+        ctx.lineTo(-s * 0.10, -s * 0.62);
+        ctx.lineTo(-s * 0.16, -s * 0.08);
+        ctx.arc(-s * 0.29, -s * 0.08, s * 0.13, 0, Math.PI);
+        ctx.closePath();
+        ctx.moveTo(-s * 0.29, s * 0.05);
+        ctx.lineTo(-s * 0.29, s * 0.68);
+        ctx.moveTo(-s * 0.46, s * 0.68);
+        ctx.lineTo(-s * 0.12, s * 0.68);
+
+        ctx.moveTo(s * 0.10, -s * 0.62);
+        ctx.lineTo(s * 0.48, -s * 0.62);
+        ctx.lineTo(s * 0.42, -s * 0.08);
+        ctx.arc(s * 0.29, -s * 0.08, s * 0.13, 0, Math.PI);
+        ctx.closePath();
+        ctx.moveTo(s * 0.29, s * 0.05);
+        ctx.lineTo(s * 0.29, s * 0.68);
+        ctx.moveTo(s * 0.12, s * 0.68);
+        ctx.lineTo(s * 0.46, s * 0.68);
+        ctx.stroke();
+        break;
+
+      case "pastel":
+        ctx.moveTo(-s * 0.74, s * 0.72);
+        ctx.lineTo(s * 0.74, s * 0.72);
+        ctx.strokeRect(-s * 0.58, s * 0.16, s * 1.16, s * 0.56);
+        ctx.strokeRect(-s * 0.36, -s * 0.32, s * 0.72, s * 0.48);
+        ctx.beginPath();
+        ctx.moveTo(0, -s * 0.32);
+        ctx.lineTo(0, -s * 0.62);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(0, -s * 0.70, s * 0.09, 0, Math.PI * 2);
+        ctx.stroke();
+        break;
+
+      case "cafe":
+        ctx.moveTo(-s * 0.58, -s * 0.15);
+        ctx.lineTo(s * 0.34, -s * 0.15);
+        ctx.lineTo(s * 0.34, s * 0.26);
+        ctx.arc(-s * 0.12, s * 0.26, s * 0.46, 0, Math.PI);
+        ctx.closePath();
+        ctx.moveTo(s * 0.34, -s * 0.02);
+        ctx.arc(s * 0.38, s * 0.16, s * 0.18, -Math.PI / 2, Math.PI / 2);
+        ctx.moveTo(-s * 0.70, s * 0.72);
+        ctx.lineTo(s * 0.56, s * 0.72);
+        ctx.moveTo(-s * 0.26, -s * 0.62);
+        ctx.quadraticCurveTo(-s * 0.16, -s * 0.48, -s * 0.26, -s * 0.34);
+        ctx.moveTo(s * 0.04, -s * 0.62);
+        ctx.quadraticCurveTo(s * 0.14, -s * 0.48, s * 0.04, -s * 0.34);
+        ctx.stroke();
+        break;
+
+      case "fotos":
+        ctx.strokeRect(-s * 0.72, -s * 0.34, s * 1.44, s * 0.96);
+        ctx.beginPath();
+        ctx.moveTo(-s * 0.32, -s * 0.34);
+        ctx.lineTo(-s * 0.20, -s * 0.58);
+        ctx.lineTo(s * 0.20, -s * 0.58);
+        ctx.lineTo(s * 0.32, -s * 0.34);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(0, s * 0.14, s * 0.28, 0, Math.PI * 2);
+        ctx.stroke();
+        break;
+
+      case "musica":
+        ctx.moveTo(-s * 0.24, s * 0.44);
+        ctx.lineTo(-s * 0.24, -s * 0.52);
+        ctx.lineTo(s * 0.52, -s * 0.68);
+        ctx.lineTo(s * 0.52, s * 0.28);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(-s * 0.42, s * 0.44, s * 0.19, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(s * 0.34, s * 0.28, s * 0.19, 0, Math.PI * 2);
+        ctx.stroke();
+        break;
+
+      case "olivo":
+        ctx.moveTo(-s * 0.62, s * 0.62);
+        ctx.quadraticCurveTo(-s * 0.05, s * 0.05, s * 0.62, -s * 0.62);
+        ctx.moveTo(-s * 0.18, s * 0.18);
+        ctx.quadraticCurveTo(-s * 0.52, s * 0.08, -s * 0.52, -s * 0.22);
+        ctx.quadraticCurveTo(-s * 0.24, -s * 0.22, -s * 0.18, s * 0.18);
+        ctx.moveTo(s * 0.18, -s * 0.18);
+        ctx.quadraticCurveTo(-s * 0.16, -s * 0.28, -s * 0.16, -s * 0.58);
+        ctx.quadraticCurveTo(s * 0.12, -s * 0.58, s * 0.18, -s * 0.18);
+        ctx.moveTo(s * 0.02, s * 0.04);
+        ctx.quadraticCurveTo(s * 0.12, s * 0.38, s * 0.42, s * 0.38);
+        ctx.quadraticCurveTo(s * 0.42, s * 0.10, s * 0.02, s * 0.04);
+        ctx.stroke();
+        break;
+
+      case "paloma":
+        ctx.moveTo(-s * 0.68, s * 0.08);
+        ctx.quadraticCurveTo(-s * 0.15, -s * 0.05, 0, -s * 0.56);
+        ctx.quadraticCurveTo(s * 0.14, -s * 0.22, s * 0.68, -s * 0.26);
+        ctx.quadraticCurveTo(s * 0.46, s * 0.06, s * 0.40, s * 0.44);
+        ctx.quadraticCurveTo(s * 0.05, s * 0.36, -s * 0.28, s * 0.62);
+        ctx.quadraticCurveTo(-s * 0.28, s * 0.30, -s * 0.68, s * 0.08);
+        ctx.stroke();
+        break;
+
+      case "auto":
+        ctx.moveTo(-s * 0.56, s * 0.02);
+        ctx.lineTo(-s * 0.36, -s * 0.42);
+        ctx.lineTo(s * 0.36, -s * 0.42);
+        ctx.lineTo(s * 0.56, s * 0.02);
+        ctx.stroke();
+        ctx.strokeRect(-s * 0.72, s * 0.02, s * 1.44, s * 0.38);
+        ctx.beginPath();
+        ctx.arc(-s * 0.40, s * 0.46, s * 0.16, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(s * 0.40, s * 0.46, s * 0.16, 0, Math.PI * 2);
+        ctx.stroke();
+        break;
+
+      case "corazon":
+        ctx.moveTo(0, s * 0.66);
+        ctx.bezierCurveTo(-s * 0.78, s * 0.16, -s * 0.78, -s * 0.56, 0, -s * 0.24);
+        ctx.bezierCurveTo(s * 0.78, -s * 0.56, s * 0.78, s * 0.16, 0, s * 0.66);
+        ctx.stroke();
+        break;
+    }
+
+    ctx.restore();
+  }
+
+  // =====================================================================
   // ---------- ITINERARIO, ESTUDIO DE IMAGEN Y PADRINOS ----------
   // =====================================================================
   let itinerario = [];
@@ -2924,14 +3532,19 @@
       return;
     }
 
+    const disenoActual = document.getElementById("canvas-diseno") ? document.getElementById("canvas-diseno").value : "alternado-der";
+
     lista.innerHTML = itinerario.map((item, idx) => {
       if (itinEditandoId === item.id) {
         return `
           <li class="itin-item" style="flex-direction:column; align-items:stretch; gap:8px;">
-            <div style="display:grid; grid-template-columns:110px 1fr 1fr; gap:6px;">
+            <div style="display:grid; grid-template-columns:105px 1fr; gap:6px;">
               <input type="text" id="edit-itin-hora-${item.id}" value="${escaparHtml(item.hora)}" style="padding:6px 8px; border:1px solid var(--terracota); border-radius:5px; background:#fff; font-family:inherit; font-size:0.84rem;">
               <input type="text" id="edit-itin-act-${item.id}" value="${escaparHtml(item.actividad)}" style="padding:6px 8px; border:1px solid var(--terracota); border-radius:5px; background:#fff; font-family:inherit; font-size:0.84rem;">
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 165px; gap:6px;">
               <input type="text" id="edit-itin-det-${item.id}" value="${escaparHtml(item.detalle || "")}" placeholder="Detalle" style="padding:6px 8px; border:1px solid var(--arena); border-radius:5px; background:#fff; font-family:inherit; font-size:0.84rem;">
+              ${renderSelectorSimboloHTML(`edit-itin-simb-${item.id}`, item.simbolo || "")}
             </div>
             <div style="display:flex; justify-content:flex-end; gap:6px;">
               <button type="button" class="btn-mini-itin" data-itin-cancelar="${item.id}">Cancelar</button>
@@ -2940,14 +3553,29 @@
           </li>
         `;
       }
+
+      const simbObj = item.simbolo ? obtenerSimboloObj(item.simbolo) : null;
+      const badgeSimbHtml = (simbObj && simbObj.id)
+        ? `<span class="itin-simbolo-badge" title="${escaparHtml(simbObj.nombre)}">${simbObj.svg}</span>`
+        : "";
+
+      let ladoTag = "";
+      if (disenoActual === "alternado-der") {
+        ladoTag = `<span class="itin-lado-pill">${idx % 2 === 0 ? "Derecha" : "Izquierda"}</span>`;
+      } else if (disenoActual === "alternado-izq") {
+        ladoTag = `<span class="itin-lado-pill">${idx % 2 === 0 ? "Izquierda" : "Derecha"}</span>`;
+      }
+
       return `
         <li class="itin-item">
           <div class="itin-item-info">
+            ${badgeSimbHtml}
             <span class="itin-hora-badge">${escaparHtml(item.hora)}</span>
             <div>
               <div class="itin-act-txt">${escaparHtml(item.actividad)}</div>
               ${item.detalle ? `<div class="itin-det-txt">${escaparHtml(item.detalle)}</div>` : ""}
             </div>
+            ${ladoTag}
           </div>
           <div class="itin-item-acciones">
             <button type="button" class="btn-mini-itin" title="Subir" data-itin-subir="${item.id}" ${idx === 0 ? "disabled style='opacity:0.4;cursor:default;'" : ""}>↑</button>
@@ -2983,9 +3611,10 @@
         const hora = document.getElementById(`edit-itin-hora-${id}`).value.trim();
         const actividad = document.getElementById(`edit-itin-act-${id}`).value.trim();
         const detalle = document.getElementById(`edit-itin-det-${id}`).value.trim();
+        const simbolo = document.getElementById(`edit-itin-simb-${id}`).value || "";
         if (!hora || !actividad) return;
         itinEditandoId = null;
-        await updateDoc(doc(db, "itinerario", id), { hora, actividad, detalle });
+        await updateDoc(doc(db, "itinerario", id), { hora, actividad, detalle, simbolo });
       });
     });
     lista.querySelectorAll("[data-itin-eliminar]").forEach(btn => {
@@ -3016,6 +3645,7 @@
     const hora = horaEl.value.trim();
     const actividad = actEl.value.trim();
     const detalle = detEl.value.trim();
+    const simbolo = document.getElementById("itin-simbolo").value || "";
     if (!hora || !actividad) return;
 
     const maxOrden = itinerario.reduce((m, x) => Math.max(m, Number(x.orden) || 0), 0);
@@ -3023,22 +3653,25 @@
       hora,
       actividad,
       detalle,
+      simbolo,
       orden: maxOrden + 1,
     });
     horaEl.value = "";
     actEl.value = "";
     detEl.value = "";
+    simboloSeleccionadoManualmente = false;
+    setValorPickerSimbolo("itin-simbolo", "");
     horaEl.focus();
   });
 
   document.getElementById("btn-cargar-itin-base").addEventListener("click", async () => {
     const base = [
-      { hora: "1:00 PM", actividad: "Ceremonia religiosa", detalle: "Templo principal", orden: 1 },
-      { hora: "2:30 PM", actividad: "Recepción y bienvenida", detalle: "Jardín del salón", orden: 2 },
-      { hora: "3:30 PM", actividad: "Comida y banquete", detalle: "Salón principal", orden: 3 },
-      { hora: "5:00 PM", actividad: "Brindis y palabras", detalle: "Con familia y amigos", orden: 4 },
-      { hora: "6:00 PM", actividad: "Corte de pastel y café", detalle: "Mesa principal", orden: 5 },
-      { hora: "7:30 PM", actividad: "Despedida de los novios", detalle: "Cierre de celebración", orden: 6 },
+      { hora: "12:30 PM", actividad: "Recepción", detalle: "Bienvenida en el jardín", simbolo: "recepcion", orden: 1 },
+      { hora: "1:00 PM", actividad: "Ceremonia", detalle: "Templo principal", simbolo: "iglesia", orden: 2 },
+      { hora: "2:30 PM", actividad: "Banquete", detalle: "Salón principal", simbolo: "banquete", orden: 3 },
+      { hora: "4:30 PM", actividad: "Brindis y palabras", detalle: "Con familia y amigos", simbolo: "brindis", orden: 4 },
+      { hora: "5:30 PM", actividad: "Corte de pastel y café", detalle: "Mesa principal", simbolo: "pastel", orden: 5 },
+      { hora: "7:00 PM", actividad: "Despedida de los novios", detalle: "Cierre de celebración", simbolo: "auto", orden: 6 },
     ];
     await Promise.all(base.map(item => addDoc(collection(db, "itinerario"), item)));
   });
@@ -3096,13 +3729,14 @@
     dibujarCanvasItinerario();
   });
 
-  ["canvas-titulo", "canvas-subtitulo", "canvas-estilo", "canvas-opacidad", "canvas-pos-y", "canvas-escala"].forEach(id => {
+  ["canvas-titulo", "canvas-subtitulo", "canvas-diseno", "canvas-estilo", "canvas-opacidad", "canvas-pos-y", "canvas-escala"].forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
     el.addEventListener("input", () => {
       if (id === "canvas-opacidad") document.getElementById("val-opacidad").textContent = el.value;
       if (id === "canvas-pos-y") document.getElementById("val-pos-y").textContent = el.value;
       if (id === "canvas-escala") document.getElementById("val-escala").textContent = el.value;
+      if (id === "canvas-diseno") renderItinerario();
       dibujarCanvasItinerario();
     });
   });
@@ -3145,7 +3779,6 @@
 
     const ctx = canvas.getContext("2d");
 
-    // Dimensiones del lienzo según imagen subida o plantilla vertical 1080x1350
     let W = 1080;
     let H = 1350;
     if (imagenFondoItinerario) {
@@ -3159,7 +3792,6 @@
     canvas.width = W;
     canvas.height = H;
 
-    // Fondo
     if (imagenFondoItinerario) {
       ctx.drawImage(imagenFondoItinerario, 0, 0, W, H);
     } else {
@@ -3173,6 +3805,7 @@
 
     const titulo = document.getElementById("canvas-titulo").value.trim();
     const subtitulo = document.getElementById("canvas-subtitulo").value.trim();
+    const diseno = document.getElementById("canvas-diseno") ? document.getElementById("canvas-diseno").value : "alternado-der";
     const estilo = document.getElementById("canvas-estilo").value;
     const opacidad = (Number(document.getElementById("canvas-opacidad").value) || 0) / 100;
     const posYPorc = (Number(document.getElementById("canvas-pos-y").value) || 50) / 100;
@@ -3185,49 +3818,98 @@
     const colorLinea = esOscuro ? "rgba(229, 196, 159, 0.45)" : "rgba(193, 129, 91, 0.42)";
 
     const baseUnit = Math.min(W, H) * 0.026 * escala;
-    const padX = Math.round(W * 0.065);
-    const padY = Math.round(baseUnit * 1.45);
-    const cardW = Math.round(W * 0.84);
+    const cardW = Math.round(W * 0.86);
     const cardX = Math.round((W - cardW) / 2);
+    const padX = Math.round(W * 0.048);
+    const padY = Math.round(baseUnit * 1.45);
 
     const itemsMostrar = itinerario.length > 0
       ? itinerario
       : [
-          { hora: "1:00 PM", actividad: "Ceremonia religiosa", detalle: "Ejemplo — agrega tus horarios a la izquierda" },
-          { hora: "2:30 PM", actividad: "Recepción y cóctel", detalle: "" },
-          { hora: "3:30 PM", actividad: "Banquete", detalle: "" },
+          { hora: "12:30", actividad: "Recepción", detalle: "", simbolo: "recepcion" },
+          { hora: "1:00", actividad: "Ceremonia", detalle: "", simbolo: "iglesia" },
+          { hora: "2:30", actividad: "Banquete", detalle: "", simbolo: "banquete" },
         ];
 
-    // Medir altura total del contenido antes de dibujar para centrarlo en posYPorc
     const fontTitulo = `600 ${Math.round(baseUnit * 1.75)}px Fraunces, Georgia, serif`;
     const fontSub = `400 ${Math.round(baseUnit * 0.85)}px "Work Sans", sans-serif`;
-    const fontHora = `600 ${Math.round(baseUnit * 0.92)}px "Work Sans", sans-serif`;
+    const fontHora = `600 ${Math.round(baseUnit * 0.90)}px "Work Sans", sans-serif`;
     const fontAct = `600 ${Math.round(baseUnit * 1.02)}px Fraunces, Georgia, serif`;
-    const fontDet = `400 ${Math.round(baseUnit * 0.78)}px "Work Sans", sans-serif`;
+    const fontDet = `400 ${Math.round(baseUnit * 0.76)}px "Work Sans", sans-serif`;
 
-    const colHoraW = Math.round(cardW * 0.27);
-    const colEjeW = Math.round(baseUnit * 1.6);
-    const colActMaxW = cardW - padX * 2 - colHoraW - colEjeW;
+    let headerH = padY;
+    if (titulo) headerH += Math.round(baseUnit * 2.1);
+    if (subtitulo) headerH += Math.round(baseUnit * 1.3);
+    if (titulo || subtitulo) headerH += Math.round(baseUnit * 1.15);
 
-    let contenidoH = padY * 2;
-    if (titulo) contenidoH += Math.round(baseUnit * 2.1);
-    if (subtitulo) contenidoH += Math.round(baseUnit * 1.3);
-    if (titulo || subtitulo) contenidoH += Math.round(baseUnit * 1.1);
+    const iconSize = Math.round(baseUnit * 1.55);
+    const iconGap = Math.round(baseUnit * 0.42);
+    const esAlternado = diseno === "alternado-der" || diseno === "alternado-izq";
 
-    const filasMedicion = itemsMostrar.map(it => {
-      ctx.font = fontAct;
-      const lineasAct = envolverLineasCanvas(ctx, it.actividad, colActMaxW);
-      ctx.font = fontDet;
-      const lineasDet = it.detalle ? envolverLineasCanvas(ctx, it.detalle, colActMaxW) : [];
-      const hAct = lineasAct.length * Math.round(baseUnit * 1.25);
-      const hDet = lineasDet.length * Math.round(baseUnit * 1.02);
-      const altoFila = Math.max(Math.round(baseUnit * 1.45), hAct + hDet) + Math.round(baseUnit * 0.85);
-      return { it, lineasAct, lineasDet, altoFila };
-    });
+    let filasMedicion = [];
+    let bodyH = 0;
 
-    contenidoH += filasMedicion.reduce((acc, f) => acc + f.altoFila, 0);
+    if (esAlternado) {
+      const branchLen = Math.round(baseUnit * 1.05);
+      const halfInnerW = (cardW / 2) - padX;
 
-    // Calcular Y superior del bloque respetando márgenes de seguridad
+      filasMedicion = itemsMostrar.map((it, idx) => {
+        const tieneSimbolo = Boolean(it.simbolo);
+        const offsetTexto = branchLen + (tieneSimbolo ? (iconGap + iconSize + iconGap) : Math.round(baseUnit * 0.5));
+        const maxTextW = Math.max(Math.round(baseUnit * 4.5), halfInnerW - offsetTexto);
+
+        ctx.font = fontAct;
+        const lineasAct = envolverLineasCanvas(ctx, it.actividad, maxTextW);
+        ctx.font = fontDet;
+        const lineasDet = it.detalle ? envolverLineasCanvas(ctx, it.detalle, maxTextW) : [];
+
+        const hHora = Math.round(baseUnit * 1.08);
+        const hAct = lineasAct.length * Math.round(baseUnit * 1.20);
+        const hDet = lineasDet.length * Math.round(baseUnit * 0.96);
+        const textBlockH = hHora + hAct + hDet;
+        const contenidoFilaH = Math.max(textBlockH, tieneSimbolo ? iconSize : 0);
+        const altoFila = contenidoFilaH + Math.round(baseUnit * 0.72);
+        const isRight = diseno === "alternado-der" ? (idx % 2 === 0) : (idx % 2 !== 0);
+
+        return {
+          it,
+          isRight,
+          tieneSimbolo,
+          branchLen,
+          lineasAct,
+          lineasDet,
+          hHora,
+          textBlockH,
+          contenidoFilaH,
+          altoFila
+        };
+      });
+
+      bodyH = filasMedicion.reduce((acc, f) => acc + f.altoFila, 0);
+    } else {
+      const colHoraW = Math.round(cardW * 0.25);
+      const colEjeW = Math.round(baseUnit * 1.6);
+
+      filasMedicion = itemsMostrar.map(it => {
+        const tieneSimbolo = Boolean(it.simbolo);
+        const extraIconW = tieneSimbolo ? (iconSize + iconGap) : 0;
+        const colActMaxW = Math.max(Math.round(baseUnit * 5), cardW - padX * 2 - colHoraW - colEjeW - extraIconW);
+
+        ctx.font = fontAct;
+        const lineasAct = envolverLineasCanvas(ctx, it.actividad, colActMaxW);
+        ctx.font = fontDet;
+        const lineasDet = it.detalle ? envolverLineasCanvas(ctx, it.detalle, colActMaxW) : [];
+        const hAct = lineasAct.length * Math.round(baseUnit * 1.25);
+        const hDet = lineasDet.length * Math.round(baseUnit * 1.02);
+        const altoFila = Math.max(Math.round(baseUnit * 1.5), hAct + hDet, tieneSimbolo ? iconSize : 0) + Math.round(baseUnit * 0.85);
+        return { it, tieneSimbolo, colHoraW, colEjeW, lineasAct, lineasDet, altoFila };
+      });
+
+      bodyH = filasMedicion.reduce((acc, f) => acc + f.altoFila, 0);
+    }
+
+    const contenidoH = headerH + bodyH + padY;
+
     const centroDeseadoY = H * posYPorc;
     let cardY = Math.round(centroDeseadoY - contenidoH / 2);
     const minMarginY = Math.round(H * 0.03);
@@ -3265,7 +3947,6 @@
       cursorY += Math.round(baseUnit * 1.3);
     }
     if (titulo || subtitulo) {
-      // Línea divisoria con rombo central
       const divY = cursorY + Math.round(baseUnit * 0.35);
       const divHalfW = Math.round(cardW * 0.26);
       ctx.strokeStyle = colorLinea;
@@ -3287,60 +3968,146 @@
       ctx.closePath();
       ctx.fill();
 
-      cursorY += Math.round(baseUnit * 1.1);
+      cursorY += Math.round(baseUnit * 1.15);
     }
 
-    const xHoraDerecha = cardX + padX + colHoraW - Math.round(baseUnit * 0.5);
-    const xEjeCentro = cardX + padX + colHoraW + Math.round(colEjeW / 2);
-    const xActIzquierda = cardX + padX + colHoraW + colEjeW + Math.round(baseUnit * 0.35);
+    if (esAlternado) {
+      const centerX = Math.round(W / 2);
+      const nodeR = Math.max(4.5, Math.round(baseUnit * 0.22));
+      const nodosY = [];
 
-    filasMedicion.forEach((fila, idx) => {
-      const dotY = cursorY + Math.round(baseUnit * 0.55);
+      let tempY = cursorY;
+      filasMedicion.forEach(fila => {
+        const nodeY = tempY + Math.min(Math.round(fila.contenidoFilaH * 0.45), Math.round(baseUnit * 1.25));
+        nodosY.push(nodeY);
+        tempY += fila.altoFila;
+      });
 
-      // Línea vertical conectora hacia el siguiente evento
-      if (idx < filasMedicion.length - 1) {
-        const nextDotY = cursorY + fila.altoFila + Math.round(baseUnit * 0.55);
+      // Eje vertical central continuo
+      if (nodosY.length > 1) {
         ctx.strokeStyle = colorLinea;
-        ctx.lineWidth = Math.max(1.5, Math.round(W * 0.002));
+        ctx.lineWidth = Math.max(1.6, Math.round(W * 0.002));
         ctx.beginPath();
-        ctx.moveTo(xEjeCentro, dotY);
-        ctx.lineTo(xEjeCentro, nextDotY);
+        ctx.moveTo(centerX, nodosY[0]);
+        ctx.lineTo(centerX, nodosY[nodosY.length - 1]);
         ctx.stroke();
       }
 
-      // Punto del nodo
-      ctx.fillStyle = colorAcento;
-      ctx.beginPath();
-      ctx.arc(xEjeCentro, dotY, Math.max(4, Math.round(baseUnit * 0.24)), 0, Math.PI * 2);
-      ctx.fill();
+      filasMedicion.forEach((fila, idx) => {
+        const nodeY = nodosY[idx];
+        const dir = fila.isRight ? 1 : -1;
 
-      // Hora
-      ctx.textAlign = "right";
-      ctx.font = fontHora;
-      ctx.fillStyle = colorAcento;
-      ctx.fillText(fila.it.hora, xHoraDerecha, cursorY + Math.round(baseUnit * 0.08));
+        // Nodo central
+        ctx.fillStyle = colorAcento;
+        ctx.beginPath();
+        ctx.arc(centerX, nodeY, nodeR, 0, Math.PI * 2);
+        ctx.fill();
 
-      // Actividad y detalle
-      ctx.textAlign = "left";
-      ctx.font = fontAct;
-      ctx.fillStyle = colorTexto;
-      let yTexto = cursorY;
-      fila.lineasAct.forEach(ln => {
-        ctx.fillText(ln, xActIzquierda, yTexto);
-        yTexto += Math.round(baseUnit * 1.25);
-      });
+        // Conector horizontal hacia derecha o izquierda
+        const branchStart = centerX + dir * (nodeR + Math.round(baseUnit * 0.12));
+        const branchEnd = centerX + dir * fila.branchLen;
+        ctx.strokeStyle = colorLinea;
+        ctx.lineWidth = Math.max(1.4, Math.round(W * 0.0017));
+        ctx.beginPath();
+        ctx.moveTo(branchStart, nodeY);
+        ctx.lineTo(branchEnd, nodeY);
+        ctx.stroke();
 
-      if (fila.lineasDet.length > 0) {
-        ctx.font = fontDet;
-        ctx.fillStyle = colorSub;
-        fila.lineasDet.forEach(ln => {
-          ctx.fillText(ln, xActIzquierda, yTexto);
-          yTexto += Math.round(baseUnit * 1.02);
+        // Posición de símbolo y texto
+        let textX;
+        if (fila.tieneSimbolo) {
+          const iconCX = branchEnd + dir * (iconGap + iconSize / 2);
+          dibujarSimboloCanvas(ctx, fila.it.simbolo, iconCX, nodeY, iconSize, colorAcento);
+          textX = iconCX + dir * (iconSize / 2 + iconGap);
+        } else {
+          textX = branchEnd + dir * Math.round(baseUnit * 0.48);
+        }
+
+        ctx.textAlign = fila.isRight ? "left" : "right";
+        let yTexto = Math.max(cursorY, Math.round(nodeY - fila.textBlockH * 0.42));
+
+        ctx.font = fontHora;
+        ctx.fillStyle = colorAcento;
+        ctx.fillText(fila.it.hora, textX, yTexto);
+        yTexto += fila.hHora;
+
+        ctx.font = fontAct;
+        ctx.fillStyle = colorTexto;
+        fila.lineasAct.forEach(ln => {
+          ctx.fillText(ln, textX, yTexto);
+          yTexto += Math.round(baseUnit * 1.20);
         });
-      }
 
-      cursorY += fila.altoFila;
-    });
+        if (fila.lineasDet.length > 0) {
+          ctx.font = fontDet;
+          ctx.fillStyle = colorSub;
+          fila.lineasDet.forEach(ln => {
+            ctx.fillText(ln, textX, yTexto);
+            yTexto += Math.round(baseUnit * 0.96);
+          });
+        }
+
+        cursorY += fila.altoFila;
+      });
+    } else {
+      // Modo lista clásica
+      const colHoraW = Math.round(cardW * 0.25);
+      const colEjeW = Math.round(baseUnit * 1.6);
+      const xHoraDerecha = cardX + padX + colHoraW - Math.round(baseUnit * 0.5);
+      const xEjeCentro = cardX + padX + colHoraW + Math.round(colEjeW / 2);
+      const xBaseDerecha = cardX + padX + colHoraW + colEjeW + Math.round(baseUnit * 0.35);
+
+      filasMedicion.forEach((fila, idx) => {
+        const dotY = cursorY + Math.round(baseUnit * 0.55);
+
+        if (idx < filasMedicion.length - 1) {
+          const nextDotY = cursorY + fila.altoFila + Math.round(baseUnit * 0.55);
+          ctx.strokeStyle = colorLinea;
+          ctx.lineWidth = Math.max(1.5, Math.round(W * 0.002));
+          ctx.beginPath();
+          ctx.moveTo(xEjeCentro, dotY);
+          ctx.lineTo(xEjeCentro, nextDotY);
+          ctx.stroke();
+        }
+
+        ctx.fillStyle = colorAcento;
+        ctx.beginPath();
+        ctx.arc(xEjeCentro, dotY, Math.max(4, Math.round(baseUnit * 0.24)), 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.textAlign = "right";
+        ctx.font = fontHora;
+        ctx.fillStyle = colorAcento;
+        ctx.fillText(fila.it.hora, xHoraDerecha, cursorY + Math.round(baseUnit * 0.08));
+
+        let xActIzquierda = xBaseDerecha;
+        if (fila.tieneSimbolo) {
+          const iconCX = xBaseDerecha + iconSize / 2;
+          dibujarSimboloCanvas(ctx, fila.it.simbolo, iconCX, dotY + Math.round(baseUnit * 0.08), iconSize, colorAcento);
+          xActIzquierda = xBaseDerecha + iconSize + iconGap;
+        }
+
+        ctx.textAlign = "left";
+        ctx.font = fontAct;
+        ctx.fillStyle = colorTexto;
+        let yTexto = cursorY;
+        fila.lineasAct.forEach(ln => {
+          ctx.fillText(ln, xActIzquierda, yTexto);
+          yTexto += Math.round(baseUnit * 1.25);
+        });
+
+        if (fila.lineasDet.length > 0) {
+          ctx.font = fontDet;
+          ctx.fillStyle = colorSub;
+          fila.lineasDet.forEach(ln => {
+            ctx.fillText(ln, xActIzquierda, yTexto);
+            yTexto += Math.round(baseUnit * 1.02);
+          });
+        }
+
+        cursorY += fila.altoFila;
+      });
+    }
 
     ctx.restore();
   }
