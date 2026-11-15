@@ -195,117 +195,14 @@
   }
   .itin-form-grid{
     display:grid;
-    grid-template-columns:115px 1fr 1fr 150px auto;
+    grid-template-columns:125px 1fr 1fr auto;
     gap:8px;
     margin-bottom:16px;
-    align-items:stretch;
   }
-  @media (max-width:740px){
+  @media (max-width:640px){
     .itin-form-grid{
       grid-template-columns:1fr;
     }
-  }
-
-  /* Selector visual opcional de símbolo */
-  .icon-picker-wrap{
-    position:relative;
-    width:100%;
-  }
-  .icon-picker-btn{
-    width:100%;
-    height:100%;
-    min-height:38px;
-    padding:8px 10px;
-    border:1px solid var(--arena);
-    border-radius:6px;
-    background:var(--crema);
-    font-family:inherit;
-    font-size:0.84rem;
-    color:var(--texto);
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:6px;
-    cursor:pointer;
-    text-align:left;
-  }
-  .icon-picker-btn:hover{
-    border-color:var(--terracota);
-  }
-  .icon-picker-btn-left{
-    display:flex;
-    align-items:center;
-    gap:7px;
-    min-width:0;
-    overflow:hidden;
-  }
-  .icon-picker-btn-left span{
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-  .icon-picker-popover{
-    display:none;
-    position:absolute;
-    top:calc(100% + 6px);
-    right:0;
-    width:270px;
-    max-height:290px;
-    overflow-y:auto;
-    background:#fff;
-    border:1px solid var(--arena);
-    border-radius:10px;
-    box-shadow:0 10px 28px rgba(59,42,34,0.16);
-    padding:8px;
-    z-index:80;
-    grid-template-columns:1fr 1fr;
-    gap:5px;
-  }
-  .icon-picker-popover.abierto{
-    display:grid;
-  }
-  @media (max-width:740px){
-    .icon-picker-popover{
-      left:0;
-      right:auto;
-      width:100%;
-    }
-  }
-  .icon-picker-opt{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    padding:7px 9px;
-    border:1px solid transparent;
-    border-radius:7px;
-    background:var(--crema);
-    color:var(--texto);
-    font-family:inherit;
-    font-size:0.8rem;
-    cursor:pointer;
-    text-align:left;
-    transition:all 0.12s ease;
-  }
-  .icon-picker-opt:hover{
-    border-color:var(--terracota);
-    background:var(--blush);
-  }
-  .icon-picker-opt.activo{
-    border-color:var(--terracota);
-    background:var(--blush);
-    font-weight:600;
-  }
-  .itin-simbolo-badge{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    width:26px;
-    height:26px;
-    border-radius:50%;
-    background:#fff;
-    border:1px solid var(--arena);
-    color:var(--terracota);
-    flex-shrink:0;
   }
   .itin-form-grid input,
   .padrinos-form-grid input,
@@ -1426,17 +1323,6 @@
             <input type="text" id="itin-hora" placeholder="Hora (ej. 1:00 PM)" required>
             <input type="text" id="itin-actividad" placeholder="Actividad (ej. Ceremonia)" required>
             <input type="text" id="itin-detalle" placeholder="Lugar o detalle (opcional)">
-            <div class="icon-picker-wrap" id="itin-icon-picker">
-              <input type="hidden" id="itin-icono" value="">
-              <button type="button" class="icon-picker-btn" id="btn-itin-icono" title="Símbolo opcional para el itinerario">
-                <span class="icon-picker-btn-left" id="itin-icono-preview">
-                  <span style="color:var(--terracota); font-weight:700;">•</span>
-                  <span>Sin símbolo</span>
-                </span>
-                <span style="font-size:0.7rem; color:var(--gris-calido);">▾</span>
-              </button>
-              <div class="icon-picker-popover" id="popover-itin-icono"></div>
-            </div>
             <button type="submit" class="btn" style="width:auto; padding:9px 16px; border-radius:6px;">+ Agregar</button>
           </form>
 
@@ -2995,108 +2881,6 @@
   let itinEditandoId = null;
   let padEditandoId = null;
 
-  // Catálogo de símbolos opcionales (vectoriales para UI y Canvas)
-  const SIMBOLOS_ITINERARIO = [
-    { id: "", nombre: "Sin símbolo" },
-    { id: "cruz", nombre: "Cruz" },
-    { id: "reloj", nombre: "Reloj" },
-    { id: "anillos", nombre: "Anillos" },
-    { id: "olivo", nombre: "Rama de olivo" },
-    { id: "lampara", nombre: "Lámpara" },
-    { id: "biblia", nombre: "Biblia / Libro" },
-    { id: "cubiertos", nombre: "Banquete" },
-    { id: "pastel", nombre: "Pastel" },
-    { id: "taza", nombre: "Café / Té" },
-    { id: "camara", nombre: "Fotos" },
-    { id: "microfono", nombre: "Palabras" },
-    { id: "corazon", nombre: "Corazón" },
-    { id: "flores", nombre: "Ramo / Flores" },
-    { id: "auto", nombre: "Salida / Auto" },
-  ];
-
-  function obtenerSvgSimbolo(id, size = 16) {
-    const base = `width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"`;
-    switch (id) {
-      case "cruz":
-        return `<svg ${base}><path d="M12 3v18"/><path d="M7 8.5h10"/></svg>`;
-      case "reloj":
-        return `<svg ${base}><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.8 1.8"/><path d="M9.5 2.5h5"/><path d="M12 2.5v2.5"/></svg>`;
-      case "anillos":
-        return `<svg ${base}><circle cx="9.2" cy="14" r="5"/><circle cx="14.8" cy="14" r="5"/><path d="M14.8 9l-1.5-2.2 1.5-1.8 1.5 1.8z"/></svg>`;
-      case "olivo":
-        return `<svg ${base}><path d="M5 19C9 15 14 10 19 5"/><path d="M10 14c-2.8-.4-4.5-2.1-4.5-4.5 2.4 0 4.1 1.7 4.5 4.5z"/><path d="M14 10c-2.8-.4-4.5-2.1-4.5-4.5 2.4 0 4.1 1.7 4.5 4.5z"/><path d="M12 12c.4 2.8 2.1 4.5 4.5 4.5 0-2.4-1.7-4.1-4.5-4.5z"/><path d="M16 8c.4 2.8 2.1 4.5 4.5 4.5 0-2.4-1.7-4.1-4.5-4.5z"/></svg>`;
-      case "lampara":
-        return `<svg ${base}><path d="M12 4c1.6 2 1.6 3.8 0 5-1.6-1.2-1.6-3 0-5z"/><path d="M6 14h11l2.5-2.5H16c-1.5-1.5-4.5-1.5-6 0H6z"/><path d="M7.5 14c0 2.5 2 4 4.5 4s4.5-1.5 4.5-4"/><path d="M6 14c-1.8 0-3-1.2-3-2.5S4.2 9 5.8 9.5"/><path d="M8.5 20h7"/></svg>`;
-      case "biblia":
-        return `<svg ${base}><path d="M2 5.5A3.5 3.5 0 0 1 5.5 4H12v15H5.5A3.5 3.5 0 0 0 2 20.5z"/><path d="M22 5.5A3.5 3.5 0 0 0 18.5 4H12v15h6.5a3.5 3.5 0 0 1 3.5 1.5z"/><path d="M7 8.5v4"/><path d="M5.5 10h3"/></svg>`;
-      case "cubiertos":
-        return `<svg ${base}><path d="M7 3v7a2.5 2.5 0 0 0 5 0V3"/><path d="M9.5 3v18"/><path d="M17 3v18"/><path d="M17 3c2 2 2.5 5 2.5 8H17"/></svg>`;
-      case "pastel":
-        return `<svg ${base}><path d="M4 20h16"/><path d="M5 20v-5h14v5"/><path d="M7.5 15v-4.5h9V15"/><path d="M12 6.5c-.9-1.2-2.2-.8-2.2.3 0 1.1 2.2 2.4 2.2 2.4s2.2-1.3 2.2-2.4c0-1.1-1.3-1.5-2.2-.3z"/></svg>`;
-      case "taza":
-        return `<svg ${base}><path d="M4 10h12v4a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5v-4z"/><path d="M16 11h2a2 2 0 0 1 0 4h-2"/><path d="M3 20h14"/><path d="M8 5c0 1.2 1 1.5 1 2.5"/><path d="M12 5c0 1.2 1 1.5 1 2.5"/></svg>`;
-      case "camara":
-        return `<svg ${base}><rect x="3" y="7" width="18" height="12" rx="2.5"/><path d="M8.5 7L10 4.5h4L15.5 7"/><circle cx="12" cy="13" r="3.2"/></svg>`;
-      case "microfono":
-        return `<svg ${base}><rect x="9" y="3" width="6" height="10" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0"/><path d="M12 17.5V21"/><path d="M8.5 21h7"/></svg>`;
-      case "corazon":
-        return `<svg ${base}><path d="M12 20.5s-7.5-4.7-7.5-10.2A4.3 4.3 0 0 1 8.8 6c1.5 0 2.6.8 3.2 1.8.6-1 1.7-1.8 3.2-1.8a4.3 4.3 0 0 1 4.3 4.3c0 5.5-7.5 10.2-7.5 10.2z"/></svg>`;
-      case "flores":
-        return `<svg ${base}><path d="M12 21v-9"/><path d="M12 12c-3 0-5-2.2-5-5.2 2 0 3.5 1 5 2.7 1.5-1.7 3-2.7 5-2.7 0 3-2 5.2-5 5.2z"/><path d="M12 16.5c-2.4 0-4-1.2-4-3 1.8 0 3 .8 4 3z"/><path d="M12 15c2.4 0 4-1.2 4-3-1.8 0-3 .8-4 3z"/></svg>`;
-      case "auto":
-        return `<svg ${base}><path d="M5 11l2-5h10l2 5"/><rect x="3" y="11" width="18" height="6" rx="2"/><circle cx="7.5" cy="17.5" r="1.8"/><circle cx="16.5" cy="17.5" r="1.8"/></svg>`;
-      default:
-        return `<span style="display:inline-flex; align-items:center; justify-content:center; width:${size}px; height:${size}px; color:var(--terracota); font-weight:700;">•</span>`;
-    }
-  }
-
-  // Inicializar selector visual de símbolos
-  function initIconPickerItinerario() {
-    const popover = document.getElementById("popover-itin-icono");
-    const btn = document.getElementById("btn-itin-icono");
-    const hiddenInput = document.getElementById("itin-icono");
-    const preview = document.getElementById("itin-icono-preview");
-    if (!popover || !btn || !hiddenInput || !preview) return;
-
-    function actualizarEstadoPicker(valor) {
-      hiddenInput.value = valor || "";
-      const obj = SIMBOLOS_ITINERARIO.find(s => s.id === (valor || "")) || SIMBOLOS_ITINERARIO[0];
-      preview.innerHTML = `${obtenerSvgSimbolo(obj.id, 16)}<span>${escaparHtml(obj.nombre)}</span>`;
-      popover.querySelectorAll(".icon-picker-opt").forEach(opt => {
-        opt.classList.toggle("activo", opt.dataset.icono === obj.id);
-      });
-    }
-
-    popover.innerHTML = SIMBOLOS_ITINERARIO.map(s => `
-      <button type="button" class="icon-picker-opt ${s.id === "" ? "activo" : ""}" data-icono="${s.id}">
-        ${obtenerSvgSimbolo(s.id, 17)}
-        <span>${escaparHtml(s.nombre)}</span>
-      </button>
-    `).join("");
-
-    btn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      popover.classList.toggle("abierto");
-    });
-
-    popover.querySelectorAll(".icon-picker-opt").forEach(opt => {
-      opt.addEventListener("click", (e) => {
-        e.stopPropagation();
-        actualizarEstadoPicker(opt.dataset.icono);
-        popover.classList.remove("abierto");
-      });
-    });
-
-    document.addEventListener("click", (e) => {
-      if (!document.getElementById("itin-icon-picker")?.contains(e.target)) {
-        popover.classList.remove("abierto");
-      }
-    });
-
-    window.resetIconPickerItinerario = () => actualizarEstadoPicker("");
-  }
-  initIconPickerItinerario();
-
   function escucharItinerario() {
     if (yaEscuchandoItinerario) return;
     yaEscuchandoItinerario = true;
@@ -3142,16 +2926,12 @@
 
     lista.innerHTML = itinerario.map((item, idx) => {
       if (itinEditandoId === item.id) {
-        const opcionesIconos = SIMBOLOS_ITINERARIO.map(s =>
-          `<option value="${s.id}" ${(item.icono || "") === s.id ? "selected" : ""}>${escaparHtml(s.nombre)}</option>`
-        ).join("");
         return `
           <li class="itin-item" style="flex-direction:column; align-items:stretch; gap:8px;">
-            <div style="display:grid; grid-template-columns:100px 1fr 1fr 130px; gap:6px;">
+            <div style="display:grid; grid-template-columns:110px 1fr 1fr; gap:6px;">
               <input type="text" id="edit-itin-hora-${item.id}" value="${escaparHtml(item.hora)}" style="padding:6px 8px; border:1px solid var(--terracota); border-radius:5px; background:#fff; font-family:inherit; font-size:0.84rem;">
               <input type="text" id="edit-itin-act-${item.id}" value="${escaparHtml(item.actividad)}" style="padding:6px 8px; border:1px solid var(--terracota); border-radius:5px; background:#fff; font-family:inherit; font-size:0.84rem;">
               <input type="text" id="edit-itin-det-${item.id}" value="${escaparHtml(item.detalle || "")}" placeholder="Detalle" style="padding:6px 8px; border:1px solid var(--arena); border-radius:5px; background:#fff; font-family:inherit; font-size:0.84rem;">
-              <select id="edit-itin-ico-${item.id}" style="padding:6px 8px; border:1px solid var(--arena); border-radius:5px; background:#fff; font-family:inherit; font-size:0.82rem;">${opcionesIconos}</select>
             </div>
             <div style="display:flex; justify-content:flex-end; gap:6px;">
               <button type="button" class="btn-mini-itin" data-itin-cancelar="${item.id}">Cancelar</button>
@@ -3160,13 +2940,9 @@
           </li>
         `;
       }
-      const badgeIcono = item.icono
-        ? `<span class="itin-simbolo-badge" title="Símbolo asignado">${obtenerSvgSimbolo(item.icono, 14)}</span>`
-        : "";
       return `
         <li class="itin-item">
-          <div class="itin-item-info" style="align-items:center;">
-            ${badgeIcono}
+          <div class="itin-item-info">
             <span class="itin-hora-badge">${escaparHtml(item.hora)}</span>
             <div>
               <div class="itin-act-txt">${escaparHtml(item.actividad)}</div>
@@ -3207,10 +2983,9 @@
         const hora = document.getElementById(`edit-itin-hora-${id}`).value.trim();
         const actividad = document.getElementById(`edit-itin-act-${id}`).value.trim();
         const detalle = document.getElementById(`edit-itin-det-${id}`).value.trim();
-        const icono = document.getElementById(`edit-itin-ico-${id}`).value || "";
         if (!hora || !actividad) return;
         itinEditandoId = null;
-        await updateDoc(doc(db, "itinerario", id), { hora, actividad, detalle, icono });
+        await updateDoc(doc(db, "itinerario", id), { hora, actividad, detalle });
       });
     });
     lista.querySelectorAll("[data-itin-eliminar]").forEach(btn => {
@@ -3238,11 +3013,9 @@
     const horaEl = document.getElementById("itin-hora");
     const actEl = document.getElementById("itin-actividad");
     const detEl = document.getElementById("itin-detalle");
-    const icoEl = document.getElementById("itin-icono");
     const hora = horaEl.value.trim();
     const actividad = actEl.value.trim();
     const detalle = detEl.value.trim();
-    const icono = icoEl ? (icoEl.value || "") : "";
     if (!hora || !actividad) return;
 
     const maxOrden = itinerario.reduce((m, x) => Math.max(m, Number(x.orden) || 0), 0);
@@ -3250,24 +3023,22 @@
       hora,
       actividad,
       detalle,
-      icono,
       orden: maxOrden + 1,
     });
     horaEl.value = "";
     actEl.value = "";
     detEl.value = "";
-    if (window.resetIconPickerItinerario) window.resetIconPickerItinerario();
     horaEl.focus();
   });
 
   document.getElementById("btn-cargar-itin-base").addEventListener("click", async () => {
     const base = [
-      { hora: "1:00 PM", actividad: "Ceremonia religiosa", detalle: "Templo principal", icono: "cruz", orden: 1 },
-      { hora: "2:30 PM", actividad: "Recepción y bienvenida", detalle: "Jardín del salón", icono: "reloj", orden: 2 },
-      { hora: "3:30 PM", actividad: "Comida y banquete", detalle: "Salón principal", icono: "cubiertos", orden: 3 },
-      { hora: "5:00 PM", actividad: "Palabras y dedicatorias", detalle: "Con familia y amigos", icono: "microfono", orden: 4 },
-      { hora: "6:00 PM", actividad: "Corte de pastel y café", detalle: "Mesa principal", icono: "pastel", orden: 5 },
-      { hora: "7:30 PM", actividad: "Despedida de los novios", detalle: "Cierre de celebración", icono: "auto", orden: 6 },
+      { hora: "1:00 PM", actividad: "Ceremonia religiosa", detalle: "Templo principal", orden: 1 },
+      { hora: "2:30 PM", actividad: "Recepción y bienvenida", detalle: "Jardín del salón", orden: 2 },
+      { hora: "3:30 PM", actividad: "Comida y banquete", detalle: "Salón principal", orden: 3 },
+      { hora: "5:00 PM", actividad: "Brindis y palabras", detalle: "Con familia y amigos", orden: 4 },
+      { hora: "6:00 PM", actividad: "Corte de pastel y café", detalle: "Mesa principal", orden: 5 },
+      { hora: "7:30 PM", actividad: "Despedida de los novios", detalle: "Cierre de celebración", orden: 6 },
     ];
     await Promise.all(base.map(item => addDoc(collection(db, "itinerario"), item)));
   });
@@ -3286,8 +3057,7 @@
       "¡Nos dará muchísima alegría compartir cada momento con ustedes! 🤍"
     ];
     try {
-      await navigator.clipboard.writeText(lineas.join("
-"));
+      await navigator.clipboard.writeText(lineas.join("\n"));
       const btn = document.getElementById("btn-copiar-itin-texto");
       const orig = btn.textContent;
       btn.textContent = "✓ Copiado al portapapeles";
@@ -3366,286 +3136,6 @@
     ctx.closePath();
   }
 
-  // Dibujo vectorial fino y elegante de cada símbolo sobre el eje del itinerario
-  function dibujarSimboloCanvas(ctx, tipo, cx, cy, radioMedallon, colorAcento, esOscuro) {
-    if (!tipo) {
-      ctx.fillStyle = colorAcento;
-      ctx.beginPath();
-      ctx.arc(cx, cy, Math.max(4, Math.round(radioMedallon * 0.28)), 0, Math.PI * 2);
-      ctx.fill();
-      return;
-    }
-
-    ctx.save();
-    // Medallón circular sutil
-    ctx.beginPath();
-    ctx.arc(cx, cy, radioMedallon, 0, Math.PI * 2);
-    ctx.fillStyle = esOscuro ? "rgba(42, 30, 24, 0.90)" : "rgba(248, 244, 238, 0.94)";
-    ctx.fill();
-    ctx.lineWidth = Math.max(1.2, radioMedallon * 0.075);
-    ctx.strokeStyle = colorAcento;
-    ctx.stroke();
-
-    // Trazos internos del símbolo escalados al medallón
-    const r = radioMedallon * 0.56;
-    ctx.strokeStyle = colorAcento;
-    ctx.fillStyle = colorAcento;
-    ctx.lineWidth = Math.max(1.6, radioMedallon * 0.105);
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-
-    switch (tipo) {
-      case "cruz": {
-        ctx.beginPath();
-        ctx.moveTo(cx, cy - r);
-        ctx.lineTo(cx, cy + r);
-        ctx.moveTo(cx - r * 0.62, cy - r * 0.32);
-        ctx.lineTo(cx + r * 0.62, cy - r * 0.32);
-        ctx.stroke();
-        break;
-      }
-      case "reloj": {
-        ctx.beginPath();
-        ctx.arc(cx, cy + r * 0.08, r * 0.86, 0, Math.PI * 2);
-        ctx.stroke();
-        // Corona superior
-        ctx.beginPath();
-        ctx.moveTo(cx - r * 0.26, cy - r * 0.96);
-        ctx.lineTo(cx + r * 0.26, cy - r * 0.96);
-        ctx.moveTo(cx, cy - r * 0.96);
-        ctx.lineTo(cx, cy - r * 0.78);
-        ctx.stroke();
-        // Manecillas
-        ctx.beginPath();
-        ctx.moveTo(cx, cy - r * 0.36);
-        ctx.lineTo(cx, cy + r * 0.08);
-        ctx.lineTo(cx + r * 0.36, cy + r * 0.28);
-        ctx.stroke();
-        break;
-      }
-      case "anillos": {
-        const rr = r * 0.52;
-        ctx.beginPath();
-        ctx.arc(cx - r * 0.30, cy + r * 0.18, rr, 0, Math.PI * 2);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.arc(cx + r * 0.30, cy + r * 0.18, rr, 0, Math.PI * 2);
-        ctx.stroke();
-        // Diamante sutil arriba
-        const dy = cy - r * 0.58;
-        ctx.beginPath();
-        ctx.moveTo(cx + r * 0.30, dy - r * 0.24);
-        ctx.lineTo(cx + r * 0.48, dy);
-        ctx.lineTo(cx + r * 0.30, dy + r * 0.22);
-        ctx.lineTo(cx + r * 0.12, dy);
-        ctx.closePath();
-        ctx.stroke();
-        break;
-      }
-      case "olivo": {
-        // Tallo diagonal
-        ctx.beginPath();
-        ctx.moveTo(cx - r * 0.72, cy + r * 0.72);
-        ctx.quadraticCurveTo(cx, cy, cx + r * 0.72, cy - r * 0.72);
-        ctx.stroke();
-        // Hojas pareadas
-        const hojas = [
-          { x: -0.25, y: 0.25, ang: -2.3 },
-          { x: 0.20, y: -0.20, ang: -2.3 },
-          { x: -0.05, y: 0.05, ang: 0.7 },
-          { x: 0.38, y: -0.38, ang: 0.7 },
-        ];
-        hojas.forEach(h => {
-          ctx.save();
-          ctx.translate(cx + r * h.x, cy + r * h.y);
-          ctx.rotate(h.ang);
-          ctx.beginPath();
-          ctx.ellipse(r * 0.28, 0, r * 0.28, r * 0.12, 0, 0, Math.PI * 2);
-          ctx.stroke();
-          ctx.restore();
-        });
-        break;
-      }
-      case "lampara": {
-        // Llama
-        ctx.beginPath();
-        ctx.moveTo(cx, cy - r * 0.92);
-        ctx.quadraticCurveTo(cx + r * 0.26, cy - r * 0.55, cx, cy - r * 0.36);
-        ctx.quadraticCurveTo(cx - r * 0.26, cy - r * 0.55, cx, cy - r * 0.92);
-        ctx.stroke();
-        // Cuerpo lámpara
-        ctx.beginPath();
-        ctx.moveTo(cx - r * 0.55, cy + r * 0.05);
-        ctx.lineTo(cx + r * 0.85, cy - r * 0.12);
-        ctx.quadraticCurveTo(cx + r * 0.62, cy + r * 0.58, cx, cy + r * 0.58);
-        ctx.quadraticCurveTo(cx - r * 0.55, cy + r * 0.58, cx - r * 0.55, cy + r * 0.05);
-        ctx.stroke();
-        // Asa y base
-        ctx.beginPath();
-        ctx.arc(cx - r * 0.65, cy + r * 0.15, r * 0.24, Math.PI * 0.5, Math.PI * 1.65);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(cx - r * 0.35, cy + r * 0.82);
-        ctx.lineTo(cx + r * 0.35, cy + r * 0.82);
-        ctx.stroke();
-        break;
-      }
-      case "biblia": {
-        ctx.beginPath();
-        ctx.moveTo(cx, cy - r * 0.55);
-        ctx.quadraticCurveTo(cx - r * 0.48, cy - r * 0.72, cx - r * 0.9, cy - r * 0.52);
-        ctx.lineTo(cx - r * 0.9, cy + r * 0.58);
-        ctx.quadraticCurveTo(cx - r * 0.48, cy + r * 0.42, cx, cy + r * 0.62);
-        ctx.quadraticCurveTo(cx + r * 0.48, cy + r * 0.42, cx + r * 0.9, cy + r * 0.58);
-        ctx.lineTo(cx + r * 0.9, cy - r * 0.52);
-        ctx.quadraticCurveTo(cx + r * 0.48, cy - r * 0.72, cx, cy - r * 0.55);
-        ctx.moveTo(cx, cy - r * 0.55);
-        ctx.lineTo(cx, cy + r * 0.62);
-        ctx.stroke();
-        break;
-      }
-      case "cubiertos": {
-        // Tenedor izquierda
-        const fx = cx - r * 0.34;
-        ctx.beginPath();
-        ctx.moveTo(fx - r * 0.16, cy - r * 0.82);
-        ctx.lineTo(fx - r * 0.16, cy - r * 0.22);
-        ctx.quadraticCurveTo(fx - r * 0.16, cy, fx, cy);
-        ctx.quadraticCurveTo(fx + r * 0.16, cy, fx + r * 0.16, cy - r * 0.22);
-        ctx.lineTo(fx + r * 0.16, cy - r * 0.82);
-        ctx.moveTo(fx, cy - r * 0.82);
-        ctx.lineTo(fx, cy + r * 0.85);
-        ctx.stroke();
-        // Cuchillo derecha
-        const kx = cx + r * 0.36;
-        ctx.beginPath();
-        ctx.moveTo(kx, cy + r * 0.85);
-        ctx.lineTo(kx, cy - r * 0.82);
-        ctx.quadraticCurveTo(kx + r * 0.28, cy - r * 0.55, kx + r * 0.24, cy + r * 0.05);
-        ctx.lineTo(kx, cy + r * 0.05);
-        ctx.stroke();
-        break;
-      }
-      case "pastel": {
-        // Base y dos pisos
-        ctx.beginPath();
-        ctx.moveTo(cx - r * 0.85, cy + r * 0.78);
-        ctx.lineTo(cx + r * 0.85, cy + r * 0.78);
-        ctx.strokeRect(cx - r * 0.68, cy + r * 0.22, r * 1.36, r * 0.56);
-        ctx.strokeRect(cx - r * 0.44, cy - r * 0.26, r * 0.88, r * 0.48);
-        // Vela/corazón superior
-        ctx.moveTo(cx, cy - r * 0.26);
-        ctx.lineTo(cx, cy - r * 0.62);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.arc(cx, cy - r * 0.76, r * 0.11, 0, Math.PI * 2);
-        ctx.fill();
-        break;
-      }
-      case "taza": {
-        ctx.beginPath();
-        ctx.moveTo(cx - r * 0.65, cy - r * 0.12);
-        ctx.lineTo(cx + r * 0.45, cy - r * 0.12);
-        ctx.lineTo(cx + r * 0.45, cy + r * 0.22);
-        ctx.quadraticCurveTo(cx + r * 0.45, cy + r * 0.68, cx - r * 0.10, cy + r * 0.68);
-        ctx.quadraticCurveTo(cx - r * 0.65, cy + r * 0.68, cx - r * 0.65, cy + r * 0.22);
-        ctx.closePath();
-        ctx.stroke();
-        // Asa y plato
-        ctx.beginPath();
-        ctx.arc(cx + r * 0.48, cy + r * 0.20, r * 0.24, -Math.PI * 0.5, Math.PI * 0.5);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(cx - r * 0.78, cy + r * 0.82);
-        ctx.lineTo(cx + r * 0.65, cy + r * 0.82);
-        ctx.stroke();
-        // Vapor
-        ctx.beginPath();
-        ctx.moveTo(cx - r * 0.25, cy - r * 0.36);
-        ctx.lineTo(cx - r * 0.25, cy - r * 0.68);
-        ctx.moveTo(cx + r * 0.10, cy - r * 0.36);
-        ctx.lineTo(cx + r * 0.10, cy - r * 0.68);
-        ctx.stroke();
-        break;
-      }
-      case "camara": {
-        trazarRectanguloRedondeado(ctx, cx - r * 0.84, cy - r * 0.45, r * 1.68, r * 1.08, r * 0.22);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(cx - r * 0.38, cy - r * 0.45);
-        ctx.lineTo(cx - r * 0.22, cy - r * 0.72);
-        ctx.lineTo(cx + r * 0.22, cy - r * 0.72);
-        ctx.lineTo(cx + r * 0.38, cy - r * 0.45);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.arc(cx, cy + r * 0.08, r * 0.32, 0, Math.PI * 2);
-        ctx.stroke();
-        break;
-      }
-      case "microfono": {
-        trazarRectanguloRedondeado(ctx, cx - r * 0.28, cy - r * 0.84, r * 0.56, r * 0.96, r * 0.28);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.arc(cx, cy - r * 0.18, r * 0.56, 0, Math.PI);
-        ctx.moveTo(cx, cy + r * 0.38);
-        ctx.lineTo(cx, cy + r * 0.84);
-        ctx.moveTo(cx - r * 0.36, cy + r * 0.84);
-        ctx.lineTo(cx + r * 0.36, cy + r * 0.84);
-        ctx.stroke();
-        break;
-      }
-      case "corazon": {
-        ctx.beginPath();
-        ctx.moveTo(cx, cy + r * 0.78);
-        ctx.bezierCurveTo(cx - r * 1.05, cy + r * 0.12, cx - r * 0.85, cy - r * 0.78, cx, cy - r * 0.25);
-        ctx.bezierCurveTo(cx + r * 0.85, cy - r * 0.78, cx + r * 1.05, cy + r * 0.12, cx, cy + r * 0.78);
-        ctx.stroke();
-        break;
-      }
-      case "flores": {
-        ctx.beginPath();
-        ctx.moveTo(cx, cy + r * 0.86);
-        ctx.lineTo(cx, cy - r * 0.05);
-        ctx.stroke();
-        // Pétalos
-        ctx.beginPath();
-        ctx.moveTo(cx, cy - r * 0.05);
-        ctx.quadraticCurveTo(cx - r * 0.55, cy - r * 0.12, cx - r * 0.42, cy - r * 0.72);
-        ctx.quadraticCurveTo(cx - r * 0.12, cy - r * 0.50, cx, cy - r * 0.78);
-        ctx.quadraticCurveTo(cx + r * 0.12, cy - r * 0.50, cx + r * 0.42, cy - r * 0.72);
-        ctx.quadraticCurveTo(cx + r * 0.55, cy - r * 0.12, cx, cy - r * 0.05);
-        ctx.stroke();
-        // Hojas tallo
-        ctx.beginPath();
-        ctx.moveTo(cx, cy + r * 0.48);
-        ctx.quadraticCurveTo(cx - r * 0.45, cy + r * 0.42, cx - r * 0.45, cy + r * 0.16);
-        ctx.moveTo(cx, cy + r * 0.34);
-        ctx.quadraticCurveTo(cx + r * 0.45, cy + r * 0.28, cx + r * 0.45, cy + r * 0.02);
-        ctx.stroke();
-        break;
-      }
-      case "auto": {
-        trazarRectanguloRedondeado(ctx, cx - r * 0.85, cy - r * 0.08, r * 1.70, r * 0.56, r * 0.16);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(cx - r * 0.56, cy - r * 0.08);
-        ctx.lineTo(cx - r * 0.35, cy - r * 0.56);
-        ctx.lineTo(cx + r * 0.35, cy - r * 0.56);
-        ctx.lineTo(cx + r * 0.56, cy - r * 0.08);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.arc(cx - r * 0.46, cy + r * 0.54, r * 0.20, 0, Math.PI * 2);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.arc(cx + r * 0.46, cy + r * 0.54, r * 0.20, 0, Math.PI * 2);
-        ctx.stroke();
-        break;
-      }
-    }
-
-    ctx.restore();
-  }
-
   async function dibujarCanvasItinerario() {
     const canvas = document.getElementById("canvas-itinerario");
     if (!canvas) return;
@@ -3703,13 +3193,10 @@
     const itemsMostrar = itinerario.length > 0
       ? itinerario
       : [
-          { hora: "1:00 PM", actividad: "Ceremonia religiosa", detalle: "Ejemplo — agrega tus horarios a la izquierda", icono: "cruz" },
-          { hora: "2:30 PM", actividad: "Recepción y bienvenida", detalle: "", icono: "reloj" },
-          { hora: "3:30 PM", actividad: "Banquete", detalle: "", icono: "cubiertos" },
+          { hora: "1:00 PM", actividad: "Ceremonia religiosa", detalle: "Ejemplo — agrega tus horarios a la izquierda" },
+          { hora: "2:30 PM", actividad: "Recepción y cóctel", detalle: "" },
+          { hora: "3:30 PM", actividad: "Banquete", detalle: "" },
         ];
-
-    const tieneAlgunIcono = itemsMostrar.some(it => !!it.icono);
-    const radioMedallon = Math.round(baseUnit * 0.82);
 
     // Medir altura total del contenido antes de dibujar para centrarlo en posYPorc
     const fontTitulo = `600 ${Math.round(baseUnit * 1.75)}px Fraunces, Georgia, serif`;
@@ -3718,8 +3205,8 @@
     const fontAct = `600 ${Math.round(baseUnit * 1.02)}px Fraunces, Georgia, serif`;
     const fontDet = `400 ${Math.round(baseUnit * 0.78)}px "Work Sans", sans-serif`;
 
-    const colHoraW = Math.round(cardW * 0.26);
-    const colEjeW = tieneAlgunIcono ? Math.round(baseUnit * 2.35) : Math.round(baseUnit * 1.6);
+    const colHoraW = Math.round(cardW * 0.27);
+    const colEjeW = Math.round(baseUnit * 1.6);
     const colActMaxW = cardW - padX * 2 - colHoraW - colEjeW;
 
     let contenidoH = padY * 2;
@@ -3734,8 +3221,7 @@
       const lineasDet = it.detalle ? envolverLineasCanvas(ctx, it.detalle, colActMaxW) : [];
       const hAct = lineasAct.length * Math.round(baseUnit * 1.25);
       const hDet = lineasDet.length * Math.round(baseUnit * 1.02);
-      const minConIcono = it.icono ? Math.round(baseUnit * 1.85) : Math.round(baseUnit * 1.45);
-      const altoFila = Math.max(minConIcono, hAct + hDet) + Math.round(baseUnit * 0.85);
+      const altoFila = Math.max(Math.round(baseUnit * 1.45), hAct + hDet) + Math.round(baseUnit * 0.85);
       return { it, lineasAct, lineasDet, altoFila };
     });
 
@@ -3804,40 +3290,35 @@
       cursorY += Math.round(baseUnit * 1.1);
     }
 
-    const xHoraDerecha = cardX + padX + colHoraW - Math.round(baseUnit * 0.45);
+    const xHoraDerecha = cardX + padX + colHoraW - Math.round(baseUnit * 0.5);
     const xEjeCentro = cardX + padX + colHoraW + Math.round(colEjeW / 2);
     const xActIzquierda = cardX + padX + colHoraW + colEjeW + Math.round(baseUnit * 0.35);
 
     filasMedicion.forEach((fila, idx) => {
-      const dotY = cursorY + Math.round(baseUnit * 0.58);
-      const offsetActual = fila.it.icono ? radioMedallon : Math.max(4, Math.round(baseUnit * 0.24));
+      const dotY = cursorY + Math.round(baseUnit * 0.55);
 
-      // Línea vertical conectora hacia el siguiente evento (respetando bordes de medallones)
+      // Línea vertical conectora hacia el siguiente evento
       if (idx < filasMedicion.length - 1) {
-        const sigFila = filasMedicion[idx + 1];
-        const nextDotY = cursorY + fila.altoFila + Math.round(baseUnit * 0.58);
-        const offsetSig = sigFila.it.icono ? radioMedallon : Math.max(4, Math.round(baseUnit * 0.24));
-        const yInicioLinea = dotY + offsetActual;
-        const yFinLinea = nextDotY - offsetSig;
-
-        if (yFinLinea > yInicioLinea) {
-          ctx.strokeStyle = colorLinea;
-          ctx.lineWidth = Math.max(1.5, Math.round(W * 0.002));
-          ctx.beginPath();
-          ctx.moveTo(xEjeCentro, yInicioLinea);
-          ctx.lineTo(xEjeCentro, yFinLinea);
-          ctx.stroke();
-        }
+        const nextDotY = cursorY + fila.altoFila + Math.round(baseUnit * 0.55);
+        ctx.strokeStyle = colorLinea;
+        ctx.lineWidth = Math.max(1.5, Math.round(W * 0.002));
+        ctx.beginPath();
+        ctx.moveTo(xEjeCentro, dotY);
+        ctx.lineTo(xEjeCentro, nextDotY);
+        ctx.stroke();
       }
 
-      // Nodo o símbolo vectorial opcional
-      dibujarSimboloCanvas(ctx, fila.it.icono || "", xEjeCentro, dotY, radioMedallon, colorAcento, esOscuro);
+      // Punto del nodo
+      ctx.fillStyle = colorAcento;
+      ctx.beginPath();
+      ctx.arc(xEjeCentro, dotY, Math.max(4, Math.round(baseUnit * 0.24)), 0, Math.PI * 2);
+      ctx.fill();
 
       // Hora
       ctx.textAlign = "right";
       ctx.font = fontHora;
       ctx.fillStyle = colorAcento;
-      ctx.fillText(fila.it.hora, xHoraDerecha, cursorY + Math.round(baseUnit * 0.10));
+      ctx.fillText(fila.it.hora, xHoraDerecha, cursorY + Math.round(baseUnit * 0.08));
 
       // Actividad y detalle
       ctx.textAlign = "left";
