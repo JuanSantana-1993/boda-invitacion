@@ -148,10 +148,233 @@
     border-bottom-color:var(--terracota);
     font-weight:600;
   }
-
   .tab-btn[data-tab="planeacion"]{
-  order: 999;
-}
+    order: 999;
+  }
+
+  /* -------- pestaña itinerario y padrinos -------- */
+  .itin-seccion-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:12px;
+    margin-bottom:18px;
+  }
+  .itin-seccion-header h2{
+    font-size:1.25rem;
+    color:var(--texto);
+  }
+  .itin-grid{
+    display:grid;
+    grid-template-columns:1.05fr 0.95fr;
+    gap:22px;
+    align-items:start;
+    margin-bottom:36px;
+  }
+  @media (max-width:920px){
+    .itin-grid{
+      grid-template-columns:1fr;
+    }
+  }
+  .itin-card{
+    background:#fff;
+    border:1px solid var(--arena);
+    border-radius:10px;
+    padding:20px;
+  }
+  .itin-card h3{
+    font-size:1.05rem;
+    margin-bottom:6px;
+    color:var(--texto);
+  }
+  .itin-sub{
+    font-size:0.84rem;
+    color:var(--gris-calido);
+    margin-bottom:16px;
+  }
+  .itin-form-grid{
+    display:grid;
+    grid-template-columns:125px 1fr 1fr auto;
+    gap:8px;
+    margin-bottom:16px;
+  }
+  @media (max-width:640px){
+    .itin-form-grid{
+      grid-template-columns:1fr;
+    }
+  }
+  .itin-form-grid input,
+  .padrinos-form-grid input,
+  .estudio-controles input[type="text"],
+  .estudio-controles select{
+    width:100%;
+    padding:9px 11px;
+    border:1px solid var(--arena);
+    border-radius:6px;
+    background:var(--crema);
+    font-family:inherit;
+    font-size:0.86rem;
+    color:var(--texto);
+  }
+  .itin-lista{
+    list-style:none;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .itin-item{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:10px 12px;
+    background:var(--crema);
+    border:1px solid rgba(216,196,174,0.65);
+    border-radius:8px;
+  }
+  .itin-item-info{
+    display:flex;
+    align-items:baseline;
+    gap:12px;
+    flex:1;
+    min-width:0;
+    flex-wrap:wrap;
+  }
+  .itin-hora-badge{
+    font-weight:600;
+    color:var(--terracota);
+    font-size:0.88rem;
+    white-space:nowrap;
+  }
+  .itin-act-txt{
+    font-weight:500;
+    color:var(--texto);
+    font-size:0.9rem;
+  }
+  .itin-det-txt{
+    font-size:0.8rem;
+    color:var(--gris-calido);
+  }
+  .itin-item-acciones{
+    display:flex;
+    align-items:center;
+    gap:4px;
+    flex-shrink:0;
+  }
+  .btn-mini-itin{
+    background:#fff;
+    border:1px solid var(--arena);
+    color:var(--texto);
+    border-radius:5px;
+    padding:4px 8px;
+    font-size:0.78rem;
+    cursor:pointer;
+    font-family:inherit;
+  }
+  .btn-mini-itin:hover{
+    border-color:var(--terracota);
+    color:var(--terracota);
+  }
+  .btn-mini-itin.eliminar:hover{
+    border-color:var(--rojo-cancelado);
+    color:var(--rojo-cancelado);
+  }
+
+  /* Estudio visual de imagen */
+  .upload-foto-label{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    padding:12px 16px;
+    border:1.5px dashed var(--terracota);
+    border-radius:8px;
+    background:var(--crema);
+    color:var(--texto);
+    font-size:0.88rem;
+    font-weight:500;
+    cursor:pointer;
+    margin-bottom:14px;
+    text-align:center;
+    transition:background 0.15s ease;
+  }
+  .upload-foto-label:hover{
+    background:var(--blush);
+  }
+  .estudio-controles{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-bottom:14px;
+  }
+  @media (max-width:540px){
+    .estudio-controles{
+      grid-template-columns:1fr;
+    }
+  }
+  .estudio-campo label{
+    display:block;
+    font-size:0.76rem;
+    color:var(--gris-calido);
+    margin-bottom:4px;
+  }
+  .estudio-campo input[type="range"]{
+    width:100%;
+    accent-color:var(--terracota);
+    cursor:pointer;
+  }
+  .canvas-preview-wrap{
+    background:var(--crema);
+    border:1px solid var(--arena);
+    border-radius:8px;
+    padding:12px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    margin-bottom:14px;
+  }
+  #canvas-itinerario{
+    max-width:100%;
+    max-height:520px;
+    width:auto;
+    height:auto;
+    border-radius:6px;
+    box-shadow:0 4px 16px rgba(59,42,34,0.10);
+  }
+  .estudio-botones{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .estudio-botones .btn{
+    flex:1;
+    width:auto;
+    min-width:180px;
+    border-radius:6px;
+  }
+
+  /* Padrinos */
+  .padrinos-form-grid{
+    display:grid;
+    grid-template-columns:210px 1fr 1fr auto;
+    gap:8px;
+    margin-bottom:16px;
+  }
+  @media (max-width:760px){
+    .padrinos-form-grid{
+      grid-template-columns:1fr;
+    }
+  }
+  .badge-simbolo{
+    display:inline-block;
+    padding:3px 10px;
+    border-radius:999px;
+    background:var(--blush);
+    color:var(--texto);
+    font-size:0.8rem;
+    font-weight:500;
+  }
 
   /* -------- importar y acciones superiores -------- */
   .importar-box{
@@ -902,6 +1125,7 @@
     <div class="tabs-panel">
       <button class="tab-btn activo" data-tab="invitados">Invitados</button>
       <button class="tab-btn" data-tab="mesas">Acomodo de Mesas</button>
+      <button class="tab-btn" data-tab="itinerario">Itinerario y Padrinos</button>
       <button class="tab-btn" data-tab="planeacion">Planeación de la boda</button>
     </div>
 
@@ -1075,6 +1299,133 @@
         <!-- Cuadrícula derecha: tarjetas de mesas -->
         <div class="grid-mesas" id="grid-mesas"></div>
       </div>
+    </div>
+
+    <!-- ============ TAB: ITINERARIO Y PADRINOS ============ -->
+    <div id="tab-itinerario" style="display:none;">
+
+      <!-- BLOQUE 1: ITINERARIO Y GENERADOR DE IMAGEN -->
+      <div class="itin-seccion-header">
+        <h2 class="serif">Itinerario de la boda</h2>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button type="button" class="btn-secundario-mesa" id="btn-cargar-itin-base" style="display:none;">Cargar ejemplo base</button>
+          <button type="button" class="btn-secundario-mesa" id="btn-copiar-itin-texto">Copiar texto para WhatsApp</button>
+        </div>
+      </div>
+
+      <div class="itin-grid">
+        <!-- Columna izquierda: captura y orden del itinerario -->
+        <div class="itin-card">
+          <h3 class="serif">Momentos del evento</h3>
+          <p class="itin-sub">Agrega cada actividad y ordénala con las flechas. Los cambios se reflejan en tiempo real en la imagen.</p>
+
+          <form id="form-itinerario" class="itin-form-grid">
+            <input type="text" id="itin-hora" placeholder="Hora (ej. 1:00 PM)" required>
+            <input type="text" id="itin-actividad" placeholder="Actividad (ej. Ceremonia)" required>
+            <input type="text" id="itin-detalle" placeholder="Lugar o detalle (opcional)">
+            <button type="submit" class="btn" style="width:auto; padding:9px 16px; border-radius:6px;">+ Agregar</button>
+          </form>
+
+          <ul class="itin-lista" id="lista-itinerario"></ul>
+        </div>
+
+        <!-- Columna derecha: estudio visual con imagen de fondo -->
+        <div class="itin-card">
+          <h3 class="serif">Imagen para compartir con confirmados</h3>
+          <p class="itin-sub">Sube una foto o plantilla de fondo, ajusta la posición y descarga la imagen lista para WhatsApp.</p>
+
+          <label class="upload-foto-label" for="input-foto-itinerario">
+            <span>📷 Subir imagen de fondo (JPG / PNG)</span>
+            <span id="nombre-foto-itin" style="font-size:0.78rem; color:var(--gris-calido);"></span>
+          </label>
+          <input type="file" id="input-foto-itinerario" accept="image/*" style="display:none;">
+
+          <div class="estudio-controles">
+            <div class="estudio-campo">
+              <label for="canvas-titulo">Título en la imagen</label>
+              <input type="text" id="canvas-titulo" value="Itinerario">
+            </div>
+            <div class="estudio-campo">
+              <label for="canvas-subtitulo">Subtítulo / Fecha</label>
+              <input type="text" id="canvas-subtitulo" value="Juan Antonio &amp; Anahí • 23 de enero de 2027">
+            </div>
+            <div class="estudio-campo">
+              <label for="canvas-estilo">Estilo de recuadro y texto</label>
+              <select id="canvas-estilo">
+                <option value="tarjeta-clara">Recuadro crema + texto cacao</option>
+                <option value="tarjeta-oscura">Recuadro cacao + texto marfil</option>
+                <option value="sin-fondo-oscuro">Sin recuadro + texto cacao</option>
+                <option value="sin-fondo-claro">Sin recuadro + texto blanco</option>
+              </select>
+            </div>
+            <div class="estudio-campo">
+              <label for="canvas-opacidad">Opacidad del recuadro (<span id="val-opacidad">86</span>%)</label>
+              <input type="range" id="canvas-opacidad" min="0" max="98" value="86">
+            </div>
+            <div class="estudio-campo">
+              <label for="canvas-pos-y">Posición vertical (<span id="val-pos-y">50</span>%)</label>
+              <input type="range" id="canvas-pos-y" min="8" max="88" value="50">
+            </div>
+            <div class="estudio-campo">
+              <label for="canvas-escala">Tamaño de letra (<span id="val-escala">100</span>%)</label>
+              <input type="range" id="canvas-escala" min="65" max="140" value="100">
+            </div>
+          </div>
+
+          <div class="canvas-preview-wrap">
+            <canvas id="canvas-itinerario" width="1080" height="1350"></canvas>
+          </div>
+
+          <div class="estudio-botones">
+            <button type="button" class="btn" id="btn-descargar-itinerario">⬇ Descargar imagen (PNG)</button>
+            <button type="button" class="btn btn-cancelar" id="btn-quitar-foto-itin" style="display:none;">Quitar foto de fondo</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- BLOQUE 2: PADRINOS Y SÍMBOLOS -->
+      <div class="itin-seccion-header">
+        <h2 class="serif">Padrinos y símbolos de la boda</h2>
+        <span id="padrinos-contador" style="font-size:0.85rem; color:var(--gris-calido);">0 registrados</span>
+      </div>
+
+      <div class="itin-card">
+        <p class="itin-sub">Registra a los padrinos asignados a cada símbolo o participación especial de la ceremonia.</p>
+
+        <form id="form-padrinos" class="padrinos-form-grid">
+          <input type="text" id="pad-simbolo" list="sugerencias-simbolos" placeholder="Símbolo / Rol (ej. Velación)" required>
+          <datalist id="sugerencias-simbolos">
+            <option value="Velación">
+            <option value="Anillos">
+            <option value="Arras">
+            <option value="Lazo">
+            <option value="Biblia y Rosario">
+            <option value="Ramo">
+            <option value="Cojines">
+            <option value="Brindis">
+            <option value="Pastel">
+            <option value="Libro de firmas">
+          </datalist>
+          <input type="text" id="pad-nombres" placeholder="Nombre(s) de padrino / madrina" required>
+          <input type="text" id="pad-notas" placeholder="Notas o teléfono (opcional)">
+          <button type="submit" class="btn" style="width:auto; padding:9px 16px; border-radius:6px;">+ Agregar</button>
+        </form>
+
+        <div class="tabla-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Símbolo / Rol</th>
+                <th>Padrino / Madrina</th>
+                <th>Notas</th>
+                <th style="width:140px;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-padrinos"></tbody>
+          </table>
+        </div>
+      </div>
+
     </div>
 
   </div>
@@ -1357,6 +1708,8 @@
       escucharFamilias();
       escucharPlaneacion();
       escucharMesas();
+      escucharItinerario();
+      escucharPadrinos();
     } else {
       loginScreen.style.display = "flex";
       panel.style.display = "none";
@@ -1370,9 +1723,11 @@
       btn.classList.add("activo");
       const tab = btn.dataset.tab;
       document.getElementById("tab-invitados").style.display = tab === "invitados" ? "block" : "none";
-      document.getElementById("tab-planeacion").style.display = tab === "planeacion" ? "block" : "none";
       document.getElementById("tab-mesas").style.display = tab === "mesas" ? "block" : "none";
+      document.getElementById("tab-itinerario").style.display = tab === "itinerario" ? "block" : "none";
+      document.getElementById("tab-planeacion").style.display = tab === "planeacion" ? "block" : "none";
       if (tab === "mesas") renderMesas();
+      if (tab === "itinerario") dibujarCanvasItinerario();
     });
   });
 
@@ -2514,6 +2869,591 @@
       URL.revokeObjectURL(url);
     });
   }
+
+  // =====================================================================
+  // ---------- ITINERARIO, ESTUDIO DE IMAGEN Y PADRINOS ----------
+  // =====================================================================
+  let itinerario = [];
+  let padrinos = [];
+  let yaEscuchandoItinerario = false;
+  let yaEscuchandoPadrinos = false;
+  let imagenFondoItinerario = null;
+  let itinEditandoId = null;
+  let padEditandoId = null;
+
+  function escucharItinerario() {
+    if (yaEscuchandoItinerario) return;
+    yaEscuchandoItinerario = true;
+    onSnapshot(collection(db, "itinerario"), (snapshot) => {
+      itinerario = snapshot.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => (Number(a.orden) || 0) - (Number(b.orden) || 0));
+      renderItinerario();
+      dibujarCanvasItinerario();
+    });
+  }
+
+  function escucharPadrinos() {
+    if (yaEscuchandoPadrinos) return;
+    yaEscuchandoPadrinos = true;
+    onSnapshot(collection(db, "padrinos"), (snapshot) => {
+      padrinos = snapshot.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => (Number(a.orden) || 0) - (Number(b.orden) || 0));
+      renderPadrinos();
+    });
+  }
+
+  function escaparHtml(str) {
+    return String(str || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function renderItinerario() {
+    const lista = document.getElementById("lista-itinerario");
+    const btnBase = document.getElementById("btn-cargar-itin-base");
+    if (!lista) return;
+
+    btnBase.style.display = itinerario.length === 0 ? "inline-block" : "none";
+
+    if (itinerario.length === 0) {
+      lista.innerHTML = `<li style="font-size:0.86rem; color:var(--gris-calido); padding:10px 4px;">Aún no hay momentos registrados. Agrega el primero arriba o carga el ejemplo base.</li>`;
+      return;
+    }
+
+    lista.innerHTML = itinerario.map((item, idx) => {
+      if (itinEditandoId === item.id) {
+        return `
+          <li class="itin-item" style="flex-direction:column; align-items:stretch; gap:8px;">
+            <div style="display:grid; grid-template-columns:110px 1fr 1fr; gap:6px;">
+              <input type="text" id="edit-itin-hora-${item.id}" value="${escaparHtml(item.hora)}" style="padding:6px 8px; border:1px solid var(--terracota); border-radius:5px; background:#fff; font-family:inherit; font-size:0.84rem;">
+              <input type="text" id="edit-itin-act-${item.id}" value="${escaparHtml(item.actividad)}" style="padding:6px 8px; border:1px solid var(--terracota); border-radius:5px; background:#fff; font-family:inherit; font-size:0.84rem;">
+              <input type="text" id="edit-itin-det-${item.id}" value="${escaparHtml(item.detalle || "")}" placeholder="Detalle" style="padding:6px 8px; border:1px solid var(--arena); border-radius:5px; background:#fff; font-family:inherit; font-size:0.84rem;">
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:6px;">
+              <button type="button" class="btn-mini-itin" data-itin-cancelar="${item.id}">Cancelar</button>
+              <button type="button" class="btn-guardar-inline" data-itin-guardar="${item.id}">Guardar</button>
+            </div>
+          </li>
+        `;
+      }
+      return `
+        <li class="itin-item">
+          <div class="itin-item-info">
+            <span class="itin-hora-badge">${escaparHtml(item.hora)}</span>
+            <div>
+              <div class="itin-act-txt">${escaparHtml(item.actividad)}</div>
+              ${item.detalle ? `<div class="itin-det-txt">${escaparHtml(item.detalle)}</div>` : ""}
+            </div>
+          </div>
+          <div class="itin-item-acciones">
+            <button type="button" class="btn-mini-itin" title="Subir" data-itin-subir="${item.id}" ${idx === 0 ? "disabled style='opacity:0.4;cursor:default;'" : ""}>↑</button>
+            <button type="button" class="btn-mini-itin" title="Bajar" data-itin-bajar="${item.id}" ${idx === itinerario.length - 1 ? "disabled style='opacity:0.4;cursor:default;'" : ""}>↓</button>
+            <button type="button" class="btn-mini-itin" title="Editar" data-itin-editar="${item.id}">✎</button>
+            <button type="button" class="btn-mini-itin eliminar" title="Eliminar" data-itin-eliminar="${item.id}">✕</button>
+          </div>
+        </li>
+      `;
+    }).join("");
+
+    lista.querySelectorAll("[data-itin-subir]").forEach(btn => {
+      btn.addEventListener("click", () => moverMomentoItinerario(btn.dataset.itinSubir, -1));
+    });
+    lista.querySelectorAll("[data-itin-bajar]").forEach(btn => {
+      btn.addEventListener("click", () => moverMomentoItinerario(btn.dataset.itinBajar, 1));
+    });
+    lista.querySelectorAll("[data-itin-editar]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        itinEditandoId = btn.dataset.itinEditar;
+        renderItinerario();
+      });
+    });
+    lista.querySelectorAll("[data-itin-cancelar]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        itinEditandoId = null;
+        renderItinerario();
+      });
+    });
+    lista.querySelectorAll("[data-itin-guardar]").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        const id = btn.dataset.itinGuardar;
+        const hora = document.getElementById(`edit-itin-hora-${id}`).value.trim();
+        const actividad = document.getElementById(`edit-itin-act-${id}`).value.trim();
+        const detalle = document.getElementById(`edit-itin-det-${id}`).value.trim();
+        if (!hora || !actividad) return;
+        itinEditandoId = null;
+        await updateDoc(doc(db, "itinerario", id), { hora, actividad, detalle });
+      });
+    });
+    lista.querySelectorAll("[data-itin-eliminar]").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        if (!confirm("¿Eliminar este momento del itinerario?")) return;
+        await deleteDoc(doc(db, "itinerario", btn.dataset.itinEliminar));
+      });
+    });
+  }
+
+  async function moverMomentoItinerario(id, direccion) {
+    const idx = itinerario.findIndex(x => x.id === id);
+    const destino = idx + direccion;
+    if (idx < 0 || destino < 0 || destino >= itinerario.length) return;
+    const copia = [...itinerario];
+    const [movido] = copia.splice(idx, 1);
+    copia.splice(destino, 0, movido);
+    await Promise.all(
+      copia.map((item, i) => updateDoc(doc(db, "itinerario", item.id), { orden: i + 1 }))
+    );
+  }
+
+  document.getElementById("form-itinerario").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const horaEl = document.getElementById("itin-hora");
+    const actEl = document.getElementById("itin-actividad");
+    const detEl = document.getElementById("itin-detalle");
+    const hora = horaEl.value.trim();
+    const actividad = actEl.value.trim();
+    const detalle = detEl.value.trim();
+    if (!hora || !actividad) return;
+
+    const maxOrden = itinerario.reduce((m, x) => Math.max(m, Number(x.orden) || 0), 0);
+    await addDoc(collection(db, "itinerario"), {
+      hora,
+      actividad,
+      detalle,
+      orden: maxOrden + 1,
+    });
+    horaEl.value = "";
+    actEl.value = "";
+    detEl.value = "";
+    horaEl.focus();
+  });
+
+  document.getElementById("btn-cargar-itin-base").addEventListener("click", async () => {
+    const base = [
+      { hora: "1:00 PM", actividad: "Ceremonia religiosa", detalle: "Templo principal", orden: 1 },
+      { hora: "2:30 PM", actividad: "Recepción y bienvenida", detalle: "Jardín del salón", orden: 2 },
+      { hora: "3:30 PM", actividad: "Comida y banquete", detalle: "Salón principal", orden: 3 },
+      { hora: "5:00 PM", actividad: "Brindis y palabras", detalle: "Con familia y amigos", orden: 4 },
+      { hora: "6:00 PM", actividad: "Corte de pastel y café", detalle: "Mesa principal", orden: 5 },
+      { hora: "7:30 PM", actividad: "Despedida de los novios", detalle: "Cierre de celebración", orden: 6 },
+    ];
+    await Promise.all(base.map(item => addDoc(collection(db, "itinerario"), item)));
+  });
+
+  document.getElementById("btn-copiar-itin-texto").addEventListener("click", async () => {
+    if (itinerario.length === 0) {
+      alert("Primero agrega momentos al itinerario.");
+      return;
+    }
+    const lineas = [
+      "✨ *Itinerario — Boda Juan Antonio & Anahí* ✨",
+      "📅 Sábado 23 de enero de 2027",
+      "",
+      ...itinerario.map(i => `• *${i.hora}* — ${i.actividad}${i.detalle ? ` (${i.detalle})` : ""}`),
+      "",
+      "¡Nos dará muchísima alegría compartir cada momento con ustedes! 🤍"
+    ];
+    try {
+      await navigator.clipboard.writeText(lineas.join("\n"));
+      const btn = document.getElementById("btn-copiar-itin-texto");
+      const orig = btn.textContent;
+      btn.textContent = "✓ Copiado al portapapeles";
+      setTimeout(() => { btn.textContent = orig; }, 2200);
+    } catch (e) {
+      alert("No se pudo copiar automáticamente.");
+    }
+  });
+
+  // ---------- Canvas: subir imagen y plasmar itinerario ----------
+  const inputFotoItin = document.getElementById("input-foto-itinerario");
+  const btnQuitarFotoItin = document.getElementById("btn-quitar-foto-itin");
+
+  inputFotoItin.addEventListener("change", (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const img = new Image();
+      img.onload = () => {
+        imagenFondoItinerario = img;
+        document.getElementById("nombre-foto-itin").textContent = `(${file.name})`;
+        btnQuitarFotoItin.style.display = "inline-block";
+        dibujarCanvasItinerario();
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  btnQuitarFotoItin.addEventListener("click", () => {
+    imagenFondoItinerario = null;
+    inputFotoItin.value = "";
+    document.getElementById("nombre-foto-itin").textContent = "";
+    btnQuitarFotoItin.style.display = "none";
+    dibujarCanvasItinerario();
+  });
+
+  ["canvas-titulo", "canvas-subtitulo", "canvas-estilo", "canvas-opacidad", "canvas-pos-y", "canvas-escala"].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener("input", () => {
+      if (id === "canvas-opacidad") document.getElementById("val-opacidad").textContent = el.value;
+      if (id === "canvas-pos-y") document.getElementById("val-pos-y").textContent = el.value;
+      if (id === "canvas-escala") document.getElementById("val-escala").textContent = el.value;
+      dibujarCanvasItinerario();
+    });
+  });
+
+  function envolverLineasCanvas(ctx, texto, maxAncho) {
+    if (!texto) return [];
+    const palabras = String(texto).split(/\s+/);
+    const lineas = [];
+    let actual = "";
+    for (const p of palabras) {
+      const prueba = actual ? `${actual} ${p}` : p;
+      if (ctx.measureText(prueba).width <= maxAncho || !actual) {
+        actual = prueba;
+      } else {
+        lineas.push(actual);
+        actual = p;
+      }
+    }
+    if (actual) lineas.push(actual);
+    return lineas;
+  }
+
+  function trazarRectanguloRedondeado(ctx, x, y, w, h, r) {
+    const radio = Math.min(r, w / 2, h / 2);
+    ctx.beginPath();
+    ctx.moveTo(x + radio, y);
+    ctx.arcTo(x + w, y, x + w, y + h, radio);
+    ctx.arcTo(x + w, y + h, x, y + h, radio);
+    ctx.arcTo(x, y + h, x, y, radio);
+    ctx.arcTo(x, y, x + w, y, radio);
+    ctx.closePath();
+  }
+
+  async function dibujarCanvasItinerario() {
+    const canvas = document.getElementById("canvas-itinerario");
+    if (!canvas) return;
+    if (document.fonts && document.fonts.ready) {
+      try { await document.fonts.ready; } catch (e) {}
+    }
+
+    const ctx = canvas.getContext("2d");
+
+    // Dimensiones del lienzo según imagen subida o plantilla vertical 1080x1350
+    let W = 1080;
+    let H = 1350;
+    if (imagenFondoItinerario) {
+      const maxDim = 2200;
+      const nw = imagenFondoItinerario.naturalWidth || 1080;
+      const nh = imagenFondoItinerario.naturalHeight || 1350;
+      const factor = Math.max(nw, nh) > maxDim ? maxDim / Math.max(nw, nh) : 1;
+      W = Math.round(nw * factor);
+      H = Math.round(nh * factor);
+    }
+    canvas.width = W;
+    canvas.height = H;
+
+    // Fondo
+    if (imagenFondoItinerario) {
+      ctx.drawImage(imagenFondoItinerario, 0, 0, W, H);
+    } else {
+      ctx.fillStyle = "#F8F4EE";
+      ctx.fillRect(0, 0, W, H);
+      const margenMarco = Math.round(W * 0.045);
+      ctx.strokeStyle = "#D8C4AE";
+      ctx.lineWidth = Math.max(2, Math.round(W * 0.0025));
+      ctx.strokeRect(margenMarco, margenMarco, W - margenMarco * 2, H - margenMarco * 2);
+    }
+
+    const titulo = document.getElementById("canvas-titulo").value.trim();
+    const subtitulo = document.getElementById("canvas-subtitulo").value.trim();
+    const estilo = document.getElementById("canvas-estilo").value;
+    const opacidad = (Number(document.getElementById("canvas-opacidad").value) || 0) / 100;
+    const posYPorc = (Number(document.getElementById("canvas-pos-y").value) || 50) / 100;
+    const escala = (Number(document.getElementById("canvas-escala").value) || 100) / 100;
+
+    const esOscuro = estilo === "tarjeta-oscura" || estilo === "sin-fondo-claro";
+    const colorTexto = esOscuro ? "#F8F4EE" : "#3B2A22";
+    const colorAcento = esOscuro ? "#E5C49F" : "#C1815B";
+    const colorSub = esOscuro ? "rgba(248, 244, 238, 0.78)" : "rgba(59, 42, 34, 0.68)";
+    const colorLinea = esOscuro ? "rgba(229, 196, 159, 0.45)" : "rgba(193, 129, 91, 0.42)";
+
+    const baseUnit = Math.min(W, H) * 0.026 * escala;
+    const padX = Math.round(W * 0.065);
+    const padY = Math.round(baseUnit * 1.45);
+    const cardW = Math.round(W * 0.84);
+    const cardX = Math.round((W - cardW) / 2);
+
+    const itemsMostrar = itinerario.length > 0
+      ? itinerario
+      : [
+          { hora: "1:00 PM", actividad: "Ceremonia religiosa", detalle: "Ejemplo — agrega tus horarios a la izquierda" },
+          { hora: "2:30 PM", actividad: "Recepción y cóctel", detalle: "" },
+          { hora: "3:30 PM", actividad: "Banquete", detalle: "" },
+        ];
+
+    // Medir altura total del contenido antes de dibujar para centrarlo en posYPorc
+    const fontTitulo = `600 ${Math.round(baseUnit * 1.75)}px Fraunces, Georgia, serif`;
+    const fontSub = `400 ${Math.round(baseUnit * 0.85)}px "Work Sans", sans-serif`;
+    const fontHora = `600 ${Math.round(baseUnit * 0.92)}px "Work Sans", sans-serif`;
+    const fontAct = `600 ${Math.round(baseUnit * 1.02)}px Fraunces, Georgia, serif`;
+    const fontDet = `400 ${Math.round(baseUnit * 0.78)}px "Work Sans", sans-serif`;
+
+    const colHoraW = Math.round(cardW * 0.27);
+    const colEjeW = Math.round(baseUnit * 1.6);
+    const colActMaxW = cardW - padX * 2 - colHoraW - colEjeW;
+
+    let contenidoH = padY * 2;
+    if (titulo) contenidoH += Math.round(baseUnit * 2.1);
+    if (subtitulo) contenidoH += Math.round(baseUnit * 1.3);
+    if (titulo || subtitulo) contenidoH += Math.round(baseUnit * 1.1);
+
+    const filasMedicion = itemsMostrar.map(it => {
+      ctx.font = fontAct;
+      const lineasAct = envolverLineasCanvas(ctx, it.actividad, colActMaxW);
+      ctx.font = fontDet;
+      const lineasDet = it.detalle ? envolverLineasCanvas(ctx, it.detalle, colActMaxW) : [];
+      const hAct = lineasAct.length * Math.round(baseUnit * 1.25);
+      const hDet = lineasDet.length * Math.round(baseUnit * 1.02);
+      const altoFila = Math.max(Math.round(baseUnit * 1.45), hAct + hDet) + Math.round(baseUnit * 0.85);
+      return { it, lineasAct, lineasDet, altoFila };
+    });
+
+    contenidoH += filasMedicion.reduce((acc, f) => acc + f.altoFila, 0);
+
+    // Calcular Y superior del bloque respetando márgenes de seguridad
+    const centroDeseadoY = H * posYPorc;
+    let cardY = Math.round(centroDeseadoY - contenidoH / 2);
+    const minMarginY = Math.round(H * 0.03);
+    cardY = Math.max(minMarginY, Math.min(H - contenidoH - minMarginY, cardY));
+
+    ctx.save();
+    if (estilo === "tarjeta-clara" || estilo === "tarjeta-oscura") {
+      trazarRectanguloRedondeado(ctx, cardX, cardY, cardW, contenidoH, Math.round(baseUnit * 0.9));
+      ctx.fillStyle = estilo === "tarjeta-clara"
+        ? `rgba(248, 244, 238, ${opacidad})`
+        : `rgba(42, 30, 24, ${opacidad})`;
+      ctx.fill();
+      ctx.lineWidth = Math.max(1.5, Math.round(W * 0.0018));
+      ctx.strokeStyle = estilo === "tarjeta-clara" ? "rgba(216, 196, 174, 0.9)" : "rgba(229, 196, 159, 0.55)";
+      ctx.stroke();
+    } else {
+      ctx.shadowColor = esOscuro ? "rgba(0, 0, 0, 0.65)" : "rgba(255, 255, 255, 0.85)";
+      ctx.shadowBlur = Math.round(baseUnit * 0.5);
+    }
+
+    let cursorY = cardY + padY;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "top";
+
+    if (titulo) {
+      ctx.font = fontTitulo;
+      ctx.fillStyle = colorTexto;
+      ctx.fillText(titulo, W / 2, cursorY);
+      cursorY += Math.round(baseUnit * 2.1);
+    }
+    if (subtitulo) {
+      ctx.font = fontSub;
+      ctx.fillStyle = colorSub;
+      ctx.fillText(subtitulo, W / 2, cursorY);
+      cursorY += Math.round(baseUnit * 1.3);
+    }
+    if (titulo || subtitulo) {
+      // Línea divisoria con rombo central
+      const divY = cursorY + Math.round(baseUnit * 0.35);
+      const divHalfW = Math.round(cardW * 0.26);
+      ctx.strokeStyle = colorLinea;
+      ctx.lineWidth = Math.max(1.2, Math.round(W * 0.0015));
+      ctx.beginPath();
+      ctx.moveTo(W / 2 - divHalfW, divY);
+      ctx.lineTo(W / 2 - Math.round(baseUnit * 0.45), divY);
+      ctx.moveTo(W / 2 + Math.round(baseUnit * 0.45), divY);
+      ctx.lineTo(W / 2 + divHalfW, divY);
+      ctx.stroke();
+
+      const r = Math.round(baseUnit * 0.22);
+      ctx.fillStyle = colorAcento;
+      ctx.beginPath();
+      ctx.moveTo(W / 2, divY - r);
+      ctx.lineTo(W / 2 + r, divY);
+      ctx.lineTo(W / 2, divY + r);
+      ctx.lineTo(W / 2 - r, divY);
+      ctx.closePath();
+      ctx.fill();
+
+      cursorY += Math.round(baseUnit * 1.1);
+    }
+
+    const xHoraDerecha = cardX + padX + colHoraW - Math.round(baseUnit * 0.5);
+    const xEjeCentro = cardX + padX + colHoraW + Math.round(colEjeW / 2);
+    const xActIzquierda = cardX + padX + colHoraW + colEjeW + Math.round(baseUnit * 0.35);
+
+    filasMedicion.forEach((fila, idx) => {
+      const dotY = cursorY + Math.round(baseUnit * 0.55);
+
+      // Línea vertical conectora hacia el siguiente evento
+      if (idx < filasMedicion.length - 1) {
+        const nextDotY = cursorY + fila.altoFila + Math.round(baseUnit * 0.55);
+        ctx.strokeStyle = colorLinea;
+        ctx.lineWidth = Math.max(1.5, Math.round(W * 0.002));
+        ctx.beginPath();
+        ctx.moveTo(xEjeCentro, dotY);
+        ctx.lineTo(xEjeCentro, nextDotY);
+        ctx.stroke();
+      }
+
+      // Punto del nodo
+      ctx.fillStyle = colorAcento;
+      ctx.beginPath();
+      ctx.arc(xEjeCentro, dotY, Math.max(4, Math.round(baseUnit * 0.24)), 0, Math.PI * 2);
+      ctx.fill();
+
+      // Hora
+      ctx.textAlign = "right";
+      ctx.font = fontHora;
+      ctx.fillStyle = colorAcento;
+      ctx.fillText(fila.it.hora, xHoraDerecha, cursorY + Math.round(baseUnit * 0.08));
+
+      // Actividad y detalle
+      ctx.textAlign = "left";
+      ctx.font = fontAct;
+      ctx.fillStyle = colorTexto;
+      let yTexto = cursorY;
+      fila.lineasAct.forEach(ln => {
+        ctx.fillText(ln, xActIzquierda, yTexto);
+        yTexto += Math.round(baseUnit * 1.25);
+      });
+
+      if (fila.lineasDet.length > 0) {
+        ctx.font = fontDet;
+        ctx.fillStyle = colorSub;
+        fila.lineasDet.forEach(ln => {
+          ctx.fillText(ln, xActIzquierda, yTexto);
+          yTexto += Math.round(baseUnit * 1.02);
+        });
+      }
+
+      cursorY += fila.altoFila;
+    });
+
+    ctx.restore();
+  }
+
+  document.getElementById("btn-descargar-itinerario").addEventListener("click", async () => {
+    await dibujarCanvasItinerario();
+    const canvas = document.getElementById("canvas-itinerario");
+    canvas.toBlob((blob) => {
+      if (!blob) return;
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "itinerario-boda-juan-anahi.png";
+      a.click();
+      URL.revokeObjectURL(url);
+    }, "image/png");
+  });
+
+  // ---------- Padrinos ----------
+  function renderPadrinos() {
+    const tbody = document.getElementById("tbody-padrinos");
+    const contador = document.getElementById("padrinos-contador");
+    if (!tbody) return;
+
+    contador.textContent = `${padrinos.length} ${padrinos.length === 1 ? "registrado" : "registrados"}`;
+
+    if (padrinos.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--gris-calido); padding:22px;">Aún no hay padrinos registrados.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = padrinos.map(p => {
+      if (padEditandoId === p.id) {
+        return `
+          <tr>
+            <td><input type="text" id="edit-pad-simb-${p.id}" value="${escaparHtml(p.simbolo)}" style="width:100%; padding:6px 8px; border:1px solid var(--terracota); border-radius:5px; background:var(--crema); font-family:inherit; font-size:0.85rem;"></td>
+            <td><input type="text" id="edit-pad-nom-${p.id}" value="${escaparHtml(p.nombres)}" style="width:100%; padding:6px 8px; border:1px solid var(--terracota); border-radius:5px; background:var(--crema); font-family:inherit; font-size:0.85rem;"></td>
+            <td><input type="text" id="edit-pad-not-${p.id}" value="${escaparHtml(p.notas || "")}" style="width:100%; padding:6px 8px; border:1px solid var(--arena); border-radius:5px; background:var(--crema); font-family:inherit; font-size:0.85rem;"></td>
+            <td>
+              <button type="button" class="btn-guardar-inline" data-pad-guardar="${p.id}">Guardar</button>
+              <button type="button" class="btn-mini-itin" data-pad-cancelar="${p.id}">Cancelar</button>
+            </td>
+          </tr>
+        `;
+      }
+      return `
+        <tr>
+          <td><span class="badge-simbolo">${escaparHtml(p.simbolo)}</span></td>
+          <td style="font-weight:500;">${escaparHtml(p.nombres)}</td>
+          <td style="color:var(--gris-calido); font-size:0.85rem;">${escaparHtml(p.notas || "—")}</td>
+          <td>
+            <button type="button" class="btn-mini-itin" data-pad-editar="${p.id}">Editar</button>
+            <button type="button" class="btn-mini-itin eliminar" data-pad-eliminar="${p.id}">Eliminar</button>
+          </td>
+        </tr>
+      `;
+    }).join("");
+
+    tbody.querySelectorAll("[data-pad-editar]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        padEditandoId = btn.dataset.padEditar;
+        renderPadrinos();
+      });
+    });
+    tbody.querySelectorAll("[data-pad-cancelar]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        padEditandoId = null;
+        renderPadrinos();
+      });
+    });
+    tbody.querySelectorAll("[data-pad-guardar]").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        const id = btn.dataset.padGuardar;
+        const simbolo = document.getElementById(`edit-pad-simb-${id}`).value.trim();
+        const nombres = document.getElementById(`edit-pad-nom-${id}`).value.trim();
+        const notas = document.getElementById(`edit-pad-not-${id}`).value.trim();
+        if (!simbolo || !nombres) return;
+        padEditandoId = null;
+        await updateDoc(doc(db, "padrinos", id), { simbolo, nombres, notas });
+      });
+    });
+    tbody.querySelectorAll("[data-pad-eliminar]").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        if (!confirm("¿Eliminar este registro de padrinos?")) return;
+        await deleteDoc(doc(db, "padrinos", btn.dataset.padEliminar));
+      });
+    });
+  }
+
+  document.getElementById("form-padrinos").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const simbEl = document.getElementById("pad-simbolo");
+    const nomEl = document.getElementById("pad-nombres");
+    const notEl = document.getElementById("pad-notas");
+    const simbolo = simbEl.value.trim();
+    const nombres = nomEl.value.trim();
+    const notas = notEl.value.trim();
+    if (!simbolo || !nombres) return;
+
+    const maxOrden = padrinos.reduce((m, x) => Math.max(m, Number(x.orden) || 0), 0);
+    await addDoc(collection(db, "padrinos"), {
+      simbolo,
+      nombres,
+      notas,
+      orden: maxOrden + 1,
+    });
+    simbEl.value = "";
+    nomEl.value = "";
+    notEl.value = "";
+    simbEl.focus();
+  });
+
+  dibujarCanvasItinerario();
 </script>
 
 </body>
